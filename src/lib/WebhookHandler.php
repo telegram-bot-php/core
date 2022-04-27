@@ -49,7 +49,7 @@ abstract class WebhookHandler
     private function getTokenFromEnvFile(string $file): ?string
     {
         if (!file_exists($file)) return null;
-        return DotEnv::loadFrom($file)::get('TELEGRAM_API_KEY');
+        return DotEnv::load($file)::get('TELEGRAM_API_KEY');
     }
 
     /**
@@ -150,7 +150,7 @@ abstract class WebhookHandler
     public function loadEnvironment(string $path): void
     {
         $dotEnv = new \TelegramBot\Util\DotEnv();
-        $dotEnv->loadFrom($path);
+        $dotEnv->load($path);
     }
 
     /**

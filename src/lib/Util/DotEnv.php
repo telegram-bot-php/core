@@ -32,24 +32,13 @@ class DotEnv
     /**
      * Load environment variables from .env file in root directory
      *
+     * @param ?string $path
      * @return DotEnv
      */
-    public static function load(): self
+    public static function load(string $path = null): self
     {
-        self::loadFrom($_SERVER['DOCUMENT_ROOT'] . '/.env');
-
-        return new self();
-    }
-
-    /**
-     * Loads environment variables from .env file
-     *
-     * @param string $path
-     * @return DotEnv
-     */
-    public static function loadFrom(string $path): self
-    {
-        $data = self::read($path);
+        if (empty($path)) $data = self::read(getcwd() . '/.env');
+        else $data = self::read($path);
         foreach ($data as $item) {
             if (count($item) == 2) {
                 putenv($item[0] . '=' . $item[1]);
@@ -62,8 +51,8 @@ class DotEnv
     /**
      * Read environment variable
      *
-     * @param string $key
-     * @param string $default
+     * @param string $key The Key of the environment variable
+     * @param string $default The default value if the key is not found
      * @return string
      */
     public static function get(string $key, string $default = ''): string
@@ -74,9 +63,10 @@ class DotEnv
     /**
      * Put environment variable
      *
-     * @param string $key
-     * @param string $value
+     * @param string $key The Key of the environment variable
+     * @param string $value The Value of the environment variable
      * @param bool $save (default: false)
+     *
      * @return void
      */
     public static function put(string $key, string $value, bool $save = false): void
@@ -90,18 +80,36 @@ class DotEnv
      *
      * @param string $path The absolute path to the file
      * @param array $input The environment variables to save
-     * @return void
+     * @return bool
      */
-    public static function saveTo(string $path, array $input): void
+    public static function saveTo(string $path, array $input): bool
     {
-        $data = array_merge(self::read($path), $input);
         $content = '';
+        $data = array_merge(self::read($path), $input);
         foreach ($data as $item) {
             if (count($item) == 2) {
                 $content .= $item[0] . '=' . $item[1] . "\n";
             }
         }
-        file_put_contents($path, $content);
+        return file_put_contents($path, $content) !== false;
+    }
+
+    /**
+     * Find the .env file location
+     *
+     * @return string
+     */
+    public static function find(): string
+    {
+        while (true) {
+            if (file_exists($_SERVER['DOCUMENT_ROOT'] . '/.env')) {
+                return $_SERVER['DOCUMENT_ROOT'] . '/.env';
+            }
+            if ($_SERVER['DOCUMENT_ROOT'] == '/') {
+                return '';
+            }
+            $_SERVER['DOCUMENT_ROOT'] = dirname($_SERVER['DOCUMENT_ROOT']);
+        }
     }
 
 }

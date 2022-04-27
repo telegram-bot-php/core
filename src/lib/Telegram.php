@@ -36,10 +36,20 @@ class Telegram
     public function __construct(string $api_key = '')
     {
         if ($api_key === '') {
-            $api_key = DotEnv::load()::get('TELEGRAM_API_KEY');
+            $defaultEnvPaths = [
+                $_SERVER['DOCUMENT_ROOT'] . '/.env',
+                __DIR__ . '/.env'
+            ];
+
+            foreach ($defaultEnvPaths as $path) {
+                if (file_exists($path)) {
+                    $api_key = DotEnv::load($path)::get('TELEGRAM_API_KEY');
+                    break;
+                }
+            }
         }
 
-        if (empty($api_key)) {
+        if (empty($api_key) || !is_string($api_key)) {
             throw new TelegramException('API Key is required');
         }
 
@@ -198,13 +208,8 @@ class Telegram
     public function fetchWith(WebhookHandler $webhook_handler, ?Update $update = null): void
     {
         if (is_subclass_of($webhook_handler, WebhookHandler::class)) {
-
-            if ($update === null) {
-                $update = self::getUpdate();
-            }
-
-            $webhook_handler->resolve([], $update);
-
+            if ($update === null) $update = self::getUpdate();
+            $webhook_handler->resolve($update);
         }
     }
 
