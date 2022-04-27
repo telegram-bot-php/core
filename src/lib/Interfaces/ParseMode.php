@@ -1,6 +1,6 @@
 <?php
 
-namespace TelegramBot\Enum;
+namespace TelegramBot\Interfaces;
 
 /**
  * Message Parse Mode
@@ -9,7 +9,7 @@ namespace TelegramBot\Enum;
  * @author  Shahrad Elahi (https://github.com/shahradelahi)
  * @license https://github.com/shahradelahi/telegram-bot/blob/master/LICENSE (MIT License)
  */
-class MessageParseMode
+class ParseMode
 {
 
     /**

@@ -1,6 +1,6 @@
 <?php
 
-namespace TelegramBot\Enum;
+namespace TelegramBot\Interfaces;
 
 class ChatAction
 {

@@ -21,34 +21,22 @@ class Telegram
     /**
      * @var string
      */
-    public static string $VERSION = 'v1.0.0';
-
-    /**
-     * @var string
-     */
     private string $api_key;
 
     /**
      * @var string
      */
-    private string $custom_input;
-
-    /**
-     * @var string
-     */
-    private string $bot_username;
+    public static string $VERSION = 'v1.0.0';
 
     /**
      * Telegram constructor.
      *
      * @param string $api_key
-     * @param string $bot_username
      */
-    public function __construct(string $api_key = '', string $bot_username = '')
+    public function __construct(string $api_key = '')
     {
         if ($api_key === '') {
             $api_key = DotEnv::load()::get('TELEGRAM_API_KEY');
-            $bot_username = DotEnv::load()::get('TELEGRAM_BOT_USERNAME');
         }
 
         if (empty($api_key)) {
@@ -57,19 +45,6 @@ class Telegram
 
         DotEnv::put('TG_CURRENT_KEY', ($this->api_key = $api_key));
         DotEnv::put('TELEGRAM_API_KEY', ($this->api_key = $api_key));
-        DotEnv::put('TELEGRAM_BOT_USERNAME', ($this->bot_username = $bot_username));
-    }
-
-    /**
-     * Set custom input string for debug purposes
-     *
-     * @param string $input (json format)
-     * @return Telegram
-     */
-    public function setCustomInput(string $input): Telegram
-    {
-        $this->custom_input = $input;
-        return $this;
     }
 
     /**
@@ -83,13 +58,20 @@ class Telegram
     }
 
     /**
-     * Get Bot name
+     * Get bot info from given API key
      *
-     * @return string
+     * @return Response
+     * @throws TelegramException
      */
-    public function getBotUsername(): string
+    public function getInfo(): Response
     {
-        return $this->bot_username;
+        $result = Request::getMe();
+
+        if (!$result->isOk()) {
+            throw new TelegramException($result->getErrorCode() . ': ' . $result->getDescription());
+        }
+
+        return $result;
     }
 
     /**
@@ -164,17 +146,13 @@ class Telegram
     }
 
     /**
-     * Process bot Update request
+     * This method will convert a string to an update object
      *
-     * @param string $input
+     * @param string $input The input string
      * @return Update|false
      */
     public function processUpdate(string $input): Update|false
     {
-        if ($this->custom_input) {
-            $input = $this->custom_input;
-        }
-
         if ($input === '' || Utils::isJson($input) === false) {
             throw new TelegramException('Input is empty!');
         }
@@ -187,6 +165,18 @@ class Telegram
     }
 
     /**
+     * Get the update from input
+     *
+     * @return Update|false
+     */
+    public static function getUpdate(): Update|false
+    {
+        $input = self::getInput();
+        if ($input === '' || Utils::isJson($input) === false) return false;
+        return (new Telegram())->processUpdate($input);
+    }
+
+    /**
      * Validate the token
      *
      * @param string $token (e.g. 123456789:ABC-DEF1234ghIkl-zyx57W2v1u123ew11) {digit}:{alphanumeric[34]}
@@ -196,6 +186,26 @@ class Telegram
     {
         preg_match_all('/([0-9]+:[a-zA-Z0-9-_]+)/', $token, $matches);
         return count($matches[0]) == 1;
+    }
+
+    /**
+     * Pass the update to the given webhook handler
+     *
+     * @param WebhookHandler $webhook_handler The webhook handler
+     * @param ?Update $update By default, it will get the update from input
+     * @return void
+     */
+    public function fetchWith(WebhookHandler $webhook_handler, ?Update $update = null): void
+    {
+        if (is_subclass_of($webhook_handler, WebhookHandler::class)) {
+
+            if ($update === null) {
+                $update = self::getUpdate();
+            }
+
+            $webhook_handler->resolve([], $update);
+
+        }
     }
 
 }

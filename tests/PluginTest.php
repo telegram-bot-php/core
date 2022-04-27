@@ -9,16 +9,25 @@ use TelegramBot\Telegram;
 class PluginTest extends \TelegramBot\Plugin
 {
 
+    /**
+     * Plugin constructor.
+     *
+     * @param Telegram $telegram
+     */
     private function __construct(Telegram $telegram)
     {
         // initialize or do something
     }
 
+    /**
+     * @param Update $update
+     * @return \Generator
+     */
     public function __run(Update $update): \Generator
     {
         yield Request::sendMessage([
             'chat_id' => $update->getMessage()->getChat()->getId(),
-            'text' => $this->getHello($update->getMessage()->getFrom()->getFirstName()),
+            'text' => $this->getText($update->getMessage()->getFrom()->getFirstName()),
         ]);
     }
 
@@ -26,7 +35,7 @@ class PluginTest extends \TelegramBot\Plugin
      * @param string $name
      * @return string
      */
-    private function getHello(string $name): string
+    private function getText(string $name): string
     {
         return 'Hello, ' . $name;
     }

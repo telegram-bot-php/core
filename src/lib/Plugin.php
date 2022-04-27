@@ -3,6 +3,8 @@
 namespace TelegramBot;
 
 use TelegramBot\Entities\Update;
+use TelegramBot\Interfaces\OnUpdateReceived;
+use TelegramBot\Interfaces\UpdateTypes;
 
 /**
  * Class Plugin
@@ -15,9 +17,9 @@ abstract class Plugin
 {
 
     /**
-     * @var Receiver
+     * @var WebhookHandler
      */
-    protected Receiver $receiver;
+    protected WebhookHandler $hook;
 
     /**
      * @var \Generator
@@ -27,7 +29,7 @@ abstract class Plugin
     /**
      * @var bool
      */
-    protected bool $kill_on_finish = false;
+    protected bool $kill_on_yield = false;
 
     /**
      * Override this method to add your own functionality
@@ -40,18 +42,37 @@ abstract class Plugin
     /**
      * Execute the plugin.
      *
-     * @param Receiver $receiver
+     * @param WebhookHandler $receiver
      * @param Update $update
      * @return void
      */
-    public function __execute(Receiver $receiver, Update $update): void
+    public function __execute(WebhookHandler $receiver, Update $update): void
     {
-        $this->receiver = $receiver;
+        $this->hook = $receiver;
         $returns = $this->__run($update);
+
+        if ($this instanceof OnUpdateReceived) {
+            $this->onUpdateReceived($update);
+        }
+
         if (!$returns->getReturn()) {
-            if ($this->kill_on_finish) {
+            if ($this->kill_on_yield) {
                 $this->kill();
             }
+        }
+    }
+
+    /**
+     * Identify the update type and if method of the type is exists, execute it.
+     *
+     * @param Update $update
+     * @return void
+     */
+    private function onUpdateReceived(Update $update): void
+    {
+        $method = UpdateTypes::identify($update);
+        if (method_exists($this, $method)) {
+            $this->$method($update);
         }
     }
 
@@ -62,7 +83,7 @@ abstract class Plugin
      */
     public function kill(): void
     {
-        $this->receiver->kill();
+        $this->hook->kill();
     }
 
 }
