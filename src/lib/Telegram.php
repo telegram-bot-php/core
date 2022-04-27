@@ -11,9 +11,9 @@ use TelegramBot\Util\Utils;
 /**
  * Telegram
  *
- * @link    https://github.com/shahradelahi/telegram-bot
+ * @link    https://github.com/telegram-bot-php/core
  * @author  Shahrad Elahi (https://github.com/shahradelahi)
- * @license https://github.com/shahradelahi/telegram-bot/blob/master/LICENSE (MIT License)
+ * @license https://github.com/telegram-bot-php/core/blob/master/LICENSE (MIT License)
  */
 class Telegram
 {
@@ -161,7 +161,7 @@ class Telegram
      * @param string $input The input string
      * @return Update|false
      */
-    public function processUpdate(string $input): Update|false
+    public static function processUpdate(string $input): Update|false
     {
         if ($input === '' || Utils::isJson($input) === false) {
             throw new TelegramException('Input is empty!');
@@ -211,6 +211,29 @@ class Telegram
             if ($update === null) $update = self::getUpdate();
             $webhook_handler->resolve($update);
         }
+    }
+
+    /**
+     * Get token from env file.
+     *
+     * @param string $file
+     * @return ?string
+     */
+    protected function getTokenFromEnvFile(string $file): ?string
+    {
+        if (!file_exists($file)) return null;
+        return DotEnv::load($file)::get('TELEGRAM_API_KEY');
+    }
+
+    /**
+     * Just another echo
+     *
+     * @param string $text
+     * @return void
+     */
+    public static function echo(string $text): void
+    {
+        echo $text;
     }
 
 }

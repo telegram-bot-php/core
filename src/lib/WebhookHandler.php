@@ -8,22 +8,17 @@ use TelegramBot\Util\DotEnv;
 /**
  * Class Webhook
  *
- * @link    https://github.com/shahradelahi/telegram-bot
+ * @link    https://github.com/telegram-bot-php/core
  * @author  Shahrad Elahi (https://github.com/shahradelahi)
- * @license https://github.com/shahradelahi/telegram-bot/blob/master/LICENSE (MIT License)
+ * @license https://github.com/telegram-bot-php/core/blob/master/LICENSE (MIT License)
  */
-abstract class WebhookHandler
+abstract class WebhookHandler extends Telegram
 {
 
     /**
      * @var array<Plugin>
      */
     private array $plugins = [];
-
-    /**
-     * @var Telegram
-     */
-    private Telegram $telegram;
 
     /**
      * @var bool
@@ -41,56 +36,17 @@ abstract class WebhookHandler
     ];
 
     /**
-     * Get token from env file.
-     *
-     * @param string $file
-     * @return ?string
-     */
-    private function getTokenFromEnvFile(string $file): ?string
-    {
-        if (!file_exists($file)) return null;
-        return DotEnv::load($file)::get('TELEGRAM_API_KEY');
-    }
-
-    /**
      * Webhook constructor.
      *
-     * @param string|array $input
-     * @throws \Exception
+     * @param string $api_key The API key of the bot. Leave it blank for autoload from .env file.
      */
-    public function __construct(string|array $input = '')
+    public function __construct(string $api_key = '')
     {
-        $api_key = '';
+        parent::__construct($api_key);
 
-        $this->init();
-        if (is_array($input)) {
-            $this->config = array_merge($this->config, $input);
-
-        } else {
-            if (Telegram::validateToken($input)) {
-                $api_key = $input;
-
-            } elseif ($input !== '') {
-                if (!$this->getTokenFromEnvFile($input)) {
-                    throw new \Exception('Invalid token or file path.');
-                }
-                $api_key = $this->getTokenFromEnvFile($input);
-
-            } else {
-                $api_key = DotEnv::get('TG_CURRENT_KEY');
-
-            }
+        if (!Telegram::validateToken(self::getApiKey())) {
+            throw new \RuntimeException('The API_KEY is invalid.');
         }
-
-        if ($this->config['autoload_env_file']) {
-            $api_key = $this->getTokenFromEnvFile($this->config['env_file_path']);
-        }
-
-        if (!Telegram::validateToken($api_key)) {
-            throw new \Exception('The API key is invalid.');
-        }
-
-        $this->telegram = new Telegram($api_key);
     }
 
     /**
@@ -111,8 +67,10 @@ abstract class WebhookHandler
     public function addPlugin(array $plugins): void
     {
         foreach ($plugins as $plugin) {
-            if (!$plugin instanceof Plugin) {
-                throw new \InvalidArgumentException('Plugin must be an instance of \TelegramBot\Plugin');
+            if (!is_subclass_of($plugin, Plugin::class)) {
+                throw new \RuntimeException(
+                    sprintf('The plugin %s must be an instance of %s', get_class($plugin), Plugin::class)
+                );
             }
             $this->plugins[] = $plugin;
         }
@@ -130,7 +88,9 @@ abstract class WebhookHandler
         $update = $update ?? Telegram::getUpdate();
         foreach ($plugins as $plugin) {
             if (!is_subclass_of($plugin, Plugin::class)) {
-                throw new \InvalidArgumentException('Plugin must be an instance of \TelegramBot\Plugin');
+                throw new \InvalidArgumentException(
+                    sprintf('The plugin %s must be an instance of %s', get_class($plugin), Plugin::class)
+                );
             }
             $this->spreadUpdateWith($update, $plugins);
         }
@@ -153,19 +113,10 @@ abstract class WebhookHandler
      * @param string $path
      * @retrun void
      */
-    public function loadEnvironment(string $path): void
+    public function loadFileOfEnv(string $path): void
     {
-        $dotEnv = new \TelegramBot\Util\DotEnv();
-        $dotEnv->load($path);
+        DotEnv::load($path);
     }
-
-    /**
-     * Use this method on the webhook class to get the updates
-     *
-     * @param Update $update
-     * @return void
-     */
-    abstract public function __process(Update $update): void;
 
     /**
      * Update the configuration
@@ -190,13 +141,14 @@ abstract class WebhookHandler
     {
         $method = '__process';
         if (!method_exists($this, $method)) {
-            throw new \RuntimeException('The __process(Update $update) method has not implemented');
+            throw new \RuntimeException(sprintf('The method %s does not exist', $method));
         }
 
         if (is_array($config)) $this->updateConfiguration($config);
 
-        $update = $update->isOk() ? $update : $this->telegram->processUpdate(Telegram::getInput());
-        $this->spreadUpdateWith($update, $this->plugins);
+        $update = $update->isOk() ? $update : Telegram::processUpdate(Telegram::getInput());
+
+        $this->{$method}($update);
     }
 
     /**
@@ -211,13 +163,12 @@ abstract class WebhookHandler
         $this->isActive = true;
 
         foreach ($plugins as $plugin) {
-            (new $plugin($this->telegram))->__execute($this, $update);
+            (new $plugin())->__execute($this, $update);
             if ($this->isActive === false) break;
         }
 
         $this->isActive = false;
     }
-
 
     /**
      * Kill the speeding process
@@ -228,5 +179,13 @@ abstract class WebhookHandler
     {
         $this->isActive = false;
     }
+
+    /**
+     * Use this method on the webhook class to get the updates
+     *
+     * @param Update $update
+     * @return void
+     */
+    abstract public function __process(Update $update): void;
 
 }

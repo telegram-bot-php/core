@@ -8,9 +8,9 @@ use TelegramBot\Interfaces\UpdateTypes;
 /**
  * Class Plugin
  *
- * @link    https://github.com/shahradelahi/telegram-bot
+ * @link    https://github.com/telegram-bot-php/core
  * @author  Shahrad Elahi (https://github.com/shahradelahi)
- * @license https://github.com/shahradelahi/telegram-bot/blob/master/LICENSE (MIT License)
+ * @license https://github.com/telegram-bot-php/core/blob/master/LICENSE (MIT License)
  */
 abstract class Plugin
 {
