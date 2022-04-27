@@ -65,14 +65,20 @@ abstract class WebhookHandler
         $this->init();
         if (is_array($input)) {
             $this->config = array_merge($this->config, $input);
+
         } else {
             if (Telegram::validateToken($input)) {
                 $api_key = $input;
+
             } elseif ($input !== '') {
                 if (!$this->getTokenFromEnvFile($input)) {
                     throw new \Exception('Invalid token or file path.');
                 }
                 $api_key = $this->getTokenFromEnvFile($input);
+
+            } else {
+                $api_key = DotEnv::get('TG_CURRENT_KEY');
+
             }
         }
 

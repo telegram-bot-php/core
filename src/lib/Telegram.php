@@ -38,7 +38,7 @@ class Telegram
         if ($api_key === '') {
             $defaultEnvPaths = [
                 $_SERVER['DOCUMENT_ROOT'] . '/.env',
-                __DIR__ . '/.env'
+                getcwd() . '/.env'
             ];
 
             foreach ($defaultEnvPaths as $path) {
