@@ -58,14 +58,20 @@ abstract class Plugin
     {
         $this->hook = $receiver;
 
-        $returns = null;
         $method = 'onReceivedUpdate';
         if (method_exists($this, $method)) {
-            $returns = $this->{$method}($update);
+            /** @var \Generator $return */
+            $return = $this->{$method}($update);
         }
 
-        if ($returns->getReturn()) {
-            if ($this->kill_on_yield) $this->kill();
+        if (isset($return) && $return instanceof \Generator) {
+            while ($return->valid()) {
+                $return->next();
+            }
+
+            if ($return->valid() && $return->getReturn()) {
+                if ($this->kill_on_yield) $this->kill();
+            }
         }
     }
 
@@ -79,9 +85,8 @@ abstract class Plugin
     {
         $method = UpdateTypes::identify($update);
         if (method_exists($this, $method)) {
-            $return = $this->$method($update);
+            yield $this->$method($update);
         }
-        return $return ?? new \Generator();
     }
 
     /**

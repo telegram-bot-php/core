@@ -145,14 +145,11 @@ class Telegram
     /**
      * Get input from stdin and return it
      *
-     * @return string
+     * @return ?string
      */
-    public static function getInput(): string
+    public static function getInput(): ?string
     {
-        if (DotEnv::get('TG_CUSTOM_INPUT') !== null) {
-            return DotEnv::get('TG_CUSTOM_INPUT');
-        }
-        return file_get_contents('php://input');
+        return file_get_contents('php://input') ?? null;
     }
 
     /**
@@ -183,7 +180,7 @@ class Telegram
     {
         $input = self::getInput();
         if ($input === '' || Utils::isJson($input) === false) return false;
-        return (new Telegram())->processUpdate($input);
+        return Telegram::processUpdate($input);
     }
 
     /**

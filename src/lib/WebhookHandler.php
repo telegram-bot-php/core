@@ -16,6 +16,11 @@ abstract class WebhookHandler extends Telegram
 {
 
     /**
+     * @var Update
+     */
+    protected Update $update;
+
+    /**
      * @var array<Plugin>
      */
     private array $plugins = [];
@@ -92,8 +97,8 @@ abstract class WebhookHandler extends Telegram
                     sprintf('The plugin %s must be an instance of %s', get_class($plugin), Plugin::class)
                 );
             }
-            $this->spreadUpdateWith($update, $plugins);
         }
+        $this->spreadUpdateWith($update, $plugins);
     }
 
     /**
@@ -104,7 +109,8 @@ abstract class WebhookHandler extends Telegram
      */
     public function loadPlugins(Update $update = null): void
     {
-        $this->loadPluginsWith($this->plugins, $update ?? Telegram::getUpdate());
+        $update = $update ?? ($this->update ?? Telegram::getUpdate());
+        $this->loadPluginsWith($this->plugins, $update);
     }
 
     /**
@@ -146,7 +152,8 @@ abstract class WebhookHandler extends Telegram
 
         if (is_array($config)) $this->updateConfiguration($config);
 
-        $update = $update->isOk() ? $update : Telegram::processUpdate(Telegram::getInput());
+        if (!empty($update)) $this->update = $update;
+        else $this->update = Telegram::getUpdate();
 
         $this->{$method}($update);
     }
@@ -163,6 +170,7 @@ abstract class WebhookHandler extends Telegram
         $this->isActive = true;
 
         foreach ($plugins as $plugin) {
+            /** @var Plugin $plugin */
             (new $plugin())->__execute($this, $update);
             if ($this->isActive === false) break;
         }

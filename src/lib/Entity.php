@@ -75,7 +75,6 @@ abstract class Entity
         return [];
     }
 
-
     /**
      * Perform any special entity validation
      *
@@ -97,22 +96,22 @@ abstract class Entity
             return $this->{$name}();
         }
 
+        if (property_exists($this, $name)) {
+            return $this->{$name};
+        }
+
         if (str_starts_with($name, 'get')) {
             $property_name = mb_strtolower(ltrim(preg_replace('/[A-Z]/', '_$0', substr($name, 3)), '_'));
 
             $property = $this->getProperty($property_name);
             $sub_entities = $this->subEntities() ?? [];
 
-            if (property_exists($this, $property_name)) {
-                return $this->{$property_name};
-            }
-
             if (isset($sub_entities[$property_name])) {
                 $class_name = $sub_entities[$property_name];
                 return Factory::resolveEntityClass($class_name, $property);
             }
 
-            return $property;
+            return $property ?? null;
         }
 
         if (str_starts_with($name, 'set')) {
