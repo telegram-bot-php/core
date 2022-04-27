@@ -7,18 +7,18 @@ use TelegramBot\Entities\Update;
 class UpdateTypes
 {
 
-    const MESSAGE = 'message';
-    const EDITED_MESSAGE = 'edited_message';
-    const CHANNEL_POST = 'channel_post';
-    const EDITED_CHANNEL_POST = 'edited_channel_post';
-    const INLINE_QUERY = 'inline_query';
-    const CHOSEN_INLINE_RESULT = 'chosen_inline_result';
-    const CALLBACK_QUERY = 'callback_query';
-    const SHIPPING_QUERY = 'shipping_query';
-    const PRE_CHECKOUT_QUERY = 'pre_checkout_query';
-    const POLL = 'poll';
-    const POLL_ANSWER = 'poll_answer';
-    const UNKNOWN = 'unknown';
+    const MESSAGE = 'Message';
+    const EDITED_MESSAGE = 'EditedMessage';
+    const CHANNEL_POST = 'ChannelPost';
+    const EDITED_CHANNEL_POST = 'EditedChannelPost';
+    const INLINE_QUERY = 'InlineQuery';
+    const CHOSEN_INLINE_RESULT = 'ChosenInlineResult';
+    const CALLBACK_QUERY = 'CallbackQuery';
+    const SHIPPING_QUERY = 'ShippingQuery';
+    const PRE_CHECKOUT_QUERY = 'PreCheckoutQuery';
+    const POLL = 'Poll';
+    const POLL_ANSWER = 'PollAnswer';
+    const UNKNOWN = 'Unknown';
 
     /**
      * Find the type by value
@@ -46,19 +46,8 @@ class UpdateTypes
      */
     public static function identify(Update $update): string
     {
-        $methods = [
-            'Message',
-            'EditedMessage',
-            'ChannelPost',
-            'EditedChannelPost',
-            'InlineQuery',
-            'ChosenInlineResult',
-            'CallbackQuery',
-            'ShippingQuery',
-            'PreCheckoutQuery',
-            'Poll',
-            'PollAnswer',
-        ];
+        $reflection = new \ReflectionClass(__CLASS__);
+        $methods = $reflection->getConstants();
 
         foreach ($methods as $method) {
             if (method_exists($update, 'get' . $method)) {

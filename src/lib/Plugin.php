@@ -64,13 +64,6 @@ abstract class Plugin
             $returns = $this->{$method}($update);
         }
 
-        $methods = get_class_methods($this);
-        foreach ($methods as $method) {
-            if (in_array($method, $this->update_types)) {
-                $returns = $this->{$method}($update);
-            }
-        }
-
         if ($returns->getReturn()) {
             if ($this->kill_on_yield) $this->kill();
         }
