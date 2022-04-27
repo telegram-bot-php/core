@@ -175,12 +175,12 @@ abstract class WebhookHandler
     /**
      * Resolve the request.
      *
-     * @param array $config
-     * @param ?Update $update
+     * @param ?Update $update The custom to work with
+     * @param array $config The configuration of the receiver
      *
      * @retrun void
      */
-    public function resolve(array $config = [], Update $update = null): void
+    public function resolve(Update $update = null, array $config = []): void
     {
         $method = '__process';
         if (!method_exists($this, $method)) {

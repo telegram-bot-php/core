@@ -30,20 +30,21 @@ use TelegramBot\Entity;
  */
 class Update extends Entity
 {
-    public const TYPE_MESSAGE              = 'message';
-    public const TYPE_EDITED_MESSAGE       = 'edited_message';
-    public const TYPE_CHANNEL_POST         = 'channel_post';
-    public const TYPE_EDITED_CHANNEL_POST  = 'edited_channel_post';
-    public const TYPE_INLINE_QUERY         = 'inline_query';
+
+    public const TYPE_MESSAGE = 'message';
+    public const TYPE_EDITED_MESSAGE = 'edited_message';
+    public const TYPE_CHANNEL_POST = 'channel_post';
+    public const TYPE_EDITED_CHANNEL_POST = 'edited_channel_post';
+    public const TYPE_INLINE_QUERY = 'inline_query';
     public const TYPE_CHOSEN_INLINE_RESULT = 'chosen_inline_result';
-    public const TYPE_CALLBACK_QUERY       = 'callback_query';
-    public const TYPE_SHIPPING_QUERY       = 'shipping_query';
-    public const TYPE_PRE_CHECKOUT_QUERY   = 'pre_checkout_query';
-    public const TYPE_POLL                 = 'poll';
-    public const TYPE_POLL_ANSWER          = 'poll_answer';
-    public const TYPE_MY_CHAT_MEMBER       = 'my_chat_member';
-    public const TYPE_CHAT_MEMBER          = 'chat_member';
-    public const TYPE_CHAT_JOIN_REQUEST    = 'chat_join_request';
+    public const TYPE_CALLBACK_QUERY = 'callback_query';
+    public const TYPE_SHIPPING_QUERY = 'shipping_query';
+    public const TYPE_PRE_CHECKOUT_QUERY = 'pre_checkout_query';
+    public const TYPE_POLL = 'poll';
+    public const TYPE_POLL_ANSWER = 'poll_answer';
+    public const TYPE_MY_CHAT_MEMBER = 'my_chat_member';
+    public const TYPE_CHAT_MEMBER = 'chat_member';
+    public const TYPE_CHAT_JOIN_REQUEST = 'chat_join_request';
 
     /**
      * {@inheritdoc}
@@ -51,20 +52,20 @@ class Update extends Entity
     protected function subEntities(): array
     {
         return [
-            self::TYPE_MESSAGE              => Message::class,
-            self::TYPE_EDITED_MESSAGE       => EditedMessage::class,
-            self::TYPE_CHANNEL_POST         => ChannelPost::class,
-            self::TYPE_EDITED_CHANNEL_POST  => EditedChannelPost::class,
-            self::TYPE_INLINE_QUERY         => InlineQuery::class,
+            self::TYPE_MESSAGE => Message::class,
+            self::TYPE_EDITED_MESSAGE => EditedMessage::class,
+            self::TYPE_CHANNEL_POST => ChannelPost::class,
+            self::TYPE_EDITED_CHANNEL_POST => EditedChannelPost::class,
+            self::TYPE_INLINE_QUERY => InlineQuery::class,
             self::TYPE_CHOSEN_INLINE_RESULT => ChosenInlineResult::class,
-            self::TYPE_CALLBACK_QUERY       => CallbackQuery::class,
-            self::TYPE_SHIPPING_QUERY       => ShippingQuery::class,
-            self::TYPE_PRE_CHECKOUT_QUERY   => PreCheckoutQuery::class,
-            self::TYPE_POLL                 => Poll::class,
-            self::TYPE_POLL_ANSWER          => PollAnswer::class,
-            self::TYPE_MY_CHAT_MEMBER       => ChatMemberUpdated::class,
-            self::TYPE_CHAT_MEMBER          => ChatMemberUpdated::class,
-            self::TYPE_CHAT_JOIN_REQUEST    => ChatJoinRequest::class,
+            self::TYPE_CALLBACK_QUERY => CallbackQuery::class,
+            self::TYPE_SHIPPING_QUERY => ShippingQuery::class,
+            self::TYPE_PRE_CHECKOUT_QUERY => PreCheckoutQuery::class,
+            self::TYPE_POLL => Poll::class,
+            self::TYPE_POLL_ANSWER => PollAnswer::class,
+            self::TYPE_MY_CHAT_MEMBER => ChatMemberUpdated::class,
+            self::TYPE_CHAT_MEMBER => ChatMemberUpdated::class,
+            self::TYPE_CHAT_JOIN_REQUEST => ChatJoinRequest::class,
         ];
     }
 
@@ -105,19 +106,13 @@ class Update extends Entity
     }
 
     /**
-     * Get update content
+     * To Array
      *
-     * @return CallbackQuery|ChatMemberUpdated|ChosenInlineResult|InlineQuery|Message|PollAnswer|Poll|PreCheckoutQuery|ShippingQuery
+     * @return array
      */
-    public function getUpdateContent()
+    public function toArray(): array
     {
-        if ($update_type = $this->getUpdateType()) {
-            // Instead of just getting the property as an array,
-            // use the __call method to get the correct Entity object.
-            $method = 'get' . str_replace('_', '', ucwords($update_type, '_'));
-            return $this->$method();
-        }
-
-        return null;
+        return parent::getRawData();
     }
+
 }
