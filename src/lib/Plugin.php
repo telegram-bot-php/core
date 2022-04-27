@@ -3,7 +3,6 @@
 namespace TelegramBot;
 
 use TelegramBot\Entities\Update;
-use TelegramBot\Interfaces\OnUpdateReceived;
 use TelegramBot\Interfaces\UpdateTypes;
 
 /**
@@ -15,6 +14,23 @@ use TelegramBot\Interfaces\UpdateTypes;
  */
 abstract class Plugin
 {
+
+    /**
+     * The Update types
+     *
+     * @var array
+     */
+    protected array $update_types = [
+        'message',
+        'edited_message',
+        'channel_post',
+        'edited_channel_post',
+        'inline_query',
+        'chosen_inline_result',
+        'callback_query',
+        'shipping_query',
+        'pre_checkout_query',
+    ];
 
     /**
      * @var WebhookHandler
@@ -32,14 +48,6 @@ abstract class Plugin
     protected bool $kill_on_yield = false;
 
     /**
-     * Override this method to add your own functionality
-     *
-     * @param Update $update
-     * @return \Generator
-     */
-    abstract public function __run(Update $update): \Generator;
-
-    /**
      * Execute the plugin.
      *
      * @param WebhookHandler $receiver
@@ -49,16 +57,22 @@ abstract class Plugin
     public function __execute(WebhookHandler $receiver, Update $update): void
     {
         $this->hook = $receiver;
-        $returns = $this->__run($update);
 
-        if ($this instanceof OnUpdateReceived) {
-            $this->onUpdateReceived($update);
+        $returns = null;
+        $method = 'onReceivedUpdate';
+        if (method_exists($this, $method)) {
+            $returns = $this->{$method}($update);
         }
 
-        if (!$returns->getReturn()) {
-            if ($this->kill_on_yield) {
-                $this->kill();
+        $methods = get_class_methods($this);
+        foreach ($methods as $method) {
+            if (in_array($method, $this->update_types)) {
+                $returns = $this->{$method}($update);
             }
+        }
+
+        if ($returns->getReturn()) {
+            if ($this->kill_on_yield) $this->kill();
         }
     }
 
@@ -66,14 +80,15 @@ abstract class Plugin
      * Identify the update type and if method of the type is exists, execute it.
      *
      * @param Update $update
-     * @return void
+     * @return \Generator
      */
-    private function onUpdateReceived(Update $update): void
+    protected function onReceivedUpdate(Update $update): \Generator
     {
         $method = UpdateTypes::identify($update);
         if (method_exists($this, $method)) {
-            $this->$method($update);
+            $return = $this->$method($update);
         }
+        return $return ?? new \Generator();
     }
 
     /**

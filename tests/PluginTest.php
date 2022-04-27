@@ -10,20 +10,10 @@ class PluginTest extends \TelegramBot\Plugin
 {
 
     /**
-     * Plugin constructor.
-     *
-     * @param Telegram $telegram
-     */
-    private function __construct(Telegram $telegram)
-    {
-        // initialize or do something
-    }
-
-    /**
      * @param Update $update
      * @return \Generator
      */
-    public function __run(Update $update): \Generator
+    public function OnReceivedUpdate(Update $update): \Generator
     {
         yield Request::sendMessage([
             'chat_id' => $update->getMessage()->getChat()->getId(),
