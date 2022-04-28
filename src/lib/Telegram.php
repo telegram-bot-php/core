@@ -5,11 +5,11 @@ namespace TelegramBot;
 use TelegramBot\Entities\Response;
 use TelegramBot\Entities\Update;
 use TelegramBot\Exception\TelegramException;
+use TelegramBot\Util\Common;
 use TelegramBot\Util\DotEnv;
-use TelegramBot\Util\Utils;
 
 /**
- * Telegram
+ * Class Telegram
  *
  * @link    https://github.com/telegram-bot-php/core
  * @author  Shahrad Elahi (https://github.com/shahradelahi)
@@ -143,6 +143,17 @@ class Telegram
     }
 
     /**
+     * This method sets the admin username. and will be used to send you a message if the bot is not working.
+     *
+     * @param string $username
+     * @return void
+     */
+    public function setAdmin(string $username): void
+    {
+        defined('ADMIN_USERNAME') or define('ADMIN_USERNAME', $username);
+    }
+
+    /**
      * Get input from stdin and return it
      *
      * @return ?string
@@ -160,7 +171,7 @@ class Telegram
      */
     public static function processUpdate(string $input): Update|false
     {
-        if ($input === '' || Utils::isJson($input) === false) {
+        if ($input === '' || Common::isJson($input) === false) {
             throw new TelegramException('Input is empty!');
         }
 
@@ -179,7 +190,7 @@ class Telegram
     public static function getUpdate(): Update|false
     {
         $input = self::getInput();
-        if ($input === '' || Utils::isJson($input) === false) return false;
+        if ($input === '' || Common::isJson($input) === false) return false;
         return Telegram::processUpdate($input);
     }
 

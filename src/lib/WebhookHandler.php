@@ -3,6 +3,7 @@
 namespace TelegramBot;
 
 use TelegramBot\Entities\Update;
+use TelegramBot\Util\Common;
 use TelegramBot\Util\DotEnv;
 
 /**
@@ -155,7 +156,23 @@ abstract class WebhookHandler extends Telegram
         if (!empty($update)) $this->update = $update;
         else $this->update = Telegram::getUpdate();
 
-        $this->{$method}($update);
+        if (defined('DEBUG_MODE') && DEBUG_MODE) {
+            try {
+                Common::arrest($this->{$method}, $this->update);
+            } catch (\RuntimeException $e) {
+
+                TelegramLog::error(($message = sprintf('%s: %s', $e->getMessage(), $e->getTraceAsString())));
+                if (defined('ADMIN_USERNAME') && ADMIN_USERNAME) {
+                    Request::sendMessage([
+                        'chat_id' => ADMIN_USERNAME,
+                        'text' => $message,
+                    ]);
+                }
+
+            }
+        } else {
+            $this->{$method}($this->update);
+        }
     }
 
     /**

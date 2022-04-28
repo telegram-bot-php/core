@@ -3,13 +3,13 @@
 namespace TelegramBot\Util;
 
 /**
- * Class Utils
+ * Class Common
  *
  * @link    https://github.com/telegram-bot-php/core
  * @author  Shahrad Elahi (https://github.com/shahradelahi)
  * @license https://github.com/telegram-bot-php/core/blob/master/LICENSE (MIT License)
  */
-class Utils
+class Common
 {
 
     /**
@@ -34,7 +34,24 @@ class Utils
     {
         error_reporting(E_ALL);
         ini_set('display_errors', 1);
+        defined('DEBUG_MODE') or define('DEBUG_MODE', true);
     }
 
+    /**
+     * Arrest with exception
+     *
+     * @param callable $callback Callback function
+     * @param mixed ...$args The arguments to pass to the callback
+     * @return mixed
+     */
+    public static function arrest(callable $callback, ...$args): mixed
+    {
+        try {
+            return $callback($args);
+        } catch (\Throwable|\TypeError|\Exception $e) {
+            echo '<b>Error:</b> ' . $e->getMessage() . PHP_EOL;
+            throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
 
 }

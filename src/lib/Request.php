@@ -6,7 +6,7 @@ use EasyHttp\Client;
 use TelegramBot\Entities\Response;
 use TelegramBot\Exception\InvalidBotTokenException;
 use TelegramBot\Exception\TelegramException;
-use TelegramBot\Util\Utils;
+use TelegramBot\Util\Common;
 
 /**
  * Class Request
@@ -166,7 +166,7 @@ class Request
     {
         $raw_response = self::execute($action, $data);
 
-        if (!Utils::isJson($raw_response)) {
+        if (!Common::isJson($raw_response)) {
             TelegramLog::debug($raw_response);
             throw new TelegramException('Invalid response from API');
         }
