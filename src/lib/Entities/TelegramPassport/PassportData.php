@@ -11,8 +11,8 @@ use TelegramBot\Entity;
  *
  * @link https://core.telegram.org/bots/api#passportdata
  *
- * @method EncryptedPassportElement[] getData()        Array with information about documents and other Telegram Passport elements that was shared with the bot
- * @method EncryptedCredentials       getCredentials() Encrypted credentials required to decrypt the data
+ * @method EncryptedPassportElement[] getData()         Array with information about documents and other Telegram Passport elements that was shared with the bot
+ * @method EncryptedCredentials       getCredentials()  Encrypted credentials required to decrypt the data
  **/
 class PassportData extends Entity
 {

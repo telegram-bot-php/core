@@ -12,5 +12,5 @@ use TelegramBot\Entities\User;
  */
 interface ChatMember
 {
-    //
+
 }

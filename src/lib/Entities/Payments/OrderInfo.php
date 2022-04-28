@@ -11,10 +11,10 @@ use TelegramBot\Entity;
  *
  * @link https://core.telegram.org/bots/api#orderinfo
  *
- * @method string          getName()            Optional. User name
- * @method string          getPhoneNumber()     Optional. User's phone number
- * @method string          getEmail()           Optional. User email
- * @method ShippingAddress getShippingAddress() Optional. User shipping address
+ * @method string          getName()                Optional. User name
+ * @method string          getPhoneNumber()         Optional. User's phone number
+ * @method string          getEmail()               Optional. User email
+ * @method ShippingAddress getShippingAddress()     Optional. User shipping address
  **/
 class OrderInfo extends Entity
 {

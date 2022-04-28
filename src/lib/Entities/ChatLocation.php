@@ -11,8 +11,8 @@ use TelegramBot\Entity;
  *
  * @link https://core.telegram.org/bots/api#chatlocation
  *
- * @method Location getLocation() The location to which the supergroup is connected. Can't be a live location.
- * @method string   getAddress()  Location address; 1-64 characters, as defined by the chat owner
+ * @method Location getLocation()   The location to which the supergroup is connected. Can't be a live location.
+ * @method string   getAddress()    Location address; 1-64 characters, as defined by the chat owner
  */
 class ChatLocation extends Entity
 {

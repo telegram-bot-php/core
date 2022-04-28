@@ -14,10 +14,10 @@ use TelegramBot\Request;
  *
  * @link https://core.telegram.org/bots/api#shippingquery
  *
- * @method string          getId()              Unique query identifier
- * @method User            getFrom()            User who sent the query
- * @method string          getInvoicePayload()  Bot specified invoice payload
- * @method ShippingAddress getShippingAddress() User specified shipping address
+ * @method string          getId()                  Unique query identifier
+ * @method User            getFrom()                User who sent the query
+ * @method string          getInvoicePayload()      Bot specified invoice payload
+ * @method ShippingAddress getShippingAddress()     User specified shipping address
  **/
 class ShippingQuery extends Entity
 {

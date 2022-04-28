@@ -12,21 +12,21 @@ use TelegramBot\Entity;
  *
  * @link https://core.telegram.org/bots/api#update
  *
- * @method int                 getUpdateId()           The update's unique identifier. Update identifiers start from a certain positive number and increase sequentially. This ID becomes especially handy if you’re using Webhooks, since it allows you to ignore repeated updates or to restore the correct update sequence, should they get out of order.
- * @method Message             getMessage()            Optional. New incoming message of any kind — text, photo, sticker, etc.
- * @method Message             getEditedMessage()      Optional. New version of a message that is known to the bot and was edited
- * @method Message             getChannelPost()        Optional. New post in the channel, can be any kind — text, photo, sticker, etc.
- * @method Message             getEditedChannelPost()  Optional. New version of a post in the channel that is known to the bot and was edited
- * @method InlineQuery         getInlineQuery()        Optional. New incoming inline query
- * @method ChosenInlineResult  getChosenInlineResult() Optional. The result of an inline query that was chosen by a user and sent to their chat partner.
- * @method CallbackQuery       getCallbackQuery()      Optional. New incoming callback query
- * @method ShippingQuery       getShippingQuery()      Optional. New incoming shipping query. Only for invoices with flexible price
- * @method PreCheckoutQuery    getPreCheckoutQuery()   Optional. New incoming pre-checkout query. Contains full information about checkout
- * @method Poll                getPoll()               Optional. New poll state. Bots receive only updates about polls, which are sent or stopped by the bot
- * @method PollAnswer          getPollAnswer()         Optional. A user changed their answer in a non-anonymous poll. Bots receive new votes only in polls that were sent by the bot itself.
- * @method ChatMemberUpdated   getMyChatMember()       Optional. The bot's chat member status was updated in a chat. For private chats, this update is received only when the bot is blocked or unblocked by the user.
- * @method ChatMemberUpdated   getChatMember()         Optional. A chat member's status was updated in a chat. The bot must be an administrator in the chat and must explicitly specify “chat_member” in the list of allowed_updates to receive these updates.
- * @method ChatJoinRequest     getChatJoinRequest()    Optional. A request to join the chat has been sent. The bot must have the can_invite_users administrator right in the chat to receive these updates.
+ * @method int                getUpdateId()             The update's unique identifier. Update identifiers start from a certain positive number and increase sequentially. This ID becomes especially handy if you’re using Webhooks, since it allows you to ignore repeated updates or to restore the correct update sequence, should they get out of order.
+ * @method Message            getMessage()              Optional. New incoming message of any kind — text, photo, sticker, etc.
+ * @method Message            getEditedMessage()        Optional. New version of a message that is known to the bot and was edited
+ * @method Message            getChannelPost()          Optional. New post in the channel, can be any kind — text, photo, sticker, etc.
+ * @method Message            getEditedChannelPost()    Optional. New version of a post in the channel that is known to the bot and was edited
+ * @method InlineQuery        getInlineQuery()          Optional. New incoming inline query
+ * @method ChosenInlineResult getChosenInlineResult()   Optional. The result of an inline query that was chosen by a user and sent to their chat partner.
+ * @method CallbackQuery      getCallbackQuery()        Optional. New incoming callback query
+ * @method ShippingQuery      getShippingQuery()        Optional. New incoming shipping query. Only for invoices with flexible price
+ * @method PreCheckoutQuery   getPreCheckoutQuery()     Optional. New incoming pre-checkout query. Contains full information about checkout
+ * @method Poll               getPoll()                 Optional. New poll state. Bots receive only updates about polls, which are sent or stopped by the bot
+ * @method PollAnswer         getPollAnswer()           Optional. A user changed their answer in a non-anonymous poll. Bots receive new votes only in polls that were sent by the bot itself.
+ * @method ChatMemberUpdated  getMyChatMember()         Optional. The bot's chat member status was updated in a chat. For private chats, this update is received only when the bot is blocked or unblocked by the user.
+ * @method ChatMemberUpdated  getChatMember()           Optional. A chat member's status was updated in a chat. The bot must be an administrator in the chat and must explicitly specify “chat_member” in the list of allowed_updates to receive these updates.
+ * @method ChatJoinRequest    getChatJoinRequest()      Optional. A request to join the chat has been sent. The bot must have the can_invite_users administrator right in the chat to receive these updates.
  */
 class Update extends Entity
 {
@@ -103,16 +103,6 @@ class Update extends Entity
     public function isOk(): bool
     {
         return $this->getUpdateId() > 0;
-    }
-
-    /**
-     * To Array
-     *
-     * @return array
-     */
-    public function toArray(): array
-    {
-        return parent::getRawData();
     }
 
 }

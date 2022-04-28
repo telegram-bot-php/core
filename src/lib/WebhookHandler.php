@@ -3,6 +3,7 @@
 namespace TelegramBot;
 
 use TelegramBot\Entities\Update;
+use TelegramBot\Exception\InvalidBotTokenException;
 use TelegramBot\Util\Common;
 use TelegramBot\Util\DotEnv;
 
@@ -38,7 +39,7 @@ abstract class WebhookHandler extends Telegram
      */
     private array $config = [
         'autoload_env_file' => true,
-        'env_file_path' => null, // Default: $_SERVER['DOCUMENT_ROOT'] . '/.env'
+        'env_file_path' => null, // default: $_SERVER['DOCUMENT_ROOT'] . '/.env' && __DIR__ . '/.env'
     ];
 
     /**
@@ -51,7 +52,7 @@ abstract class WebhookHandler extends Telegram
         parent::__construct($api_key);
 
         if (!Telegram::validateToken(self::getApiKey())) {
-            throw new \RuntimeException('The API_KEY is invalid.');
+            throw new InvalidBotTokenException();
         }
     }
 

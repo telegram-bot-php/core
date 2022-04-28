@@ -6,11 +6,6 @@ use TelegramBot\Entity;
 
 class Factory extends \TelegramBot\Factory
 {
-
-    /**
-     * @param array $data
-     * @return Entity
-     */
     public static function make(array $data): Entity
     {
         $type = [
@@ -29,5 +24,4 @@ class Factory extends \TelegramBot\Factory
         $class = $type[$data['status']];
         return new $class($data);
     }
-
 }

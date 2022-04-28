@@ -11,10 +11,10 @@ use TelegramBot\Entity;
  *
  * @link https://core.telegram.org/bots/api#passportelementerrorfiles
  *
- * @method string   getSource()     Error source, must be files
- * @method string   getType()       The section of the user's Telegram Passport which has the issue, one of “utility_bill”, “bank_statement”, “rental_agreement”, “passport_registration”, “temporary_registration”
- * @method string[] getFileHashes() List of base64-encoded file hashes
- * @method string   getMessage()    Error message
+ * @method string   getSource()         Error source, must be files
+ * @method string   getType()           The section of the user's Telegram Passport which has the issue, one of “utility_bill”, “bank_statement”, “rental_agreement”, “passport_registration”, “temporary_registration”
+ * @method string[] getFileHashes()     List of base64-encoded file hashes
+ * @method string   getMessage()        Error message
  */
 class PassportElementErrorFiles extends Entity implements PassportElementError
 {

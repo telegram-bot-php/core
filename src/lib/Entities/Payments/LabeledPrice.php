@@ -11,8 +11,8 @@ use TelegramBot\Entity;
  *
  * @link https://core.telegram.org/bots/api#labeledprice
  *
- * @method string getLabel()  Portion label
- * @method int    getAmount() Price of the product in the smallest units of the currency (integer, not float/double).
+ * @method string getLabel()    Portion label
+ * @method int    getAmount()   Price of the product in the smallest units of the currency (integer, not float/double).
  **/
 class LabeledPrice extends Entity
 {

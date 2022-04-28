@@ -11,9 +11,9 @@ use TelegramBot\Entity;
  *
  * @link https://core.telegram.org/bots/api#shippingoption
  *
- * @method string         getId()     Shipping option identifier
- * @method string         getTitle()  Option title
- * @method LabeledPrice[] getPrices() List of price portions
+ * @method string         getId()       Shipping option identifier
+ * @method string         getTitle()    Option title
+ * @method LabeledPrice[] getPrices()   List of price portions
  **/
 class ShippingOption extends Entity
 {

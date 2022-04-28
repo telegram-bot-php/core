@@ -28,36 +28,36 @@ use TelegramBot\Entities\MessageEntity;
  * ];
  * </code>
  *
- * @method string               getType()                Type of the result, must be video
- * @method string               getId()                  Unique identifier for this result, 1-64 bytes
- * @method string               getVideoUrl()            A valid URL for the embedded video player or video file
- * @method string               getMimeType()            Mime type of the content of video url, “text/html” or “video/mp4”
- * @method string               getThumbUrl()            URL of the thumbnail (jpeg only) for the video
- * @method string               getTitle()               Title for the result
- * @method string               getCaption()             Optional. Caption of the video to be sent, 0-200 characters
- * @method string               getParseMode()           Optional. Mode for parsing entities in the video caption
- * @method MessageEntity[]      getCaptionEntities()     Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
- * @method int                  getVideoWidth()          Optional. Video width
- * @method int                  getVideoHeight()         Optional. Video height
- * @method int                  getVideoDuration()       Optional. Video duration in seconds
- * @method string               getDescription()         Optional. Short description of the result
- * @method InlineKeyboard       getReplyMarkup()         Optional. Inline keyboard attached to the message
- * @method InputMessageContent  getInputMessageContent() Optional. Content of the message to be sent instead of the video
+ * @method string              getType()                    Type of the result, must be video
+ * @method string              getId()                      Unique identifier for this result, 1-64 bytes
+ * @method string              getVideoUrl()                A valid URL for the embedded video player or video file
+ * @method string              getMimeType()                Mime type of the content of video url, “text/html” or “video/mp4”
+ * @method string              getThumbUrl()                URL of the thumbnail (jpeg only) for the video
+ * @method string              getTitle()                   Title for the result
+ * @method string              getCaption()                 Optional. Caption of the video to be sent, 0-200 characters
+ * @method string              getParseMode()               Optional. Mode for parsing entities in the video caption
+ * @method MessageEntity[]     getCaptionEntities()         Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+ * @method int                 getVideoWidth()              Optional. Video width
+ * @method int                 getVideoHeight()             Optional. Video height
+ * @method int                 getVideoDuration()           Optional. Video duration in seconds
+ * @method string              getDescription()             Optional. Short description of the result
+ * @method InlineKeyboard      getReplyMarkup()             Optional. Inline keyboard attached to the message
+ * @method InputMessageContent getInputMessageContent()     Optional. Content of the message to be sent instead of the video
  *
- * @method $this setId(string $id)                                                  Unique identifier for this result, 1-64 bytes
- * @method $this setVideoUrl(string $video_url)                                     A valid URL for the embedded video player or video file
- * @method $this setMimeType(string $mime_type)                                     Mime type of the content of video url, “text/html” or “video/mp4”
- * @method $this setThumbUrl(string $thumb_url)                                     URL of the thumbnail (jpeg only) for the video
- * @method $this setTitle(string $title)                                            Title for the result
- * @method $this setCaption(string $caption)                                        Optional. Caption of the video to be sent, 0-200 characters
- * @method $this setParseMode(string $parse_mode)                                   Optional. Mode for parsing entities in the video caption
- * @method $this setCaptionEntities(array $caption_entities)                        Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
- * @method $this setVideoWidth(int $video_width)                                    Optional. Video width
- * @method $this setVideoHeight(int $video_height)                                  Optional. Video height
- * @method $this setVideoDuration(int $video_duration)                              Optional. Video duration in seconds
- * @method $this setDescription(string $description)                                Optional. Short description of the result
- * @method $this setReplyMarkup(InlineKeyboard $reply_markup)                       Optional. Inline keyboard attached to the message
- * @method $this setInputMessageContent(InputMessageContent $input_message_content) Optional. Content of the message to be sent instead of the video
+ * @method $this setId(string $id)                                                      Unique identifier for this result, 1-64 bytes
+ * @method $this setVideoUrl(string $video_url)                                         A valid URL for the embedded video player or video file
+ * @method $this setMimeType(string $mime_type)                                         Mime type of the content of video url, “text/html” or “video/mp4”
+ * @method $this setThumbUrl(string $thumb_url)                                         URL of the thumbnail (jpeg only) for the video
+ * @method $this setTitle(string $title)                                                Title for the result
+ * @method $this setCaption(string $caption)                                            Optional. Caption of the video to be sent, 0-200 characters
+ * @method $this setParseMode(string $parse_mode)                                       Optional. Mode for parsing entities in the video caption
+ * @method $this setCaptionEntities(array $caption_entities)                            Optional. List of special entities that appear in the caption, which can be specified instead of parse_mode
+ * @method $this setVideoWidth(int $video_width)                                        Optional. Video width
+ * @method $this setVideoHeight(int $video_height)                                      Optional. Video height
+ * @method $this setVideoDuration(int $video_duration)                                  Optional. Video duration in seconds
+ * @method $this setDescription(string $description)                                    Optional. Short description of the result
+ * @method $this setReplyMarkup(InlineKeyboard $reply_markup)                           Optional. Inline keyboard attached to the message
+ * @method $this setInputMessageContent(InputMessageContent $input_message_content)     Optional. Content of the message to be sent instead of the video
  */
 class InlineQueryResultVideo extends InlineEntity implements InlineQueryResult
 {
