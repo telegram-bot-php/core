@@ -115,6 +115,7 @@ class TelegramLog
     {
         // Get the correct logger instance.
         $logger = null;
+        self::initialize();
         if (in_array($name, ['emergency', 'alert', 'critical', 'error', 'warning', 'notice', 'info', 'debug',], true)) {
             $logger = self::$logger;
         } elseif ($name === 'update') {

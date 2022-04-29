@@ -143,6 +143,31 @@ class Request
 {
 
     /**
+     * Available fields for InputFile helper
+     *
+     * This is basically the list of all fields that allow InputFile objects
+     * for which input can be simplified by providing local path directly  as string.
+     *
+     * @var array
+     */
+    private static array $input_file_fields = [
+        'setWebhook' => ['certificate'],
+        'sendPhoto' => ['photo'],
+        'sendAudio' => ['audio', 'thumb'],
+        'sendDocument' => ['document', 'thumb'],
+        'sendVideo' => ['video', 'thumb'],
+        'sendAnimation' => ['animation', 'thumb'],
+        'sendVoice' => ['voice', 'thumb'],
+        'sendVideoNote' => ['video_note', 'thumb'],
+        'setChatPhoto' => ['photo'],
+        'sendSticker' => ['sticker'],
+        'uploadStickerFile' => ['png_sticker'],
+        'createNewStickerSet' => ['png_sticker', 'tgs_sticker', 'webm_sticker'],
+        'addStickerToSet' => ['png_sticker', 'tgs_sticker', 'webm_sticker'],
+        'setStickerSetThumb' => ['thumb'],
+    ];
+
+    /**
      * URI of the Telegram API
      *
      * @var string
@@ -155,6 +180,13 @@ class Request
      * @var string
      */
     private static string $api_base_download_uri = '/file/bot{API_KEY}';
+
+    /**
+     * The current action that is being executed
+     *
+     * @var string
+     */
+    private static string $current_action = '';
 
     /**
      * Get the Telegram API path
@@ -177,6 +209,75 @@ class Request
     }
 
     /**
+     * File input stream
+     *
+     * @param string $file The absolute path to the file
+     * @return resource
+     */
+    public static function readFile(string $file): mixed
+    {
+        if (!file_exists($file)) {
+            throw new TelegramException('File not found: ' . $file);
+        }
+
+        $fp = fopen($file, 'rb');
+        if (!$fp) {
+            throw new TelegramException('Could not open file: ' . $file);
+        }
+
+        return $fp;
+    }
+
+    /**
+     * Properly set up the request params
+     *
+     * If any item of the array is a resource, reformat it to a multipart request.
+     * Else, just return the passed data as form params.
+     *
+     * @param array $data
+     * @return array
+     */
+    private static function setUpRequestParams(array $data): array
+    {
+        $multipart = [];
+        $has_resource = false;
+
+        $options = [
+            'headers' => [
+                'Content-Type' => 'application/json',
+                'Accept' => 'application/json',
+                'User-Agent' => 'TelegramBot-PHP/' . Telegram::$VERSION
+            ]
+        ];
+
+        foreach ($data as $key => &$item) {
+            if (array_key_exists(self::$current_action, self::$input_file_fields) && in_array($key, self::$input_file_fields[self::$current_action], true)) {
+                if (is_string($item) && file_exists($item)) {
+                    $item = self::readFile($item);
+                    $has_resource = true;
+
+                } elseif (is_resource($item)) {
+                    $has_resource = true;
+
+                } else {
+                    throw new TelegramException('Invalid file input: ' . $key);
+                }
+
+                $multipart[] = ['name' => $key, 'contents' => $item];
+            }
+        }
+        unset($item);
+
+        if ($has_resource) {
+            $options['multipart'] = $multipart;
+        }
+
+        $options['body'] = $data;
+
+        return $options;
+    }
+
+    /**
      * Execute HTTP Request
      *
      * @param string $action Action to execute
@@ -186,14 +287,16 @@ class Request
      */
     private static function execute(string $action, array $data): string
     {
-        $response = self::getClient()->post(self::getApiPath() . $action, [
-            'headers' => [
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-                'User-Agent' => 'TelegramBot-PHP/' . Telegram::$VERSION
-            ],
-            'body' => $data
-        ]);
+        $request_params = self::setUpRequestParams($data);
+
+        $response = self::getClient()->post(
+            self::getApiPath() . $action,
+            $request_params
+        );
+
+        if ($response->getErrorCode() !== 0) {
+            throw new TelegramException('HTTP Error: ' . $response->getError());
+        }
 
         return $response->getBody();
     }
@@ -209,6 +312,8 @@ class Request
      */
     public static function send(string $action, array $data = []): Response
     {
+        self::$current_action = $action;
+
         $raw_response = self::execute($action, $data);
 
         if (!Common::isJson($raw_response)) {
@@ -221,6 +326,8 @@ class Request
         if (!$response->isOk() && $response->getErrorCode() === 401 && $response->getDescription() === 'Unauthorized') {
             throw new InvalidBotTokenException();
         }
+
+        self::$current_action = '';
 
         return $response;
     }

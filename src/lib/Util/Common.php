@@ -28,28 +28,35 @@ class Common
     /**
      * Debug mode
      *
+     * @param ?int $admin_id Fill this or use setAdmin()
      * @return void
      */
-    public static function setDebugMode(): void
+    public static function setDebugMode(?int $admin_id = null): void
     {
         error_reporting(E_ALL);
         ini_set('display_errors', 1);
         defined('DEBUG_MODE') or define('DEBUG_MODE', true);
+        if ($admin_id) {
+            defined('TG_ADMIN_ID') or define('TG_ADMIN_ID', $admin_id);
+        }
     }
 
     /**
      * Arrest with exception
      *
-     * @param callable $callback Callback function
+     * @param mixed $class The class
+     * @param string $callback The method
      * @param mixed ...$args The arguments to pass to the callback
      * @return mixed
      */
-    public static function arrest(callable $callback, ...$args): mixed
+    public static function arrest(mixed $class, string $callback, ...$args): mixed
     {
         try {
-            return $callback($args);
+            return call_user_func_array([$class, $callback], $args);
         } catch (\Throwable|\TypeError|\Exception $e) {
-            echo '<b>Error:</b> ' . $e->getMessage() . PHP_EOL;
+            if (defined('DEBUG_MODE') && DEBUG_MODE) {
+                echo '<b>TelegramError:</b> ' . $e->getMessage() . PHP_EOL;
+            }
             throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
     }

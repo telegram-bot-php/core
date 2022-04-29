@@ -40,8 +40,9 @@ class DotEnv
         if (empty($path)) $data = self::read(getcwd() . '/.env');
         else $data = self::read($path);
         foreach ($data as $item) {
+            [$key, $value] = $item;
             if (count($item) == 2) {
-                putenv($item[0] . '=' . $item[1]);
+                putenv(trim($key) . '=' . trim($value));
             }
         }
 

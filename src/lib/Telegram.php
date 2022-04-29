@@ -145,12 +145,12 @@ class Telegram
     /**
      * This method sets the admin username. and will be used to send you a message if the bot is not working.
      *
-     * @param string $username
+     * @param int $chat_id
      * @return void
      */
-    public function setAdmin(string $username): void
+    public function setAdmin(int $chat_id): void
     {
-        defined('ADMIN_USERNAME') or define('ADMIN_USERNAME', $username);
+        defined('TG_ADMIN_ID') or define('TG_ADMIN_ID', $chat_id);
     }
 
     /**
@@ -180,6 +180,30 @@ class Telegram
         if (!$update->isOk()) return false;
 
         return $update;
+    }
+
+    /**
+     * Validate webapp data from is from Telegram
+     *
+     * @link https://core.telegram.org/bots/webapps#validating-data-received-via-the-web-app
+     *
+     * @param string $token The bot token
+     * @param string $body The message body from getInput()
+     * @return bool
+     */
+    public static function validateWebData(string $token, string $body): bool
+    {
+        $raw_data = explode('&', rawurldecode($body));
+
+        $data = [];
+        foreach ($raw_data as $key_value_pair) {
+            list($key, $value) = explode('=', $key_value_pair);
+            $data[$key] = $value;
+        }
+
+        $data_check_string = "auth_date={$data['auth_date']}\nquery_id={$data['query_id']}\nuser={$data['user']}";
+        $secret_key = hash_hmac('sha256', $token, "WebAppData", true);
+        return hash_hmac('sha256', $data_check_string, $secret_key) == $data['hash'];
     }
 
     /**

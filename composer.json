@@ -34,7 +34,7 @@
    },
    "autoload-dev": {
 	  "psr-4": {
-		 "TelegramBot\\Tests\\Unit\\": "tests/"
+		 "TelegramBot\\Tests\\Unit\\": "tests/Unit/"
 	  }
    }
 }

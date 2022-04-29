@@ -18,9 +18,9 @@ abstract class WebhookHandler extends Telegram
 {
 
     /**
-     * @var Update
+     * @var ?Update
      */
-    protected Update $update;
+    protected ?Update $update;
 
     /**
      * @var array<Plugin>
@@ -100,7 +100,9 @@ abstract class WebhookHandler extends Telegram
                 );
             }
         }
-        $this->spreadUpdateWith($update, $plugins);
+        if ($update instanceof Update) {
+            $this->spreadUpdateWith($update, $plugins);
+        }
     }
 
     /**
@@ -155,24 +157,33 @@ abstract class WebhookHandler extends Telegram
         if (is_array($config)) $this->updateConfiguration($config);
 
         if (!empty($update)) $this->update = $update;
-        else $this->update = Telegram::getUpdate();
+        else $this->update = Telegram::getUpdate() !== false ? Telegram::getUpdate() : null;
 
-        if (defined('DEBUG_MODE') && DEBUG_MODE) {
-            try {
-                Common::arrest($this->{$method}, $this->update);
-            } catch (\RuntimeException $e) {
+        if (empty($this->update)) {
+            TelegramLog::error('The update is empty');
+            return;
+        }
 
-                TelegramLog::error(($message = sprintf('%s: %s', $e->getMessage(), $e->getTraceAsString())));
-                if (defined('ADMIN_USERNAME') && ADMIN_USERNAME) {
-                    Request::sendMessage([
-                        'chat_id' => ADMIN_USERNAME,
-                        'text' => $message,
-                    ]);
-                }
+        try {
 
+            Common::arrest($this, $method, $this->update);
+
+        } catch (\RuntimeException $e) {
+            TelegramLog::error(($message = sprintf('%s: %s', $e->getMessage(), $e->getTraceAsString())));
+            if (defined('TG_ADMIN_ID') && TG_ADMIN_ID && defined('DEBUG_MODE') && DEBUG_MODE) {
+                $file = tempnam(sys_get_temp_dir(), 'tg');
+                $data = $update->getRawData(false);
+                file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT));
+                Request::sendDocument([
+                    'chat_id' => TG_ADMIN_ID,
+                    'document' => $file,
+                ]);
+                unlink($file);
+                Request::sendMessage([
+                    'chat_id' => TG_ADMIN_ID,
+                    'text' => $message,
+                ]);
             }
-        } else {
-            $this->{$method}($this->update);
         }
     }
 
