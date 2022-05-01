@@ -7,6 +7,7 @@ use TelegramBot\Entities\Update;
 use TelegramBot\Exception\TelegramException;
 use TelegramBot\Util\Common;
 use TelegramBot\Util\DotEnv;
+use function PHPUnit\Framework\isJson;
 
 /**
  * Class Telegram
@@ -171,15 +172,39 @@ class Telegram
      */
     public static function processUpdate(string $input): Update|false
     {
-        if ($input === '' || Common::isJson($input) === false) {
-            throw new TelegramException('Input is empty!');
+        if (empty($input)) {
+            throw new TelegramException(
+                'Input is empty! Please check your code and try again.'
+            );
         }
 
-        $update = new Update(json_decode($input, true));
+        if (self::validateWebData(self::getApiKey(), $input)) {
+            if (Common::isUrlEncode($input)) {
+                $web_data = Common::urlDecode($input);
+            }
 
-        if (!$update->isOk()) return false;
+            if (Common::isJson($input)) {
+                $web_data = json_decode($input, true);
+            }
 
-        return $update;
+            $input = json_encode([
+                'web_data' => $web_data,
+            ]);
+        }
+
+        if (Common::isUrlEncode($input)) {
+            $input = json_encode(Common::urlDecode($input));
+        }
+
+        if (!Common::isJson($input)) {
+            throw new TelegramException(
+                'Input is not a valid JSON string! Please check your code and try again.'
+            );
+        }
+
+        $input = json_decode($input, true);
+
+        return new Update($input);
     }
 
     /**
@@ -195,13 +220,7 @@ class Telegram
     {
         if (!Common::isJson($body)) {
             $raw_data = rawurldecode(str_replace('_auth=', '', $body));
-            $init_data = explode('&', $raw_data);
-            $data = [];
-
-            foreach ($init_data as $value) {
-                [$key, $val] = explode('=', $value);
-                $data[$key] = $val;
-            }
+            $data = Common::urlDecode($raw_data);
 
             $data['user'] = urldecode($data['user']);
 

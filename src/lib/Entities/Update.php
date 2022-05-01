@@ -27,7 +27,7 @@ use TelegramBot\Entity;
  * @method ChatMemberUpdated  getMyChatMember()         Optional. The bot's chat member status was updated in a chat. For private chats, this update is received only when the bot is blocked or unblocked by the user.
  * @method ChatMemberUpdated  getChatMember()           Optional. A chat member's status was updated in a chat. The bot must be an administrator in the chat and must explicitly specify “chat_member” in the list of allowed_updates to receive these updates.
  * @method ChatJoinRequest    getChatJoinRequest()      Optional. A request to join the chat has been sent. The bot must have the can_invite_users administrator right in the chat to receive these updates.
- * @method WebAppData             getWebData()              Optional. The data from WebApp
+ * @method WebAppData         getWebData()              Optional. The data from WebApp
  */
 class Update extends Entity
 {
