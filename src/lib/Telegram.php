@@ -60,9 +60,9 @@ class Telegram
     /**
      * Get API key from temporary ENV variable
      *
-     * @return string
+     * @return ?string
      */
-    public static function getApiKey(): string
+    public static function getApiKey(): ?string
     {
         return DotEnv::get('TG_CURRENT_KEY');
     }
@@ -193,16 +193,26 @@ class Telegram
      */
     public static function validateWebData(string $token, string $body): bool
     {
-        $raw_data = explode('&', rawurldecode($body));
+        if (!Common::isJson($body)) {
+            $raw_data = rawurldecode(str_replace('_auth=', '', $body));
+            $init_data = explode('&', $raw_data);
+            $data = [];
 
-        $data = [];
-        foreach ($raw_data as $key_value_pair) {
-            list($key, $value) = explode('=', $key_value_pair);
-            $data[$key] = $value;
+            foreach ($init_data as $value) {
+                [$key, $val] = explode('=', $value);
+                $data[$key] = $val;
+            }
+
+            $data['user'] = urldecode($data['user']);
+
+        } else {
+            $data = json_decode($body, true);
+            $data['user'] = json_encode($data['user']);
         }
 
         $data_check_string = "auth_date={$data['auth_date']}\nquery_id={$data['query_id']}\nuser={$data['user']}";
         $secret_key = hash_hmac('sha256', $token, "WebAppData", true);
+
         return hash_hmac('sha256', $data_check_string, $secret_key) == $data['hash'];
     }
 

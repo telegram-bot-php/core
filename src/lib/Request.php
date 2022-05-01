@@ -3,6 +3,7 @@
 namespace TelegramBot;
 
 use EasyHttp\Client;
+use EasyHttp\FormData;
 use TelegramBot\Entities\Response;
 use TelegramBot\Exception\InvalidBotTokenException;
 use TelegramBot\Exception\TelegramException;
@@ -220,7 +221,7 @@ class Request
             throw new TelegramException('File not found: ' . $file);
         }
 
-        $fp = fopen($file, 'rb');
+        $fp = fopen($file, 'r');
         if (!$fp) {
             throw new TelegramException('Could not open file: ' . $file);
         }
@@ -243,7 +244,7 @@ class Request
         $has_resource = false;
 
         $options = [
-            'headers' => [
+            'header' => [
                 'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
                 'User-Agent' => 'TelegramBot-PHP/' . Telegram::$VERSION
@@ -252,27 +253,35 @@ class Request
 
         foreach ($data as $key => &$item) {
             if (array_key_exists(self::$current_action, self::$input_file_fields) && in_array($key, self::$input_file_fields[self::$current_action], true)) {
+
                 if (is_string($item) && file_exists($item)) {
-                    $item = self::readFile($item);
                     $has_resource = true;
 
-                } elseif (is_resource($item)) {
-                    $has_resource = true;
+                } elseif (filter_var($item, FILTER_VALIDATE_URL)) {
+                    $has_resource = false;
+                    continue;
 
                 } else {
-                    throw new TelegramException('Invalid file input: ' . $key);
+                    throw new TelegramException(
+                        'Invalid file path or URL: ' . $item . ' for ' . self::$current_action . ' action'
+                    );
                 }
 
-                $multipart[] = ['name' => $key, 'contents' => $item];
+                $multipart[$key] = $item;
+                continue;
             }
+
+            if (is_array($item)) {
+                $item = json_encode($item);
+            }
+
+            $options['query'][$key] = $item;
         }
         unset($item);
 
         if ($has_resource) {
-            $options['multipart'] = $multipart;
+            $options['multipart'] = FormData::create($multipart);
         }
-
-        $options['body'] = $data;
 
         return $options;
     }
@@ -289,14 +298,10 @@ class Request
     {
         $request_params = self::setUpRequestParams($data);
 
-        $response = self::getClient()->post(
+        $response = self::getClient()->get(
             self::getApiPath() . $action,
-            $request_params
+            $request_params ?? []
         );
-
-        if ($response->getErrorCode() !== 0) {
-            throw new TelegramException('HTTP Error: ' . $response->getError());
-        }
 
         return $response->getBody();
     }

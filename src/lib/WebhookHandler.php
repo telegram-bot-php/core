@@ -171,18 +171,19 @@ abstract class WebhookHandler extends Telegram
         } catch (\RuntimeException $e) {
             TelegramLog::error(($message = sprintf('%s: %s', $e->getMessage(), $e->getTraceAsString())));
             if (defined('TG_ADMIN_ID') && TG_ADMIN_ID && defined('DEBUG_MODE') && DEBUG_MODE) {
-                $file = tempnam(sys_get_temp_dir(), 'tg');
-                $data = $update->getRawData(false);
-                file_put_contents($file, json_encode($data, JSON_PRETTY_PRINT));
+                file_put_contents(
+                    ($file = getcwd() . '/' . uniqid('error_')),
+                    $message . PHP_EOL . PHP_EOL . $update->getRawData(false)
+                );
+                Request::sendMessage([
+                    'chat_id' => TG_ADMIN_ID,
+                    'text' => $message,
+                ]);
                 Request::sendDocument([
                     'chat_id' => TG_ADMIN_ID,
                     'document' => $file,
                 ]);
                 unlink($file);
-                Request::sendMessage([
-                    'chat_id' => TG_ADMIN_ID,
-                    'text' => $message,
-                ]);
             }
         }
     }
