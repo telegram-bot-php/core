@@ -22,10 +22,10 @@ abstract class Factory
      * This method is used to create a new instance of the entity.
      *
      * @param string $class
-     * @param array $property
+     * @param mixed $property
      * @return Entity
      */
-    public static function resolveEntityClass(string $class, array $property): Entity
+    public static function resolveEntityClass(string $class, mixed $property): Entity
     {
         if (is_subclass_of($class, Factory::class)) {
             return $class::make($property);

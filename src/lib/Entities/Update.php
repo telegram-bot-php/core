@@ -98,14 +98,4 @@ class Update extends Entity
         return null;
     }
 
-    /**
-     * Get isOk - The UpdateId must be greater than 0.
-     *
-     * @return bool
-     */
-    public function isOk(): bool
-    {
-        return $this->getUpdateId() > 0;
-    }
-
 }

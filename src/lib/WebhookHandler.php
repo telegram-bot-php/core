@@ -38,8 +38,8 @@ abstract class WebhookHandler extends Telegram
      * @var array
      */
     private array $config = [
-        'autoload_env_file' => true,
-        'env_file_path' => null, // default: $_SERVER['DOCUMENT_ROOT'] . '/.env' && __DIR__ . '/.env'
+        'autoload_env_file' => false,
+        'env_file_path' => null,
     ];
 
     /**
@@ -172,7 +172,7 @@ abstract class WebhookHandler extends Telegram
             TelegramLog::error(($message = sprintf('%s: %s', $e->getMessage(), $e->getTraceAsString())));
             if (defined('TG_ADMIN_ID') && TG_ADMIN_ID && defined('DEBUG_MODE') && DEBUG_MODE) {
                 file_put_contents(
-                    ($file = getcwd() . '/' . uniqid('error_')),
+                    ($file = getcwd() . '/' . uniqid('error_') . '.log'),
                     $message . PHP_EOL . PHP_EOL . $update->getRawData(false)
                 );
                 Request::sendMessage([

@@ -20,12 +20,14 @@ abstract class Entity
     /**
      * Entity constructor.
      *
-     * @param array $data The raw data passed to this entity
+     * @param ?array $data The raw data passed to this entity
      */
-    public function __construct(array $data)
+    public function __construct(?array $data)
     {
-        $this->assignMemberVariables(($this->raw_data = $data));
-        $this->validate();
+        if (!empty($data)) {
+            $this->assignMemberVariables(($this->raw_data = $data));
+            $this->validate();
+        }
     }
 
     /**

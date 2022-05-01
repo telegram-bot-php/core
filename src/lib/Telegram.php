@@ -7,7 +7,6 @@ use TelegramBot\Entities\Update;
 use TelegramBot\Exception\TelegramException;
 use TelegramBot\Util\Common;
 use TelegramBot\Util\DotEnv;
-use function PHPUnit\Framework\isJson;
 
 /**
  * Class Telegram
@@ -37,17 +36,8 @@ class Telegram
     public function __construct(string $api_key = '')
     {
         if ($api_key === '') {
-            $defaultEnvPaths = [
-                $_SERVER['DOCUMENT_ROOT'] . '/.env',
-                getcwd() . '/.env'
-            ];
-
-            foreach ($defaultEnvPaths as $path) {
-                if (file_exists($path)) {
-                    $api_key = DotEnv::load($path)::get('TELEGRAM_API_KEY');
-                    break;
-                }
-            }
+            $env_file = $this->getEnvFilePath();
+            $api_key = DotEnv::load($env_file)->get('TELEGRAM_API_KEY');
         }
 
         if (empty($api_key) || !is_string($api_key)) {
@@ -56,6 +46,28 @@ class Telegram
 
         DotEnv::put('TG_CURRENT_KEY', ($this->api_key = $api_key));
         DotEnv::put('TELEGRAM_API_KEY', ($this->api_key = $api_key));
+    }
+
+    /**
+     * Get env file path and return it
+     *
+     * @return string
+     */
+    private function getEnvFilePath(): string
+    {
+        $defaultEnvPaths = [
+            $_SERVER['DOCUMENT_ROOT'] . '/.env',
+            getcwd() . '/../.env',
+            getcwd() . '/.env',
+        ];
+
+        foreach ($defaultEnvPaths as $path) {
+            if (file_exists($path)) {
+                return $path;
+            }
+        }
+
+        return '';
     }
 
     /**
@@ -168,9 +180,10 @@ class Telegram
      * This method will convert a string to an update object
      *
      * @param string $input The input string
+     * @param string $apiKey The API key
      * @return Update|false
      */
-    public static function processUpdate(string $input): Update|false
+    public static function processUpdate(string $input, string $apiKey): Update|false
     {
         if (empty($input)) {
             throw new TelegramException(
@@ -178,7 +191,13 @@ class Telegram
             );
         }
 
-        if (self::validateWebData(self::getApiKey(), $input)) {
+        if (!self::validateToken($apiKey)){
+            throw new TelegramException(
+                'Invalid token! Please check your code and try again.'
+            );
+        }
+
+        if (self::validateWebData($apiKey, $input)) {
             if (Common::isUrlEncode($input)) {
                 $web_data = Common::urlDecode($input);
             }
@@ -190,10 +209,6 @@ class Telegram
             $input = json_encode([
                 'web_data' => $web_data,
             ]);
-        }
-
-        if (Common::isUrlEncode($input)) {
-            $input = json_encode(Common::urlDecode($input));
         }
 
         if (!Common::isJson($input)) {
@@ -243,8 +258,8 @@ class Telegram
     public static function getUpdate(): Update|false
     {
         $input = self::getInput();
-        if ($input === '' || Common::isJson($input) === false) return false;
-        return Telegram::processUpdate($input);
+        if (empty($input)) return false;
+        return Telegram::processUpdate($input, self::getApiKey());
     }
 
     /**
