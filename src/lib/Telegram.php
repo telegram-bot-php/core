@@ -302,6 +302,22 @@ class Telegram
     }
 
     /**
+     * Debug mode
+     *
+     * @param ?int $admin_id Fill this or use setAdmin()
+     * @return void
+     */
+    public static function setDebugMode(?int $admin_id = null): void
+    {
+        error_reporting(E_ALL);
+        ini_set('display_errors', 1);
+        defined('DEBUG_MODE') or define('DEBUG_MODE', true);
+        if ($admin_id) {
+            defined('TG_ADMIN_ID') or define('TG_ADMIN_ID', $admin_id);
+        }
+    }
+
+    /**
      * Just another echo
      *
      * @param string $text

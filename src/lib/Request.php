@@ -16,10 +16,10 @@ use TelegramBot\Util\Common;
  * Getting updates
  * There are two mutually exclusive ways of receiving updates for your bot — the getUpdates method on one hand and Webhooks on the other. Incoming updates are stored on the server until the bot receives them either way, but they will not be kept longer than 24 hours.
  *
- * @method static Response getUpdates(array $data)                          Use this method to receive incoming updates using long polling (wiki). An Array of Update objects is returned.
- * @method static Response setWebhook(array $data)                          Use this method to specify a url and receive incoming updates via an outgoing webhook. Whenever there is an update for the bot, we will send an HTTPS POST request to the specified url, containing a JSON-serialized Update. In case of an unsuccessful request, we will give up after a reasonable amount of attempts. Returns true.
- * @method static Response deleteWebhook(array $data)                       Use this method to remove webhook integration if you decide to switch back to getUpdates. Returns True on success.
- * @method static Response getWebhookInfo()                                 Use this method to get current webhook status. Requires no parameters. On success, returns a WebhookInfo object. If the bot is using getUpdates, will return an object with the url field empty.
+ * @method static Response getUpdates(array $data)      Use this method to receive incoming updates using long polling (wiki). An Array of Update objects is returned.
+ * @method static Response setWebhook(array $data)      Use this method to specify a url and receive incoming updates via an outgoing webhook. Whenever there is an update for the bot, we will send an HTTPS POST request to the specified url, containing a JSON-serialized Update. In case of an unsuccessful request, we will give up after a reasonable amount of attempts. Returns true.
+ * @method static Response deleteWebhook(array $data)   Use this method to remove webhook integration if you decide to switch back to getUpdates. Returns True on success.
+ * @method static Response getWebhookInfo()             Use this method to get current webhook status. Requires no parameters. On success, returns a WebhookInfo object. If the bot is using getUpdates, will return an object with the url field empty.
  *
  *
  * Available methods
@@ -90,55 +90,55 @@ use TelegramBot\Util\Common;
  * Updating messages
  * The following methods allow you to change an existing message in the message history instead of sending a new one with a result of an action. This is most useful for messages with inline keyboards using callback queries, but can also help reduce clutter in conversations with regular chat bots.
  *
- * @method static Response editMessageText(array $data)                     Use this method to edit text and game messages sent by the bot or via the bot (for inline bots). On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
- * @method static Response editMessageCaption(array $data)                  Use this method to edit captions of messages sent by the bot or via the bot (for inline bots). On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
- * @method static Response editMessageMedia(array $data)                    Use this method to edit audio, document, photo, or video messages. On success, if the edited message was sent by the bot, the edited Message is returned, otherwise True is returned.
- * @method static Response editMessageReplyMarkup(array $data)              Use this method to edit only the reply markup of messages sent by the bot or via the bot (for inline bots). On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
- * @method static Response stopPoll(array $data)                            Use this method to stop a poll which was sent by the bot. On success, the stopped Poll with the final results is returned.
- * @method static Response deleteMessage(array $data)                       Use this method to delete a message, including service messages, with certain limitations. Returns True on success.
+ * @method static Response editMessageText(array $data)         Use this method to edit text and game messages sent by the bot or via the bot (for inline bots). On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
+ * @method static Response editMessageCaption(array $data)      Use this method to edit captions of messages sent by the bot or via the bot (for inline bots). On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
+ * @method static Response editMessageMedia(array $data)        Use this method to edit audio, document, photo, or video messages. On success, if the edited message was sent by the bot, the edited Message is returned, otherwise True is returned.
+ * @method static Response editMessageReplyMarkup(array $data)  Use this method to edit only the reply markup of messages sent by the bot or via the bot (for inline bots). On success, if edited message is sent by the bot, the edited Message is returned, otherwise True is returned.
+ * @method static Response stopPoll(array $data)                Use this method to stop a poll which was sent by the bot. On success, the stopped Poll with the final results is returned.
+ * @method static Response deleteMessage(array $data)           Use this method to delete a message, including service messages, with certain limitations. Returns True on success.
  *
  *
  * Stickers
  * The following methods and objects allow your bot to handle stickers and sticker sets.
  *
- * @method static Response sendSticker(array $data)                         Use this method to send static .WEBP, animated .TGS, or video .WEBM stickers. On success, the sent Message is returned.
- * @method static Response getStickerSet(array $data)                       Use this method to get a sticker set. On success, a StickerSet object is returned.
- * @method static Response uploadStickerFile(array $data)                   Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet methods (can be used multiple times). Returns the uploaded File on success.
- * @method static Response createNewStickerSet(array $data)                 Use this method to create new sticker set owned by a user. The bot will be able to edit the created sticker set. Returns True on success.
- * @method static Response addStickerToSet(array $data)                     Use this method to add a new sticker to a set created by the bot. Returns True on success.
- * @method static Response setStickerPositionInSet(array $data)             Use this method to move a sticker in a set created by the bot to a specific position. Returns True on success.
- * @method static Response deleteStickerFromSet(array $data)                Use this method to delete a sticker from a set created by the bot. Returns True on success.
- * @method static Response setStickerSetThumb(array $data)                  Use this method to set the thumbnail of a sticker set. Animated thumbnails can be set for animated sticker sets only. Returns True on success.
+ * @method static Response sendSticker(array $data)                 Use this method to send static .WEBP, animated .TGS, or video .WEBM stickers. On success, the sent Message is returned.
+ * @method static Response getStickerSet(array $data)               Use this method to get a sticker set. On success, a StickerSet object is returned.
+ * @method static Response uploadStickerFile(array $data)           Use this method to upload a .png file with a sticker for later use in createNewStickerSet and addStickerToSet methods (can be used multiple times). Returns the uploaded File on success.
+ * @method static Response createNewStickerSet(array $data)         Use this method to create new sticker set owned by a user. The bot will be able to edit the created sticker set. Returns True on success.
+ * @method static Response addStickerToSet(array $data)             Use this method to add a new sticker to a set created by the bot. Returns True on success.
+ * @method static Response setStickerPositionInSet(array $data)     Use this method to move a sticker in a set created by the bot to a specific position. Returns True on success.
+ * @method static Response deleteStickerFromSet(array $data)        Use this method to delete a sticker from a set created by the bot. Returns True on success.
+ * @method static Response setStickerSetThumb(array $data)          Use this method to set the thumbnail of a sticker set. Animated thumbnails can be set for animated sticker sets only. Returns True on success.
  *
  *
  * Inline mode
  * The following methods and objects allow your bot to work in inline mode.
  *
- * @method static Response answerInlineQuery(array $data)                   Use this method to send answers to an inline query. On success, True is returned.
- * @method static Response answerWebAppQuery(array $data)                   Use this method to set the result of an interaction with a Web App and send a corresponding message on behalf of the user to the chat from which the query originated. On success, a SentWebAppMessage object is returned.
- * @method static Response SentWebAppMessage(array $data)                   Contains information about an inline message sent by a Web App on behalf of a user.
+ * @method static Response answerInlineQuery(array $data)   Use this method to send answers to an inline query. On success, True is returned.
+ * @method static Response answerWebAppQuery(array $data)   Use this method to set the result of an interaction with a Web App and send a corresponding message on behalf of the user to the chat from which the query originated. On success, a SentWebAppMessage object is returned.
+ * @method static Response SentWebAppMessage(array $data)   Contains information about an inline message sent by a Web App on behalf of a user.
  *
  *
  * Payments
  * Your bot can accept payments from Telegram users. Please see the introduction to payments for more details on the process and how to set up payments for your bot.
  *
- * @method static Response sendInvoice(array $data)                         Use this method to send invoices. On success, the sent Message is returned.
- * @method static Response answerShippingQuery(array $data)                 If you sent an invoice requesting a shipping address and the parameter is_flexible was specified, the Bot API will send an Update with a shipping_query field to the bot. Use this method to reply to shipping queries. On success, True is returned.
- * @method static Response answerPreCheckoutQuery(array $data)              Once the user has confirmed their payment and shipping details, the Bot API sends the final confirmation in the form of an Update with the field pre_checkout_query. Use this method to respond to such pre-checkout queries. On success, True is returned.
+ * @method static Response sendInvoice(array $data)             Use this method to send invoices. On success, the sent Message is returned.
+ * @method static Response answerShippingQuery(array $data)     If you sent an invoice requesting a shipping address and the parameter is_flexible was specified, the Bot API will send an Update with a shipping_query field to the bot. Use this method to reply to shipping queries. On success, True is returned.
+ * @method static Response answerPreCheckoutQuery(array $data)  Once the user has confirmed their payment and shipping details, the Bot API sends the final confirmation in the form of an Update with the field pre_checkout_query. Use this method to respond to such pre-checkout queries. On success, True is returned.
  *
  *
  * Telegram Passport
  * Telegram Passport is a unified authorization method for services that require personal identification. Users can upload their documents once, then instantly share their data with services that require real-world ID (finance, ICOs, etc.).
  *
- * @method static Response setPassportDataErrors(array $data)               Informs a user that some of the Telegram Passport elements they provided contains errors. The user will not be able to re-submit their Passport to you until the errors are fixed (the contents of the field for which you returned the error must change). Returns True on success. Use this if the data submitted by the user doesn't satisfy the standards your service requires for any reason. For example, if a birthday date seems invalid, a submitted document is blurry, a scan shows evidence of tampering, etc. Supply some details in the error message to make sure the user knows how to correct the issues.
+ * @method static Response setPassportDataErrors(array $data)   Informs a user that some of the Telegram Passport elements they provided contains errors. The user will not be able to re-submit their Passport to you until the errors are fixed (the contents of the field for which you returned the error must change). Returns True on success. Use this if the data submitted by the user doesn't satisfy the standards your service requires for any reason. For example, if a birthday date seems invalid, a submitted document is blurry, a scan shows evidence of tampering, etc. Supply some details in the error message to make sure the user knows how to correct the issues.
  *
  *
  * Games
  * our bot can offer users HTML5 games to play solo or to compete against each other in groups and one-on-one chats. Create games via @BotFather using the /newgame command. Please note that this kind of power requires responsibility: you will need to accept the terms for each game that your bots will be offering.
  *
- * @method static Response sendGame(array $data)                            our bot can offer users HTML5 games to play solo or to compete against each other in groups and one-on-one chats. Create games via @BotFather using the /newgame command. Please note that this kind of power requires responsibility: you will need to accept the terms for each game that your bots will be offering.
- * @method static Response setGameScore(array $data)                        Use this method to set the score of the specified user in a game. On success, if the message was sent by the bot, returns the edited Message, otherwise returns True. Returns an error, if the new score is not greater than the user's current score in the chat and force is False.
- * @method static Response getGameHighScores(array $data)                   Use this method to get data for high score tables. Will return the score of the specified user and several of his neighbors in a game. On success, returns an Array of GameHighScore objects.
+ * @method static Response sendGame(array $data)            our bot can offer users HTML5 games to play solo or to compete against each other in groups and one-on-one chats. Create games via @BotFather using the /newgame command. Please note that this kind of power requires responsibility: you will need to accept the terms for each game that your bots will be offering.
+ * @method static Response setGameScore(array $data)        Use this method to set the score of the specified user in a game. On success, if the message was sent by the bot, returns the edited Message, otherwise returns True. Returns an error, if the new score is not greater than the user's current score in the chat and force is False.
+ * @method static Response getGameHighScores(array $data)   Use this method to get data for high score tables. Will return the score of the specified user and several of his neighbors in a game. On success, returns an Array of GameHighScore objects.
  */
 class Request
 {
@@ -210,23 +210,21 @@ class Request
     }
 
     /**
-     * File input stream
+     * Use this method to get stats of given user in a supergroup or channel.
      *
-     * @param string $file The absolute path to the file
-     * @return resource
+     * @param int $user_id User identifier
+     * @param int $chat_id Identifier of the chat to get stats for
+     *
+     * @return string [left, member, administrator, creator]
      */
-    public static function readFile(string $file): mixed
+    public static function getChatMemberStatus(int $user_id, int $chat_id): string
     {
-        if (!file_exists($file)) {
-            throw new TelegramException('File not found: ' . $file);
-        }
+        $response = self::getChatMember([
+            'user_id' => $user_id,
+            'chat_id' => $chat_id,
+        ]);
 
-        $fp = fopen($file, 'r');
-        if (!$fp) {
-            throw new TelegramException('Could not open file: ' . $file);
-        }
-
-        return $fp;
+        return $response->getResult()->status ?? "left";
     }
 
     /**
