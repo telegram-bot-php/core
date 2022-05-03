@@ -4,6 +4,8 @@ namespace TelegramBot;
 
 use EasyHttp\Client;
 use EasyHttp\FormData;
+use TelegramBot\Entities\InlineKeyboard;
+use TelegramBot\Entities\Keyboard;
 use TelegramBot\Entities\Response;
 use TelegramBot\Exception\InvalidBotTokenException;
 use TelegramBot\Exception\TelegramException;
@@ -143,210 +145,227 @@ use TelegramBot\Util\Common;
 class Request
 {
 
-    /**
-     * Available fields for InputFile helper
-     *
-     * This is basically the list of all fields that allow InputFile objects
-     * for which input can be simplified by providing local path directly  as string.
-     *
-     * @var array
-     */
-    private static array $input_file_fields = [
-        'setWebhook' => ['certificate'],
-        'sendPhoto' => ['photo'],
-        'sendAudio' => ['audio', 'thumb'],
-        'sendDocument' => ['document', 'thumb'],
-        'sendVideo' => ['video', 'thumb'],
-        'sendAnimation' => ['animation', 'thumb'],
-        'sendVoice' => ['voice', 'thumb'],
-        'sendVideoNote' => ['video_note', 'thumb'],
-        'setChatPhoto' => ['photo'],
-        'sendSticker' => ['sticker'],
-        'uploadStickerFile' => ['png_sticker'],
-        'createNewStickerSet' => ['png_sticker', 'tgs_sticker', 'webm_sticker'],
-        'addStickerToSet' => ['png_sticker', 'tgs_sticker', 'webm_sticker'],
-        'setStickerSetThumb' => ['thumb'],
-    ];
+	/**
+	 * Available fields for InputFile helper
+	 *
+	 * This is basically the list of all fields that allow InputFile objects
+	 * for which input can be simplified by providing local path directly  as string.
+	 *
+	 * @var array
+	 */
+	private static array $input_file_fields = [
+		'setWebhook' => ['certificate'],
+		'sendPhoto' => ['photo'],
+		'sendAudio' => ['audio', 'thumb'],
+		'sendDocument' => ['document', 'thumb'],
+		'sendVideo' => ['video', 'thumb'],
+		'sendAnimation' => ['animation', 'thumb'],
+		'sendVoice' => ['voice', 'thumb'],
+		'sendVideoNote' => ['video_note', 'thumb'],
+		'setChatPhoto' => ['photo'],
+		'sendSticker' => ['sticker'],
+		'uploadStickerFile' => ['png_sticker'],
+		'createNewStickerSet' => ['png_sticker', 'tgs_sticker', 'webm_sticker'],
+		'addStickerToSet' => ['png_sticker', 'tgs_sticker', 'webm_sticker'],
+		'setStickerSetThumb' => ['thumb'],
+	];
 
-    /**
-     * URI of the Telegram API
-     *
-     * @var string
-     */
-    private static string $api_base_uri = 'https://api.telegram.org';
+	/**
+	 * URI of the Telegram API
+	 *
+	 * @var string
+	 */
+	private static string $api_base_uri = 'https://api.telegram.org';
 
-    /**
-     * URI of the Telegram API for downloading files (relative to $api_base_url or absolute)
-     *
-     * @var string
-     */
-    private static string $api_base_download_uri = '/file/bot{API_KEY}';
+	/**
+	 * URI of the Telegram API for downloading files (relative to $api_base_url or absolute)
+	 *
+	 * @var string
+	 */
+	private static string $api_base_download_uri = '/file/bot{API_KEY}';
 
-    /**
-     * The current action that is being executed
-     *
-     * @var string
-     */
-    private static string $current_action = '';
+	/**
+	 * The current action that is being executed
+	 *
+	 * @var string
+	 */
+	private static string $current_action = '';
 
-    /**
-     * Get the Telegram API path
-     *
-     * @return string
-     */
-    public static function getApiPath(): string
-    {
-        return self::$api_base_uri . '/bot' . Telegram::getApiKey() . '/';
-    }
+	/**
+	 * Get the Telegram API path
+	 *
+	 * @return string
+	 */
+	public static function getApiPath(): string
+	{
+		return self::$api_base_uri . '/bot' . Telegram::getApiKey() . '/';
+	}
 
-    /**
-     * Initialize a http client
-     *
-     * @return Client
-     */
-    private static function getClient(): Client
-    {
-        return new Client();
-    }
+	/**
+	 * Initialize a http client
+	 *
+	 * @return Client
+	 */
+	private static function getClient(): Client
+	{
+		return new Client();
+	}
 
-    /**
-     * Use this method to get stats of given user in a supergroup or channel.
-     *
-     * @param int $user_id User identifier
-     * @param int $chat_id Identifier of the chat to get stats for
-     *
-     * @return string [left, member, administrator, creator]
-     */
-    public static function getChatMemberStatus(int $user_id, int $chat_id): string
-    {
-        $response = self::getChatMember([
-            'user_id' => $user_id,
-            'chat_id' => $chat_id,
-        ]);
+	/**
+	 * Use this method to get stats of given user in a supergroup or channel.
+	 *
+	 * @param int $user_id User identifier
+	 * @param int $chat_id Identifier of the chat to get stats for
+	 *
+	 * @return string [left, member, administrator, creator]
+	 */
+	public static function getChatMemberStatus(int $user_id, int $chat_id): string
+	{
+		$response = self::getChatMember([
+			'user_id' => $user_id,
+			'chat_id' => $chat_id,
+		]);
 
-        return $response->getResult()->status ?? "left";
-    }
+		return $response->getResult()->status ?? "left";
+	}
 
-    /**
-     * Properly set up the request params
-     *
-     * If any item of the array is a resource, reformat it to a multipart request.
-     * Else, just return the passed data as form params.
-     *
-     * @param array $data
-     * @return array
-     */
-    private static function setUpRequestParams(array $data): array
-    {
-        $multipart = [];
-        $has_resource = false;
+	/**
+	 * Properly set up the request params
+	 *
+	 * If any item of the array is a resource, reformat it to a multipart request.
+	 * Else, just return the passed data as form params.
+	 *
+	 * @param array $data
+	 * @return array
+	 */
+	private static function setUpRequestParams(array $data): array
+	{
+		$multipart = [];
+		$has_resource = false;
 
-        $options = [
-            'header' => [
-                'Content-Type' => 'application/json',
-                'Accept' => 'application/json',
-                'User-Agent' => 'TelegramBot-PHP/' . Telegram::$VERSION
-            ]
-        ];
+		$options = [
+			'header' => [
+				'Content-Type' => 'application/json',
+				'Accept' => 'application/json',
+				'User-Agent' => 'TelegramBot-PHP/' . Telegram::$VERSION
+			]
+		];
 
-        foreach ($data as $key => &$item) {
-            if (array_key_exists(self::$current_action, self::$input_file_fields) && in_array($key, self::$input_file_fields[self::$current_action], true)) {
+		foreach ($data as $key => &$item) {
+			if (array_key_exists(self::$current_action, self::$input_file_fields) && in_array($key, self::$input_file_fields[self::$current_action], true)) {
 
-                if (is_string($item) && file_exists($item)) {
-                    $has_resource = true;
+				if (is_string($item) && file_exists($item)) {
+					$has_resource = true;
 
-                } elseif (filter_var($item, FILTER_VALIDATE_URL)) {
-                    $has_resource = false;
-                    continue;
+				} elseif (filter_var($item, FILTER_VALIDATE_URL)) {
+					$has_resource = false;
+					continue;
 
-                } else {
-                    throw new TelegramException(
-                        'Invalid file path or URL: ' . $item . ' for ' . self::$current_action . ' action'
-                    );
-                }
+				} else {
+					throw new TelegramException(
+						'Invalid file path or URL: ' . $item . ' for ' . self::$current_action . ' action'
+					);
+				}
 
-                $multipart[$key] = $item;
-                continue;
-            }
+				$multipart[$key] = $item;
+				continue;
+			}
 
-            if (is_array($item)) {
-                $item = json_encode($item);
-            }
+			if ($item instanceof Entity) {
+				$item = $item->getRawData();
+			}
 
-            $options['query'][$key] = $item;
-        }
-        unset($item);
+			if (is_array($item)) {
+				$item = json_encode($item);
+			}
 
-        if ($has_resource) {
-            $options['multipart'] = FormData::create($multipart);
-        }
+			$options['query'][$key] = $item;
+		}
+		unset($item);
 
-        return $options;
-    }
+		if ($has_resource) {
+			$options['multipart'] = FormData::create($multipart);
+		}
 
-    /**
-     * Execute HTTP Request
-     *
-     * @param string $action Action to execute
-     * @param array $data Data to attach to the execution
-     *
-     * @return string Result of the HTTP Request
-     */
-    private static function execute(string $action, array $data): string
-    {
-        $request_params = self::setUpRequestParams($data);
+		return $options;
+	}
 
-        $response = self::getClient()->get(
-            self::getApiPath() . $action,
-            $request_params ?? []
-        );
+	/**
+	 * Create a Http Request
+	 *
+	 * @param string $action Action to execute
+	 * @param array $data Data to attach to the execution
+	 *
+	 * @return array An array of the setUpRequestParams and the url
+	 */
+	public static function create(string $action, array $data): array
+	{
+		return [
+			'url' => self::getApiPath() . $action,
+			'options' => self::setUpRequestParams($data)
+		];
+	}
 
-        return $response->getBody();
-    }
+	/**
+	 * Execute HTTP Request
+	 *
+	 * @param string $action Action to execute
+	 * @param array $data Data to attach to the execution
+	 *
+	 * @return string Result of the HTTP Request
+	 */
+	private static function execute(string $action, array $data): string
+	{
+		[$url, $options] = self::create($action, $data);
 
-    /**
-     * Send command
-     *
-     * @param string $action
-     * @param array $data
-     *
-     * @return Response
-     * @throws TelegramException
-     */
-    public static function send(string $action, array $data = []): Response
-    {
-        self::$current_action = $action;
+		$response = self::getClient()->get($url, $options);
 
-        $raw_response = self::execute($action, $data);
+		return $response->getBody();
+	}
 
-        if (!Common::isJson($raw_response)) {
-            TelegramLog::debug($raw_response);
-            throw new TelegramException('Invalid response from API');
-        }
+	/**
+	 * Send command
+	 *
+	 * @param string $action
+	 * @param array $data
+	 *
+	 * @return Response
+	 * @throws TelegramException
+	 */
+	public static function send(string $action, array $data = []): Response
+	{
+		self::$current_action = $action;
 
-        $response = new Response(json_decode($raw_response, true));
+		$raw_response = self::execute($action, $data);
 
-        if (!$response->isOk() && $response->getErrorCode() === 401 && $response->getDescription() === 'Unauthorized') {
-            throw new InvalidBotTokenException();
-        }
+		if (!Common::isJson($raw_response)) {
+			TelegramLog::debug($raw_response);
+			throw new TelegramException('Invalid response from API');
+		}
 
-        self::$current_action = '';
+		$response = new Response(json_decode($raw_response, true));
 
-        return $response;
-    }
+		if (!$response->isOk() && $response->getErrorCode() === 401 && $response->getDescription() === 'Unauthorized') {
+			throw new InvalidBotTokenException();
+		}
 
-    /**
-     * Any statically called method should be relayed to the `send` method.
-     *
-     * @param string $action
-     * @param array $data
-     *
-     * @return Response
-     * @throws TelegramException
-     */
-    public static function __callStatic(string $action, array $data): Response
-    {
-        return static::send($action, reset($data) ?: []);
-    }
+		self::$current_action = '';
+
+		return $response;
+	}
+
+	/**
+	 * Any statically called method should be relayed to the `send` method.
+	 *
+	 * @param string $action
+	 * @param array $data
+	 *
+	 * @return Response
+	 * @throws TelegramException
+	 */
+	public static function __callStatic(string $action, array $data): Response
+	{
+		return static::send($action, reset($data) ?: []);
+	}
 
 }

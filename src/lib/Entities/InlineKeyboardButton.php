@@ -35,6 +35,34 @@ use TelegramBot\Exception\TelegramException;
 class InlineKeyboardButton extends KeyboardButton
 {
 
+	public function __construct($data)
+	{
+
+		parent::__construct($data);
+	}
+
+	/**
+	 * Creates instance of InlineKeyboardButton
+	 *
+	 * @param string $string
+	 * @return InlineKeyboardButton
+	 */
+	public static function make(string $string): InlineKeyboardButton
+	{
+		return new self($string);
+	}
+
+	/**
+	 * @param string $data
+	 * @return $this
+	 */
+	public function CallbackData(string $data): InlineKeyboardButton
+	{
+		$this->raw_data['callback_data'] = $data;
+
+		return $this;
+	}
+
     /**
      * Check if the passed data array could be an InlineKeyboardButton.
      *
@@ -63,24 +91,6 @@ class InlineKeyboardButton extends KeyboardButton
     {
         if ($this->getProperty('text', '') === '') {
             throw new TelegramException('You must add some text to the button!');
-        }
-
-        $num_params = 0;
-
-        foreach (['url', 'login_url', 'callback_data', 'web_app', 'callback_game', 'pay'] as $param) {
-            if ($this->getProperty($param, '') !== '') {
-                $num_params++;
-            }
-        }
-
-        foreach (['switch_inline_query', 'switch_inline_query_current_chat'] as $param) {
-            if ($this->getProperty($param) !== null) {
-                $num_params++;
-            }
-        }
-
-        if ($num_params !== 1) {
-            throw new TelegramException('You must use only one of these fields: url, login_url, callback_data, web_app, switch_inline_query, switch_inline_query_current_chat, callback_game, pay!');
         }
     }
 

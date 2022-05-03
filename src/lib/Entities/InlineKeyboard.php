@@ -9,4 +9,15 @@ namespace TelegramBot\Entities;
  */
 class InlineKeyboard extends Keyboard
 {
+
+	/**
+	 * Creates instance of Keyboard
+	 *
+	 * @return InlineKeyboard
+	 */
+	public static function make(): InlineKeyboard
+	{
+		return new self();
+	}
+
 }
