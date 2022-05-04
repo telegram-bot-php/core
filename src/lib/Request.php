@@ -4,8 +4,6 @@ namespace TelegramBot;
 
 use EasyHttp\Client;
 use EasyHttp\FormData;
-use TelegramBot\Entities\InlineKeyboard;
-use TelegramBot\Entities\Keyboard;
 use TelegramBot\Entities\Response;
 use TelegramBot\Exception\InvalidBotTokenException;
 use TelegramBot\Exception\TelegramException;
@@ -316,9 +314,9 @@ class Request
 	 */
 	private static function execute(string $action, array $data): string
 	{
-		[$url, $options] = self::create($action, $data);
+		$request = self::create($action, $data);
 
-		$response = self::getClient()->get($url, $options);
+		$response = self::getClient()->get($request['url'], $request['options']);
 
 		return $response->getBody();
 	}
