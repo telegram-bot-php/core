@@ -28,7 +28,7 @@ class Keyboard extends Entity
 		parent::__construct(array_merge($data, [
 			'resize_keyboard' => false,
 			'one_time_keyboard' => false,
-			'input_field_placeholder' => null,
+			'input_field_placeholder' => '',
 			'selective' => false
 		]));
 	}
