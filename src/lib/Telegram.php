@@ -237,10 +237,19 @@ class Telegram
 			$raw_data = rawurldecode(str_replace('_auth=', '', $body));
 			$data = Common::urlDecode($raw_data);
 
+			if (empty($data['user'])) {
+				return false;
+			}
+
 			$data['user'] = urldecode($data['user']);
 
 		} else {
 			$data = json_decode($body, true);
+
+			if (empty($data['user'])) {
+				return false;
+			}
+
 			$data['user'] = json_encode($data['user']);
 		}
 

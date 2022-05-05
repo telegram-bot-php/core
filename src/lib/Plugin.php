@@ -3,7 +3,6 @@
 namespace TelegramBot;
 
 use TelegramBot\Entities\Update;
-use TelegramBot\Interfaces\UpdateTypes;
 
 /**
  * Class Plugin
@@ -48,6 +47,44 @@ abstract class Plugin
 	protected bool $kill_on_yield = false;
 
 	/**
+	 * Check for the exit of the plugin.
+	 *
+	 * @param \Generator $return
+	 * @return void
+	 */
+	public function __checkExit(\Generator $return): void
+	{
+		if ($return->valid()) {
+			if ($return->current() !== null && $this->kill_on_yield === true) {
+				$this->kill();
+			}
+		}
+
+		if ($return->valid()) {
+			$return->next();
+			$this->__checkExit($return);
+		}
+	}
+
+	/**
+	 * Identify the update type. e.g. Message, EditedMessage, etc.
+	 *
+	 * @param Update $update
+	 * @return string|null
+	 */
+	public function __identify(Update $update): ?string
+	{
+		$type = $update->getUpdateType();
+
+		if ($type === null) {
+			return null;
+		}
+
+		return str_replace('_', '', ucwords($type, '_'));
+	}
+
+
+	/**
 	 * Execute the plugin.
 	 *
 	 * @param WebhookHandler $receiver
@@ -58,20 +95,15 @@ abstract class Plugin
 	{
 		$this->hook = $receiver;
 
-		$method = 'onReceivedUpdate';
-		if (method_exists($this, $method)) {
-			/** @var \Generator $return */
-			$return = $this->{$method}($update);
+		if (method_exists($this, 'onReceivedUpdate')) {
+			$return = $this->onReceivedUpdate($update);
+			$this->__checkExit($return);
 		}
 
-		if (isset($return) && $return instanceof \Generator) {
-			while ($return->valid()) {
-				$return->next();
-			}
-
-			if ($return->valid() && $return->getReturn()) {
-				if ($this->kill_on_yield) $this->kill();
-			}
+		$type = $this->__identify($update);
+		if (method_exists($this, ($method = 'on' . $type)) && $type !== null) {
+			$return = $this->$method($update);
+			$this->__checkExit($return);
 		}
 	}
 
@@ -81,13 +113,7 @@ abstract class Plugin
 	 * @param Update $update
 	 * @return \Generator
 	 */
-	protected function onReceivedUpdate(Update $update): \Generator
-	{
-		$method = UpdateTypes::identify($update);
-		if (method_exists($this, $method)) {
-			yield $this->$method($update);
-		}
-	}
+	abstract protected function onReceivedUpdate(Update $update): \Generator;
 
 	/**
 	 * Kill the plugin.

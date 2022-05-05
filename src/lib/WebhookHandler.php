@@ -92,7 +92,8 @@ abstract class WebhookHandler extends Telegram
 	 */
 	public function loadPluginsWith(array $plugins, Update $update = null): void
 	{
-		$update = $update ?? Telegram::getUpdate();
+		$update = $update ?? ($this->update ?? Telegram::getUpdate());
+
 		foreach ($plugins as $plugin) {
 			if (!is_subclass_of($plugin, Plugin::class)) {
 				throw new \InvalidArgumentException(
@@ -100,6 +101,7 @@ abstract class WebhookHandler extends Telegram
 				);
 			}
 		}
+
 		if ($update instanceof Update) {
 			$this->spreadUpdateWith($update, $plugins);
 		}
@@ -160,7 +162,9 @@ abstract class WebhookHandler extends Telegram
 		else $this->update = Telegram::getUpdate() !== false ? Telegram::getUpdate() : null;
 
 		if (empty($this->update)) {
-			TelegramLog::error('The update is empty');
+			TelegramLog::error(
+				'The update is empty, the request is not processed'
+			);
 			return;
 		}
 
@@ -168,8 +172,13 @@ abstract class WebhookHandler extends Telegram
 
 			Common::arrest($this, $method, $this->update);
 
-		} catch (\RuntimeException $e) {
-			TelegramLog::error(($message = sprintf('%s: %s', $e->getMessage(), $e->getTraceAsString())));
+		} catch (\RuntimeException $exception) {
+
+			$e = $exception->getPrevious();
+			TelegramLog::error(($message = sprintf(
+				'%s(%d): %s\n%s', $e->getFile(), $e->getLine(), $e->getMessage(), $e->getTraceAsString()
+			)));
+
 			if (defined('TG_ADMIN_ID') && TG_ADMIN_ID && defined('DEBUG_MODE') && DEBUG_MODE) {
 				file_put_contents(
 					($file = getcwd() . '/' . uniqid('error_') . '.log'),

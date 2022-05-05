@@ -24,12 +24,10 @@ abstract class Entity
 	 */
 	public function __construct(?array $data)
 	{
-		if (array_key_exists('raw_data', $data)) {
-			$this->raw_data = $data['raw_data'];
+		if (!empty($data)) {
+			$this->assignMemberVariables(($this->raw_data = $data));
+			$this->validate();
 		}
-
-		$this->assignMemberVariables(($this->raw_data = $data));
-		$this->validate();
 	}
 
 	/**
