@@ -11,7 +11,7 @@ use TelegramBot\Entities\Update;
  * @author  Shahrad Elahi (https://github.com/shahradelahi)
  * @license https://github.com/telegram-bot-php/core/blob/master/LICENSE (MIT License)
  */
-abstract class Plugin
+class Plugin
 {
 
 	/**
@@ -20,15 +20,15 @@ abstract class Plugin
 	 * @var array
 	 */
 	protected array $update_types = [
-		'message',
-		'edited_message',
-		'channel_post',
-		'edited_channel_post',
-		'inline_query',
-		'chosen_inline_result',
-		'callback_query',
-		'shipping_query',
-		'pre_checkout_query',
+		'Message',
+		'EditedMessage',
+		'ChannelPost',
+		'EditedChannelPost',
+		'InlineQuery',
+		'ChosenInlineResult',
+		'CallbackQuery',
+		'ShippingQuery',
+		'PreCheckoutQuery',
 	];
 
 	/**
@@ -83,7 +83,6 @@ abstract class Plugin
 		return str_replace('_', '', ucwords($type, '_'));
 	}
 
-
 	/**
 	 * Execute the plugin.
 	 *
@@ -106,14 +105,6 @@ abstract class Plugin
 			$this->__checkExit($return);
 		}
 	}
-
-	/**
-	 * Identify the update type and if method of the type is exists, execute it.
-	 *
-	 * @param Update $update
-	 * @return \Generator
-	 */
-	abstract protected function onReceivedUpdate(Update $update): \Generator;
 
 	/**
 	 * Kill the plugin.
