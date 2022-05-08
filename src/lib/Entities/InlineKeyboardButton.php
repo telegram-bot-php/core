@@ -35,12 +35,6 @@ use TelegramBot\Exception\TelegramException;
 class InlineKeyboardButton extends KeyboardButton
 {
 
-	public function __construct($data)
-	{
-
-		parent::__construct($data);
-	}
-
 	/**
 	 * Creates instance of InlineKeyboardButton
 	 *
@@ -59,6 +53,28 @@ class InlineKeyboardButton extends KeyboardButton
 	public function CallbackData(string $data): InlineKeyboardButton
 	{
 		$this->raw_data['callback_data'] = $data;
+
+		return $this;
+	}
+
+	/**
+	 * @param string $data
+	 * @return $this
+	 */
+	public function Url(string $data): InlineKeyboardButton
+	{
+		$this->raw_data['url'] = $data;
+
+		return $this;
+	}
+
+	/**
+	 * @param string $url
+	 * @return $this
+	 */
+	public function WebApp(string $url): KeyboardButton
+	{
+		$this->raw_data['web_app'] = new WebAppInfo(['url' => $url]);
 
 		return $this;
 	}

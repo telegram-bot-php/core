@@ -20,7 +20,7 @@ class KeyboardTest extends TestCase
 			->setKeyboard([
 				[
 					InlineKeyboardButton::make('Button 1')->WebApp('https://google.com'),
-					InlineKeyboardButton::make('Button 2')->CallbackData('callback_data'),
+					InlineKeyboardButton::make('Button 2')->Url('https://google.com'),
 				],
 				[
 					InlineKeyboardButton::make('Button 3')->CallbackData('callback_data'),
@@ -40,7 +40,7 @@ class KeyboardTest extends TestCase
 		$keyboard = json_encode([
 			[
 				['text' => 'Button 1', 'web_app' => ['url' => 'https://google.com']],
-				['text' => 'Button 2', 'callback_data' => 'callback_data'],
+				['text' => 'Button 2', 'url' => 'https://google.com'],
 			],
 			[
 				['text' => 'Button 3', 'callback_data' => 'callback_data'],

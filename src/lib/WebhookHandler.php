@@ -5,6 +5,7 @@ namespace TelegramBot;
 use TelegramBot\Entities\Update;
 use TelegramBot\Exception\InvalidBotTokenException;
 use TelegramBot\Util\Common;
+use TelegramBot\Util\CrossData;
 use TelegramBot\Util\DotEnv;
 
 /**
@@ -234,5 +235,28 @@ abstract class WebhookHandler extends Telegram
 	 * @return void
 	 */
 	abstract public function __process(Update $update): void;
+
+	/**
+	 * put CrossData into the plugins
+	 *
+	 * @param string $key
+	 * @param mixed $value
+	 * @return void
+	 */
+	public function putCrossData(string $key, mixed $value): void
+	{
+		CrossData::put($key, $value);
+	}
+
+	/**
+	 * get CrossData from the plugins
+	 *
+	 * @param string $key
+	 * @return string|array|bool|null
+	 */
+	public function getCrossData(string $key): string|array|bool|null
+	{
+		return CrossData::get($key);
+	}
 
 }
