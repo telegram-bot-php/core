@@ -331,7 +331,7 @@ class Telegram
 			if (defined('DEBUG_MODE') && DEBUG_MODE) {
 
 				TelegramLog::error(($message = sprintf(
-					'%s(%d): %s\n%s',
+					"%s(%d): %s\n%s",
 					$exception->getFile(),
 					$exception->getLine(),
 					$exception->getMessage(),
