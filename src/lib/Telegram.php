@@ -320,10 +320,53 @@ class Telegram
 	{
 		error_reporting(E_ALL);
 		ini_set('display_errors', 1);
+
 		defined('DEBUG_MODE') or define('DEBUG_MODE', true);
 		if ($admin_id) {
 			defined('TG_ADMIN_ID') or define('TG_ADMIN_ID', $admin_id);
 		}
+
+		set_exception_handler(function ($exception) {
+
+			if (defined('DEBUG_MODE') && DEBUG_MODE) {
+
+				TelegramLog::error(($message = sprintf(
+					'%s(%d): %s\n%s',
+					$exception->getFile(),
+					$exception->getLine(),
+					$exception->getMessage(),
+					$exception->getTraceAsString()
+				)));
+
+				echo '<b>TelegramError:</b> ' . $message;
+
+				if (defined('TG_ADMIN_ID') && TG_ADMIN_ID) {
+					$input = getenv('TG_CURRENT_UPDATE') ?? self::getInput();
+					$update = self::processUpdate($input, self::getApiKey());
+
+					file_put_contents(
+						($file = getcwd() . '/' . uniqid('error_') . '.log'),
+						$message . PHP_EOL . PHP_EOL . $update->getRawData(false)
+					);
+
+					Request::sendMessage([
+						'chat_id' => TG_ADMIN_ID,
+						'text' => $message,
+					]);
+
+					Request::sendDocument([
+						'chat_id' => TG_ADMIN_ID,
+						'document' => $file,
+					]);
+
+					unlink($file);
+				}
+
+			} else {
+				throw $exception;
+			}
+
+		});
 	}
 
 	/**

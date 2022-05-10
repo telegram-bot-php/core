@@ -12,75 +12,63 @@ namespace TelegramBot\Util;
 class Common
 {
 
-    /**
-     * Validate the given string is JSON or not
-     *
-     * @param ?string $string
-     * @return bool
-     */
-    public static function isJson(?string $string): bool
-    {
-        if (!is_string($string)) return false;
-        json_decode($string);
-        return json_last_error() === JSON_ERROR_NONE;
-    }
+	/**
+	 * Validate the given string is JSON or not
+	 *
+	 * @param ?string $string
+	 * @return bool
+	 */
+	public static function isJson(?string $string): bool
+	{
+		if (!is_string($string)) {
+			return false;
+		}
 
-    /**
-     * Arrest with exception
-     *
-     * @param mixed $class The class
-     * @param string $callback The method
-     * @param mixed ...$args The arguments to pass to the callback
-     * @return mixed
-     */
-    public static function arrest(mixed $class, string $callback, ...$args): mixed
-    {
-        try {
-            return call_user_func_array([$class, $callback], $args);
-        } catch (\Throwable|\TypeError|\Exception $e) {
-            if (defined('DEBUG_MODE') && DEBUG_MODE) {
-                echo '<b>TelegramError:</b> ' . $e->getMessage() . PHP_EOL;
-            }
-            throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
-        }
-    }
+		json_decode($string);
 
-    /**
-     * Check string is a url encoded string or not
-     *
-     * @param string $string
-     * @return bool
-     */
-    public static function isUrlEncode(string $string): bool
-    {
-        return preg_match('/%[0-9A-F]{2}/i', $string);
-    }
+		return json_last_error() === JSON_ERROR_NONE;
+	}
 
-    /**
-     * Convert url encoded string to array
-     *
-     * @param string $string
-     * @return array
-     */
-    public static function urlDecode(string $string): array
-    {
-        $raw_data = explode('&', urldecode($string));
-        $data = [];
+	/**
+	 * Check string is a url encoded string or not
+	 *
+	 * @param ?string $string
+	 * @return bool
+	 */
+	public static function isUrlEncode(?string $string): bool
+	{
+		if (!is_string($string)) {
+			return false;
+		}
 
-        foreach ($raw_data as $row) {
-            [$key, $value] = explode('=', $row);
+		return preg_match('/%[0-9A-F]{2}/i', $string);
+	}
 
-            if (self::isUrlEncode($value)) {
-                $value = urldecode($value);
-                if (self::isJson($value)) {
-                    $value = json_decode($value, true);
-                }
-            }
+	/**
+	 * Convert url encoded string to array
+	 *
+	 * @param string $string
+	 * @return array
+	 */
+	public static function urlDecode(string $string): array
+	{
+		$raw_data = explode('&', urldecode($string));
+		$data = [];
 
-            $data[$key] = $value;
-        }
+		foreach ($raw_data as $row) {
+			[$key, $value] = explode('=', $row);
 
-        return $data;
-    }
+			if (self::isUrlEncode($value)) {
+				$value = urldecode($value);
+				if (self::isJson($value)) {
+					$value = json_decode($value, true);
+				}
+			}
+
+			$data[$key] = $value;
+		}
+
+		return $data;
+	}
 
 }

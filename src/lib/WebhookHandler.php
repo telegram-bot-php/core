@@ -4,7 +4,6 @@ namespace TelegramBot;
 
 use TelegramBot\Entities\Update;
 use TelegramBot\Exception\InvalidBotTokenException;
-use TelegramBot\Util\Common;
 use TelegramBot\Util\CrossData;
 use TelegramBot\Util\DotEnv;
 
@@ -169,33 +168,9 @@ abstract class WebhookHandler extends Telegram
 			return;
 		}
 
-		try {
+		putenv('TG_CURRENT_UPDATE=' . $this->update->getRawData(false));
 
-			Common::arrest($this, $method, $this->update);
-
-		} catch (\RuntimeException $exception) {
-
-			$e = $exception->getPrevious();
-			TelegramLog::error(($message = sprintf(
-				'%s(%d): %s\n%s', $e->getFile(), $e->getLine(), $e->getMessage(), $e->getTraceAsString()
-			)));
-
-			if (defined('TG_ADMIN_ID') && TG_ADMIN_ID && defined('DEBUG_MODE') && DEBUG_MODE) {
-				file_put_contents(
-					($file = getcwd() . '/' . uniqid('error_') . '.log'),
-					$message . PHP_EOL . PHP_EOL . $update->getRawData(false)
-				);
-				Request::sendMessage([
-					'chat_id' => TG_ADMIN_ID,
-					'text' => $message,
-				]);
-				Request::sendDocument([
-					'chat_id' => TG_ADMIN_ID,
-					'document' => $file,
-				]);
-				unlink($file);
-			}
-		}
+		$this->$method($update);
 	}
 
 	/**
