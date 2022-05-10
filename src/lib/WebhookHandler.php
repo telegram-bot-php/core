@@ -170,7 +170,7 @@ abstract class WebhookHandler extends Telegram
 
 		putenv('TG_CURRENT_UPDATE=' . $this->update->getRawData(false));
 
-		$this->$method($update);
+		$this->$method($this->update);
 	}
 
 	/**
