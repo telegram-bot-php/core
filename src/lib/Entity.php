@@ -15,7 +15,7 @@ abstract class Entity
 	/**
 	 * @var array The raw data passed to this entity
 	 */
-	protected array $raw_data;
+	protected array $raw_data = [];
 
 	/**
 	 * Entity constructor.
