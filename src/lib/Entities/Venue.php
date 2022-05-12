@@ -20,13 +20,15 @@ use TelegramBot\Entity;
  */
 class Venue extends Entity
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function subEntities(): array
-    {
-        return [
-            'location' => Location::class,
-        ];
-    }
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function subEntities(): array
+	{
+		return [
+			'location' => Location::class,
+		];
+	}
+
 }

@@ -12,7 +12,7 @@ use TelegramBot\Entity;
  *
  * @link https://core.telegram.org/bots/api#voicechatended
  *
- * @method int        getDuration()       Voice chat duration; in seconds
+ * @method int getDuration() 	Voice chat duration, in seconds
  */
 class VoiceChatEnded extends Entity
 {

@@ -11,15 +11,18 @@ use TelegramBot\Entity;
  *
  * @link https://core.telegram.org/bots/api#chatjoinrequest
  *
- * @method Chat           getChat()         Chat to which the request was sent
- * @method User           getFrom()         User that sent the join request
- * @method int            getDate()         Date the request was sent in Unix time
- * @method string         getBio()          Optional. Bio of the user.
- * @method ChatInviteLink getInviteLink()   Optional. Chat invite link that was used by the user to send the join request
+ * @method Chat           getChat()       	Chat to which the request was sent
+ * @method User           getFrom()       	User that sent the join request
+ * @method int            getDate()       	Date the request was sent in Unix time
+ * @method string         getBio()        	Optional. Bio of the user.
+ * @method ChatInviteLink getInviteLink() 	Optional. Chat invite link that was used by the user to send the join request
  */
 class ChatJoinRequest extends Entity
 {
 
+	/**
+	 * {@inheritdoc}
+	 */
     protected function subEntities(): array
     {
         return [

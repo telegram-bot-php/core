@@ -11,7 +11,7 @@ use TelegramBot\Entity;
  *
  * @link https://core.telegram.org/bots/api#voicechatscheduled
  *
- * @method int getStartDate() Point in time (Unix timestamp) when the voice chat is supposed to be started by a chat administrator
+ * @method int getStartDate() 	Point in time (Unix timestamp) when the voice chat is supposed to be started by a chat administrator
  */
 class VoiceChatScheduled extends Entity
 {

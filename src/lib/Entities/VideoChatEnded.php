@@ -1,4 +1,5 @@
 <?php
+
 namespace TelegramBot\Entities;
 
 use TelegramBot\Entity;
@@ -8,7 +9,7 @@ use TelegramBot\Entity;
  *
  * @link https://core.telegram.org/bots/api#videochatended
  *
- * @method int        getDuration()       Video chat duration in seconds
+ * @method int getDuration() 	Video chat duration in seconds
  */
 class VideoChatEnded extends Entity
 {

@@ -14,35 +14,37 @@ use TelegramBot\Entity;
  */
 class UserProfilePhotos extends Entity
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function subEntities(): array
-    {
-        return [
-            'photos' => PhotoSize::class,
-        ];
-    }
 
-    /**
-     * Requested profile pictures (in up to 4 sizes each)
-     *
-     * This method overrides the default getPhotos method and returns a nice array
-     *
-     * @return PhotoSize[][]
-     */
-    public function getPhotos(): array
-    {
-        $all_photos = [];
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function subEntities(): array
+	{
+		return [
+			'photos' => PhotoSize::class,
+		];
+	}
 
-        if ($these_photos = $this->getProperty('photos')) {
-            foreach ($these_photos as $photos) {
-                $all_photos[] = array_map(function ($photo) {
-                    return new PhotoSize($photo);
-                }, $photos);
-            }
-        }
+	/**
+	 * Requested profile pictures (in up to 4 sizes each)
+	 *
+	 * This method overrides the default getPhotos method and returns a nice array
+	 *
+	 * @return PhotoSize[][]
+	 */
+	public function getPhotos(): array
+	{
+		$all_photos = [];
 
-        return $all_photos;
-    }
+		if ($these_photos = $this->getProperty('photos')) {
+			foreach ($these_photos as $photos) {
+				$all_photos[] = array_map(function ($photo) {
+					return new PhotoSize($photo);
+				}, $photos);
+			}
+		}
+
+		return $all_photos;
+	}
+
 }

@@ -2,7 +2,6 @@
 
 namespace TelegramBot\Entities;
 
-use TelegramBot\Entities\User;
 use TelegramBot\Entity;
 
 /**
@@ -10,17 +9,19 @@ use TelegramBot\Entity;
  *
  * @link https://core.telegram.org/bots/api#videochatparticipantsinvited
  *
- * @method User[]      getUsers()       New members that were invited to the video chat
+ * @method User[] getUsers()    New members that were invited to the video chat
  */
 class VideoChatParticipantsInvited extends Entity
 {
-    /**
-     * {@inheritdoc}
-     */
-    protected function subEntities(): array
-    {
-        return [
-            'users' => [User::class],
-        ];
-    }
+
+	/**
+	 * {@inheritdoc}
+	 */
+	protected function subEntities(): array
+	{
+		return [
+			'users' => [User::class],
+		];
+	}
+
 }
