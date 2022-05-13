@@ -44,7 +44,7 @@ class Plugin
 	/**
 	 * @var bool
 	 */
-	protected bool $kill_on_yield = false;
+	protected bool $kill_on_yield = true;
 
 	/**
 	 * Check for the exit of the plugin.
