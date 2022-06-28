@@ -242,7 +242,7 @@ class Request
 		$has_resource = false;
 
 		$options = [
-			'header' => [
+			'headers' => [
 				'Content-Type' => 'application/json',
 				'Accept' => 'application/json',
 				'User-Agent' => 'TelegramBot-PHP/' . Telegram::$VERSION

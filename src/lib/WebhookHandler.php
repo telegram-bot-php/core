@@ -150,9 +150,8 @@ abstract class WebhookHandler extends Telegram
 	 */
 	public function resolve(Update $update = null, array $config = []): void
 	{
-		$method = '__process';
-		if (!method_exists($this, $method)) {
-			throw new \RuntimeException(sprintf('The method %s does not exist', $method));
+		if (!method_exists($this, '__process')) {
+			throw new \RuntimeException('The method __process does not exist');
 		}
 
 		if (is_array($config)) $this->updateConfiguration($config);
@@ -169,7 +168,7 @@ abstract class WebhookHandler extends Telegram
 
 		putenv('TG_CURRENT_UPDATE=' . $this->update->getRawData(false));
 
-		$this->$method($this->update);
+		$this->__process($this->update);
 	}
 
 	/**

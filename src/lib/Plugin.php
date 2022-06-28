@@ -15,23 +15,6 @@ class Plugin
 {
 
 	/**
-	 * The Update types
-	 *
-	 * @var array
-	 */
-	protected array $update_types = [
-		'Message',
-		'EditedMessage',
-		'ChannelPost',
-		'EditedChannelPost',
-		'InlineQuery',
-		'ChosenInlineResult',
-		'CallbackQuery',
-		'ShippingQuery',
-		'PreCheckoutQuery',
-	];
-
-	/**
 	 * @var WebhookHandler
 	 */
 	protected WebhookHandler $hook;
