@@ -24,13 +24,29 @@ class RequestTest extends \PHPUnit\Framework\TestCase
     {
         $this->load_env();
 
-        $result = Request::sendMessage([
+        $result = Request::create('sendMessage', [
             'chat_id' => '259760855',
             'text' => 'text',
             'parse_mode' => 'Markdown',
-        ], getenv('TELEGRAM_BOT_TOKEN'));
+        ], 'SOME_TOKEN');
 
-        $this->assertEquals(true, $result->isOk());
+        $expected = [
+            'url' => 'https://api.telegram.org/botSOME_TOKEN/sendMessage',
+            'options' => [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Accept' => 'application/json',
+                    'User-Agent' => 'TelegramBot-PHP/v1.0.0'
+                ],
+                'query' => [
+                    'chat_id' => '259760855',
+                    'text' => 'text',
+                    'parse_mode' => 'Markdown',
+                ],
+            ],
+        ];
+
+        $this->assertEquals($expected, $result);
     }
 
 }
