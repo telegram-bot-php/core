@@ -1,35 +1,46 @@
 {
    "name": "telegram-bot-php/core",
    "description": "A PHP library that makes using Telegram Bot API much easier.",
-   "keywords": ["telegram", "bot", "api", "php"],
-   "minimum-stability": "stable",
+   "keywords": [
+      "telegram",
+      "bot",
+      "core",
+      "php"
+   ],
    "license": "MIT",
    "homepage": "https://github.com/telegram-bot-php/core",
    "support": {
-	  "issues": "https://github.com/telegram-bot-php/core/issues",
-	  "source": "https://github.com/telegram-bot-php/core"
+      "issues": "https://github.com/telegram-bot-php/core/issues",
+      "source": "https://github.com/telegram-bot-php/core"
    },
    "authors": [
-	  {
-		 "name": "Shahrad Elahi",
-		 "email": "shahrad@litehex.com",
-		 "role": "developer"
-	  }
+      {
+         "name": "Shahrad Elahi",
+         "email": "shahrad@litehex.com",
+         "role": "developer"
+      }
    ],
+   "minimum-stability": "dev",
+   "prefer-stable": true,
    "require": {
-	  "php": ">=8.0",
-	  "ext-json": "*",
-	  "ext-curl": "*",
-	  "ext-mbstring": "*",
-	  "psr/log": "^1.1|^2.0|^3.0",
-	  "shahradelahi/easy-http": "^v1.1.0"
+      "php": ">=8.0",
+      "ext-json": "*",
+      "ext-curl": "*",
+      "ext-mbstring": "*",
+      "psr/log": "^1.1|^2.0|^3.0",
+      "shahradelahi/easy-http": "^v1.1.2"
    },
    "require-dev": {
       "phpunit/phpunit": "^9.5.20"
    },
    "autoload": {
-	  "psr-4": {
-		 "TelegramBot\\": "src/lib/"
-	  }
+      "psr-4": {
+         "TelegramBot\\": "src/"
+      }
+   },
+   "autoload-dev": {
+      "psr-4": {
+         "TelegramBotTest\\": "tests/"
+      }
    }
 }
