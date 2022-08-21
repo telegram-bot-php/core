@@ -14,13 +14,6 @@ class CrashPad
 {
 
     /**
-     * Admin chat id
-     *
-     * @var int
-     */
-    private static int $adminChatId = -1;
-
-    /**
      * Report the error to the developers from the Telegram Bot API.
      *
      * @param int $chat_id The chat id of the group to send the message to.
@@ -96,22 +89,6 @@ class CrashPad
     }
 
     /**
-     * @return int
-     */
-    public static function getAdminChatId(): int
-    {
-        return static::$adminChatId;
-    }
-
-    /**
-     * @param int $adminChatId
-     */
-    public static function setAdminChatId(int $adminChatId): void
-    {
-        static::$adminChatId = $adminChatId;
-    }
-
-    /**
      * Debug mode. Catch the crash reports.
      *
      * @param int $admin_id (optional) The admin chat id.
@@ -124,17 +101,22 @@ class CrashPad
 
         defined('DEBUG_MODE') or define('DEBUG_MODE', true);
         if ($admin_id !== -1) {
-            CrashPad::setAdminChatId($admin_id);
+            Telegram::setAdminChatId($admin_id);
         }
 
-        set_exception_handler(function ($exception) {
+        set_exception_handler(function (\Throwable $throwable) {
             if (!defined('DEBUG_MODE') && !DEBUG_MODE) {
-                throw $exception;
+                throw new \RuntimeException(
+                    $throwable->getMessage(),
+                    $throwable->getCode(),
+                    $throwable->getPrevious()
+                );
             } else {
-                if (CrashPad::getAdminChatId() !== -1) {
+                if (Telegram::getAdminChatId() !== -1) {
                     $input = getenv('TG_CURRENT_UPDATE') ?? Telegram::getInput();
                     $update = Telegram::processUpdate($input, Telegram::getApiToken());
-                    CrashPad::report(CrashPad::getAdminChatId(), $exception, json_encode($update));
+                    $exception = new \Exception($throwable->getMessage(), $throwable->getCode(), $throwable->getPrevious());
+                    CrashPad::report(Telegram::getAdminChatId(), $exception, json_encode($update));
                 }
             }
         });

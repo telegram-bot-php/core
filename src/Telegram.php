@@ -24,6 +24,13 @@ class Telegram
     public static string $VERSION = 'v1.0.0';
 
     /**
+     * Admin chat id
+     *
+     * @var int
+     */
+    private static int $adminChatId = -1;
+
+    /**
      * @var string|null
      */
     private static string|null $api_key = null;
@@ -104,6 +111,22 @@ class Telegram
     {
         if (!file_exists($file)) return null;
         return $_ENV['TELEGRAM_BOT_TOKEN'] ?? null;
+    }
+
+    /**
+     * @return int
+     */
+    public static function getAdminChatId(): int
+    {
+        return static::$adminChatId;
+    }
+
+    /**
+     * @param int $adminChatId
+     */
+    public static function setAdminChatId(int $adminChatId): void
+    {
+        static::$adminChatId = $adminChatId;
     }
 
     /**
