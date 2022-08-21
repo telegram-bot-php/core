@@ -1,14 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace TelegramBotTest;
+namespace TelegramBotTest\Unit;
 
 use TelegramBot\Request;
+use TelegramBot\Telegram;
+use TelegramBot\Util\DotEnv;
 
 class RequestTest extends \PHPUnit\Framework\TestCase
 {
 
-    public function test_send_message()
+    public function test_request_creation(): void
     {
         $result = Request::create('sendMessage', [
             'chat_id' => '259760855',

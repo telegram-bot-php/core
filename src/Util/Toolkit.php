@@ -71,4 +71,19 @@ class Toolkit
         return json_last_error() === JSON_ERROR_NONE;
     }
 
+    /**
+     * Ignored reflection class
+     *
+     * @param class-string|object $reflectionClass
+     * @return \ReflectionClass
+     */
+    public static function reflectionClass(string|object $reflectionClass): \ReflectionClass
+    {
+        try {
+            return new \ReflectionClass($reflectionClass);
+        } catch (\ReflectionException $e) {
+            throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
+        }
+    }
+
 }

@@ -383,7 +383,7 @@ class Request
             return self::$api_base_uri . '/bot' . static::$current_token . '/';
         }
 
-        return self::$api_base_uri . '/bot' . Telegram::getApiKey() . '/';
+        return self::$api_base_uri . '/bot' . Telegram::getApiToken() . '/';
     }
 
 }

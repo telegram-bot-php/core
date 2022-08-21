@@ -4,7 +4,9 @@ namespace TelegramBot;
 
 use TelegramBot\Entities\Update;
 use TelegramBot\Exception\InvalidBotTokenException;
-use TelegramBot\Util\DotEnv;
+use TelegramBot\Interfaces\HandlerInterface;
+use TelegramBot\Traits\HandlerTrait;
+use TelegramBot\Util\Toolkit;
 
 /**
  * UpdateHandler class
@@ -13,8 +15,10 @@ use TelegramBot\Util\DotEnv;
  * @author  Shahrad Elahi (https://github.com/shahradelahi)
  * @license https://github.com/telegram-bot-php/core/blob/master/LICENSE (MIT License)
  */
-abstract class UpdateHandler extends Telegram
+class UpdateHandler extends Telegram implements HandlerInterface
 {
+
+    use HandlerTrait;
 
     /**
      * @var ?Update
@@ -22,14 +26,14 @@ abstract class UpdateHandler extends Telegram
     protected ?Update $update;
 
     /**
-     * @var array<Plugin>
+     * @var Plugin[]
      */
     private array $plugins = [];
 
     /**
      * @var bool
      */
-    private bool $isActive = false;
+    private bool $active_spreader = false;
 
     /**
      * The default configuration of the webhook.
@@ -44,79 +48,69 @@ abstract class UpdateHandler extends Telegram
     /**
      * Webhook constructor.
      *
-     * @param string $api_key The API key of the bot. Leave it blank for autoload from .env file.
+     * @param string $api_token The API key of the bot. Leave it blank for autoload from .env file.
      */
-    public function __construct(string $api_key = '')
+    public function __construct(string $api_token = '')
     {
-        parent::__construct($api_key);
+        parent::__construct($api_token);
 
-        if (!Telegram::validateToken(self::getApiKey())) {
+        if (!Telegram::validateToken(self::getApiToken())) {
             throw new InvalidBotTokenException();
         }
     }
 
     /**
-     * Initialize the receiver.
+     * Add plugins to the receiver
      *
-     * @return void
+     * @param Plugin[]|array $plugins
+     * @retrun void
      */
-    public function init(): void
+    public function addPlugins(Plugin|array $plugins): UpdateHandler
     {
-        $this->config['env_file_path'] = $_SERVER['DOCUMENT_ROOT'] . '/.env';
-    }
+        if (is_object($plugins)) {
+            $plugins = [$plugins];
+        }
 
-    /**
-     * Add a plugin to the receiver
-     *
-     * @param array<Plugin> $plugins
-     */
-    public function addPlugin(array $plugins): void
-    {
         foreach ($plugins as $plugin) {
             if (!is_subclass_of($plugin, Plugin::class)) {
                 throw new \RuntimeException(
                     sprintf('The plugin %s must be an instance of %s', get_class($plugin), Plugin::class)
                 );
             }
-            $this->plugins[] = $plugin;
-        }
-    }
 
-    /**
-     * Match the message to the plugins
-     *
-     * @param ?Update $update The update to match
-     * @return void
-     */
-    public function loadPlugins(Update $update = null): void
-    {
-        $update = $update ?? ($this->update ?? Telegram::getUpdate());
-        $this->loadPluginsWith($this->plugins, $update);
+            $reflection = Toolkit::reflectionClass($plugin);
+            $this->plugins[] = [
+                'class' => $plugin,
+                'initialized' => is_object($plugin),
+            ];
+        }
+
+        return $this;
     }
 
     /**
      * Match the update with the given plugins
      *
-     * @param array<Plugin> $plugins
-     * @param ?Update $update The update to match
+     * @param Plugin[]|array $plugins
      * @return void
      */
-    public function loadPluginsWith(array $plugins, Update $update = null): void
+    private function loadPlugins(array $plugins): void
     {
         $update = $update ?? ($this->update ?? Telegram::getUpdate());
 
         foreach ($plugins as $plugin) {
-            if (!is_subclass_of($plugin, Plugin::class)) {
-                throw new \InvalidArgumentException(
-                    sprintf('The plugin %s must be an instance of %s', get_class($plugin), Plugin::class)
-                );
+            if (!is_subclass_of($plugin['class'], Plugin::class)) {
+                throw new \InvalidArgumentException(sprintf(
+                    'The plugin %s must be an instance of %s',
+                    get_class($plugin['class']), Plugin::class
+                ));
             }
         }
 
         if (!$update instanceof Update) {
             throw new \InvalidArgumentException(sprintf(
-                'The update must be an instance of %s',
-                Update::class
+                'The update must be an instance of %s. %s given',
+                Update::class, gettype($update)
             ));
         }
 
@@ -132,26 +126,18 @@ abstract class UpdateHandler extends Telegram
      */
     private function spreadUpdateWith(Update $update, array $plugins): void
     {
-        $this->isActive = true;
+        $this->active_spreader = true;
 
         foreach ($plugins as $plugin) {
-            /** @var Plugin $plugin */
-            (new $plugin())->__execute($this, $update);
-            if ($this->isActive === false) break;
+            if ($plugin['initialized'] === false) {
+                $plugin['class'] = new $plugin['class']();
+            }
+
+            $plugin['class']->__execute($this, $update);
+            if ($this->active_spreader === false) break;
         }
 
-        $this->isActive = false;
-    }
-
-    /**
-     * Load the environment's
-     *
-     * @param string $path
-     * @retrun void
-     */
-    public function loadFileOfEnv(string $path): void
-    {
-        DotEnv::load($path);
+        $this->active_spreader = false;
     }
 
     /**
@@ -183,6 +169,20 @@ abstract class UpdateHandler extends Telegram
         putenv('TG_CURRENT_UPDATE=' . $this->update->getRawData(false));
 
         $this->__process($this->update);
+        $this->loadPlugins($this->plugins);
+    }
+
+    /**
+     * Resolve the request on single plugin.
+     *
+     * @param Plugin $plugin The plugin to work with
+     * @param ?Update $update The custom to work with
+     * @param array $config The configuration of the receiver
+     * @return void
+     */
+    public static function resolveOn(Plugin $plugin, Update $update = null, array $config = []): void
+    {
+        // TODO: Implement resolveOn() method.
     }
 
     /**
@@ -197,21 +197,13 @@ abstract class UpdateHandler extends Telegram
     }
 
     /**
-     * Use this method on the webhook class to get the updates
-     *
-     * @param Update $update
-     * @return void
-     */
-    abstract public function __process(Update $update): void;
-
-    /**
-     * Stop the speeding process
+     * Stop the spreader process
      *
      * @return void
      */
     public function stop(): void
     {
-        $this->isActive = false;
+        $this->active_spreader = false;
     }
 
 }

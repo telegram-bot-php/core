@@ -54,9 +54,9 @@ class DotEnv
      *
      * @param string $key The Key of the environment variable
      * @param string $default The default value if the key is not found
-     * @return string
+     * @return mixed
      */
-    public static function get(string $key, string $default = ''): string
+    public static function get(string $key, mixed $default = ''): mixed
     {
         return getenv($key) ?: $default;
     }

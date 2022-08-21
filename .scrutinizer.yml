@@ -1,0 +1,21 @@
+build:
+  tests:
+    override:
+      - true
+  nodes:
+    tests:
+      environment:
+        php:
+          version: 8.0
+
+    analysis:
+      environment:
+        php:
+          version: 8.0
+
+      tests:
+        override: [ php-scrutinizer-run ]
+
+filter:
+  paths:
+    - "tests/unit/*"

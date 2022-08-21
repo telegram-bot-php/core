@@ -5,8 +5,8 @@ namespace TelegramBot;
 use TelegramBot\Entities\Response;
 use TelegramBot\Entities\Update;
 use TelegramBot\Exception\TelegramException;
-use TelegramBot\Util\Toolkit;
 use TelegramBot\Util\DotEnv;
+use TelegramBot\Util\Toolkit;
 
 /**
  * Telegram class
@@ -22,29 +22,54 @@ class Telegram
      * @var string
      */
     public static string $VERSION = 'v1.0.0';
+
     /**
      * @var string
      */
-    private string $api_key;
+    private static string $api_key;
 
     /**
      * Telegram constructor.
      *
-     * @param string $api_key
+     * @param string $api_token
      */
-    public function __construct(string $api_key = '')
+    public function __construct(string $api_token = '')
     {
-        if ($api_key === '') {
+        if ($api_token === '') {
             $env_file = $this->getEnvFilePath();
-            $api_key = DotEnv::load($env_file)->get('TELEGRAM_BOT_TOKEN');
+            $api_token = DotEnv::load($env_file)->get('TELEGRAM_BOT_TOKEN');
         }
 
-        if (empty($api_key) || !is_string($api_key)) {
-            throw new TelegramException('API Key is required');
+        if (empty($api_token) || self::validateToken($api_token) === false) {
+            throw new TelegramException(sprintf(
+                'Invalid Telegram API token: %s',
+                $api_token
+            ));
         }
 
-        DotEnv::put('TG_CURRENT_KEY', ($this->api_key = $api_key));
-        DotEnv::put('TELEGRAM_BOT_TOKEN', ($this->api_key = $api_key));
+        self::setToken($api_token);
+    }
+
+    /**
+     * Set the current bot token.
+     *
+     * @param string $api_key
+     * @return void
+     */
+    public static function setToken(string $api_key): void
+    {
+        static::$api_key = $api_key;
+        DotEnv::put('TELEGRAM_BOT_TOKEN', $api_key);
+    }
+
+    /**
+     * Get the current bot token.
+     *
+     * @return string|false
+     */
+    public static function getApiToken(): string|false
+    {
+        return static::$api_key;
     }
 
     /**
@@ -70,73 +95,15 @@ class Telegram
     }
 
     /**
-     * Debug mode
+     * Get token from env file.
      *
-     * @param ?int $admin_id Fill this or use setAdmin()
-     * @return void
+     * @param string $file
+     * @return ?string
      */
-    public static function setDebugMode(?int $admin_id = null): void
+    protected function getEnvToken(string $file): ?string
     {
-        error_reporting(E_ALL);
-        ini_set('display_errors', 1);
-
-        defined('DEBUG_MODE') or define('DEBUG_MODE', true);
-        if ($admin_id) {
-            defined('TG_ADMIN_ID') or define('TG_ADMIN_ID', $admin_id);
-        }
-
-        set_exception_handler(function ($exception) {
-
-            if (defined('DEBUG_MODE') && DEBUG_MODE) {
-
-                TelegramLog::error(($message = sprintf(
-                    "%s(%d): %s\n%s",
-                    $exception->getFile(),
-                    $exception->getLine(),
-                    $exception->getMessage(),
-                    $exception->getTraceAsString()
-                )));
-
-                echo '<b>TelegramError:</b> ' . $message;
-
-                if (defined('TG_ADMIN_ID') && TG_ADMIN_ID) {
-                    $input = getenv('TG_CURRENT_UPDATE') ?? self::getInput();
-                    $update = self::processUpdate($input, self::getApiKey());
-
-                    file_put_contents(
-                        ($file = getcwd() . 'Telegram.php/' . uniqid('error_') . '.log'),
-                        $message . PHP_EOL . PHP_EOL . $update->getRawData(false)
-                    );
-
-                    Request::sendMessage([
-                        'chat_id' => TG_ADMIN_ID,
-                        'text' => $message,
-                    ]);
-
-                    Request::sendDocument([
-                        'chat_id' => TG_ADMIN_ID,
-                        'document' => $file,
-                    ]);
-
-                    unlink($file);
-                }
-
-            } else {
-                throw $exception;
-            }
-
-        });
-    }
-
-    /**
-     * Just another echo
-     *
-     * @param string $text
-     * @return void
-     */
-    public static function echo(string $text): void
-    {
-        echo $text;
+        if (!file_exists($file)) return null;
+        return DotEnv::load($file)::get('TELEGRAM_BOT_TOKEN');
     }
 
     /**
@@ -215,24 +182,13 @@ class Telegram
     }
 
     /**
-     * This method sets the admin username. and will be used to send you a message if the bot is not working.
-     *
-     * @param int $chat_id
-     * @return void
-     */
-    public function setAdmin(int $chat_id): void
-    {
-        defined('TG_ADMIN_ID') or define('TG_ADMIN_ID', $chat_id);
-    }
-
-    /**
      * Pass the update to the given webhook handler
      *
      * @param UpdateHandler $webhook_handler The webhook handler
-     * @param ?Update $update By default, it will get the update from input
+     * @param Update|null $update By default, it will get the update from input
      * @return void
      */
-    public function fetchWith(UpdateHandler $webhook_handler, ?Update $update = null): void
+    public function fetchWith(UpdateHandler $webhook_handler, Update|null $update = null): void
     {
         if (is_subclass_of($webhook_handler, UpdateHandler::class)) {
             if ($update === null) $update = self::getUpdate();
@@ -249,15 +205,15 @@ class Telegram
     {
         $input = self::getInput();
         if (empty($input)) return false;
-        return Telegram::processUpdate($input, self::getApiKey());
+        return Telegram::processUpdate($input, self::getApiToken());
     }
 
     /**
      * Get input from stdin and return it
      *
-     * @return ?string
+     * @return string|null
      */
-    public static function getInput(): ?string
+    public static function getInput(): string|null
     {
         return file_get_contents('php://input') ?? null;
     }
@@ -266,10 +222,10 @@ class Telegram
      * This method will convert a string to an update object
      *
      * @param string $input The input string
-     * @param string $apiKey The API key
+     * @param string|null $apiKey The API key
      * @return Update|false
      */
-    public static function processUpdate(string $input, string $apiKey): Update|false
+    public static function processUpdate(string $input, string|null $apiKey = null): Update|false
     {
         if (empty($input)) {
             throw new TelegramException(
@@ -277,13 +233,13 @@ class Telegram
             );
         }
 
-        if (!self::validateToken($apiKey)) {
+        if ($apiKey !== null && !self::validateToken($apiKey)) {
             throw new TelegramException(
                 'Invalid token! Please check your code and try again.'
             );
         }
 
-        if (self::validateWebData($apiKey, $input)) {
+        if ($apiKey !== null && self::validateWebData($apiKey, $input)) {
             if (Toolkit::isUrlEncode($input)) {
                 $web_data = Toolkit::urlDecode($input);
             }
@@ -292,15 +248,18 @@ class Telegram
                 $web_data = json_decode($input, true);
             }
 
-            $input = json_encode([
-                'web_data' => $web_data,
-            ]);
+            if (!empty($web_data) && is_array($web_data)) {
+                $input = json_encode([
+                    'web_data' => $web_data,
+                ]);
+            }
         }
 
         if (!Toolkit::isJson($input)) {
-            throw new TelegramException(
-                'Input is not a valid JSON string! Please check your code and try again.'
-            );
+            throw new TelegramException(sprintf(
+                "Input is not a valid JSON string! Please check your code and try again.\nInput: %s",
+                $input
+            ));
         }
 
         $input = json_decode($input, true);
@@ -355,28 +314,6 @@ class Telegram
         $secret_key = hash_hmac('sha256', $token, "WebAppData", true);
 
         return hash_hmac('sha256', $data_check_string, $secret_key) == $data['hash'];
-    }
-
-    /**
-     * Get API key from temporary ENV variable
-     *
-     * @return ?string
-     */
-    public static function getApiKey(): ?string
-    {
-        return DotEnv::get('TG_CURRENT_KEY');
-    }
-
-    /**
-     * Get token from env file.
-     *
-     * @param string $file
-     * @return ?string
-     */
-    protected function getTokenFromEnvFile(string $file): ?string
-    {
-        if (!file_exists($file)) return null;
-        return DotEnv::load($file)::get('TELEGRAM_BOT_TOKEN');
     }
 
 }

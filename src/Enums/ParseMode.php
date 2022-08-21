@@ -1,9 +1,9 @@
 <?php
 
-namespace TelegramBot\Interfaces;
+namespace TelegramBot\Enums;
 
 /**
- * Message Parse Mode
+ * ParseMode class
  *
  * @link    https://github.com/telegram-bot-php/core
  * @author  Shahrad Elahi (https://github.com/shahradelahi)
