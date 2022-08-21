@@ -1,25 +1,27 @@
 <?php
 declare(strict_types=1);
 
-namespace TelegramBotTest\Unit;
+namespace TelegramBotTest;
 
 use TelegramBot\Request;
 use TelegramBot\Telegram;
-use TelegramBot\Util\DotEnv;
 
 class RequestTest extends \PHPUnit\Framework\TestCase
 {
 
     public function test_request_creation(): void
     {
+        TelegramTest::loadEnvironment();
+        Telegram::setToken($_ENV['TELEGRAM_BOT_TOKEN']);
+
         $result = Request::create('sendMessage', [
             'chat_id' => '259760855',
             'text' => 'text',
             'parse_mode' => 'Markdown',
-        ], 'SOME_TOKEN');
+        ]);
 
         $expected = [
-            'url' => 'https://api.telegram.org/botSOME_TOKEN/sendMessage',
+            'url' => "https://api.telegram.org/bot{$_ENV['TELEGRAM_BOT_TOKEN']}/sendMessage",
             'options' => [
                 'headers' => [
                     'Content-Type' => 'application/json',
@@ -35,6 +37,19 @@ class RequestTest extends \PHPUnit\Framework\TestCase
         ];
 
         $this->assertEquals($expected, $result);
+    }
+
+    public function test_send_message(): void
+    {
+        TelegramTest::loadEnvironment();
+        Telegram::setToken($_ENV['TELEGRAM_BOT_TOKEN']);
+
+        $response = Request::sendMessage([
+            'chat_id' => 259760855,
+            'text' => 'Hello World',
+        ]);
+
+        $this->assertTrue($response->isOk());
     }
 
 }

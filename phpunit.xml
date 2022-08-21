@@ -1,12 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<phpunit colors="true" bootstrap="vendor/autoload.php">
+<phpunit bootstrap="vendor/autoload.php" colors="true" convertErrorsToExceptions="true"
+         convertNoticesToExceptions="true" convertWarningsToExceptions="true" processIsolation="false"
+         stopOnFailure="false">
     <php>
         <ini name="date.timezone" value="UTC"/>
         <ini name="error_reporting" value="-1"/>
     </php>
+    <coverage processUncoveredFiles="true">
+        <include>
+            <directory suffix=".php">tests/</directory>
+        </include>
+    </coverage>
     <testsuites>
         <testsuite name="Unit Tests">
-            <directory>tests/</directory>
+            <directory suffix=".php">tests/</directory>
         </testsuite>
     </testsuites>
 </phpunit>

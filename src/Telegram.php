@@ -2,10 +2,10 @@
 
 namespace TelegramBot;
 
+use Symfony\Component\Dotenv\Dotenv;
 use TelegramBot\Entities\Response;
 use TelegramBot\Entities\Update;
 use TelegramBot\Exception\TelegramException;
-use TelegramBot\Util\DotEnv;
 use TelegramBot\Util\Toolkit;
 
 /**
@@ -24,9 +24,9 @@ class Telegram
     public static string $VERSION = 'v1.0.0';
 
     /**
-     * @var string
+     * @var string|null
      */
-    private static string $api_key;
+    private static string|null $api_key = null;
 
     /**
      * Telegram constructor.
@@ -36,8 +36,8 @@ class Telegram
     public function __construct(string $api_token = '')
     {
         if ($api_token === '') {
-            $env_file = $this->getEnvFilePath();
-            $api_token = DotEnv::load($env_file)->get('TELEGRAM_BOT_TOKEN');
+            (new Dotenv())->load($this->getEnvFilePath());
+            $api_token = $_ENV['TELEGRAM_BOT_TOKEN'];
         }
 
         if (empty($api_token) || self::validateToken($api_token) === false) {
@@ -59,7 +59,7 @@ class Telegram
     public static function setToken(string $api_key): void
     {
         static::$api_key = $api_key;
-        DotEnv::put('TELEGRAM_BOT_TOKEN', $api_key);
+        $_ENV['TELEGRAM_BOT_TOKEN'] = $api_key;
     }
 
     /**
@@ -69,7 +69,7 @@ class Telegram
      */
     public static function getApiToken(): string|false
     {
-        return static::$api_key;
+        return self::$api_key !== null ? (self::validateToken(self::$api_key) ? self::$api_key : false) : false;
     }
 
     /**
@@ -98,12 +98,12 @@ class Telegram
      * Get token from env file.
      *
      * @param string $file
-     * @return ?string
+     * @return string|null
      */
-    protected function getEnvToken(string $file): ?string
+    protected function getEnvToken(string $file): string|null
     {
         if (!file_exists($file)) return null;
-        return DotEnv::load($file)::get('TELEGRAM_BOT_TOKEN');
+        return $_ENV['TELEGRAM_BOT_TOKEN'] ?? null;
     }
 
     /**

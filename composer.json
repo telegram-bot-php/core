@@ -27,7 +27,7 @@
       "ext-json": "*",
       "ext-curl": "*",
       "ext-mbstring": "*",
-      "vlucas/phpdotenv": "^v5.4.1",
+      "symfony/dotenv": "^v6.1.0",
       "shahradelahi/easy-http": "^v1.2.0"
    },
    "require-dev": {
@@ -46,6 +46,6 @@
    },
    "scripts": {
       "install-dependencies": "composer install --prefer-source",
-      "phpunit-test": "vendor/bin/phpunit --colors=always --teamcity --configuration phpunit.xml"
+      "phpunit-test": "vendor/bin/phpunit --colors=always --configuration phpunit.xml"
    }
 }
