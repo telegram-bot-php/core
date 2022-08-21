@@ -1,5 +1,5 @@
 <p align="center">
-<img src="logo.png" alt="logo" width="200" height="200"/>
+<img src="logo.png" alt="logo" width="250" height="250"/>
 </p>
 <p align="center">
   <a href="https://github.com/telegram-bot-php/core/actions"><img src="https://github.com/telegram-bot-php/core/workflows/PHPUnit%20Test/badge.svg" alt="Build Status" /></a>
@@ -18,14 +18,13 @@
 
 # Telegram Bot PHP
 
-This library is a simple and easy to use library for creating Telegram bots, and it's interacting with
-the [Telegram Bot API](https://core.telegram.org/bots/api).
+This library is a simple and easy to use library for creating [Telegram API Bots](https://telegram.org/blog/bot-revolution), and this library is designed to provide a platform where one can simply write a bot and have interactions in a matter of minutes.
 
 ## Table of Contents
 
 - [Introduction](#introduction)
-- [Installation](#installation)
-    - [Getting started](#getting-started)
+  - [Installation](#installation)
+  - [Getting started](#getting-started)
 - [Webhook](#webhook)
     - [Use self-signed certificate](#use-self-signed-certificate)
     - [Delete webhook](#delete-webhook)
@@ -50,9 +49,6 @@ the [Telegram Bot API](https://core.telegram.org/bots/api).
 This is an official announcement of support, which allows integrators of all sorts to bring automated interactions with
 the [Telegram Bot API](https://core.telegram.org/bots/api) to their users.
 
-This library is designed to provide a platform where one can simply write a bot and have interactions in a matter of
-minutes.
-
 This library features:
 
 - The easiest and simplest way for [update handling](#update-handling)
@@ -67,7 +63,7 @@ This library features:
 - Inline keyboard support
 - And many more...
 
-#### Installation
+### Installation
 
 ```ssh
 composer require telegram-bot-php/core
@@ -101,7 +97,7 @@ php composer.phar require "telegram-bot-php/core"
 
 </details>
 
-#### Getting started
+### Getting started
 
 ```php
 <?php
@@ -111,7 +107,7 @@ $admin_id = 123456789;
 $bot_token = 'your_bot_token';
 
 \TelegramBot\Telegram::setToken($bot_token);
-\TelegramBot\CrashPad::setAdminChatId($admin_id);
+\TelegramBot\CrashPad::setDebugMode($admin_id);
 
 $result = \TelegramBot\Request::sendMessage([
     'chat_id' => $admin_id,
@@ -193,7 +189,7 @@ Or just go advanced:
 
 ```php
 TelegramBot\UpdateHandler::filterIncomingUpdates([
-    'message' => function (\TelegramBot\Entities\Update $update) {
+    Update::TYPE_MESSAGE => function (\TelegramBot\Entities\Update $update) {
         return $update->getMessage()->getChat()->getId() === 259760855;
     }
 ]);
@@ -244,21 +240,19 @@ class MainPlugin extends \TelegramBot\Plugin
 ### Anonymous plugins and handlers
 
 ```php
-$commands = new class() extends \TelegramBot\Plugin {
+<?php
+declare(strict_types=1);
 
+$commands = new class() extends \TelegramBot\Plugin {
     public function onUpdate(\TelegramBot\Entities\Update $update): \Generator
     {
         // Write your code here
     }
-
 };
 
 $admin = new class() extends \TelegramBot\Plugin {
-
     // TODO: Write your code here
-
 };
-
 
 (new \TelegramBot\UpdateHandler())->addPlugins([$commands, $admin])->resolve();
 ```
