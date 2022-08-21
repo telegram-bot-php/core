@@ -18,11 +18,54 @@
 
 # Telegram Bot PHP
 
-Someday I will write documentation for this library, but for now, you can use it and see how it works.
+This library is a simple and easy to use library for creating Telegram bots, and it's interacting with
+the [Telegram Bot API](https://core.telegram.org/bots/api).
+
+## Table of Contents
+
+- [Introduction](#introduction)
+- [Installation](#installation)
+    - [Getting started](#getting-started)
+- [Webhook](#webhook)
+    - [Use self-signed certificate](#use-self-signed-certificate)
+    - [Delete webhook](#delete-webhook)
+- [Update Handling](#update-handling)
+    - [Anonymous plugins and handlers](#anonymous-plugins-and-handlers)
+    - [Create a handler for updates](#create-a-handler-for-updates)
+    - [Filter incoming updates](#filter-incoming-updates)
+- [Plugins](#plugins)
+    - [Create plugin for Handler class](#create-plugin-for-handler-class)
+    - [Available events and methods](#available-events-and-methods)
+- [Supports](#supports)
+- [Logging](/docs/01-logging.md)
+- [Error Handling](#error-handling)
+- [Example bot](https://github.com/telegram-bot-php/example-of-usage)
+- [Troubleshooting](#troubleshooting)
+- [Code of Conduct](#code-of-conduct)
+- [Contributing](#contributing)
+- [License](#license)
 
 ## Introduction
 
-Some documentation will be written here soon.
+This is an official announcement of support, which allows integrators of all sorts to bring automated interactions with
+the [Telegram Bot API](https://core.telegram.org/bots/api) to their users.
+
+This library is designed to provide a platform where one can simply write a bot and have interactions in a matter of
+minutes.
+
+This library features:
+
+- The easiest and simplest way for [update handling](#update-handling)
+- Support for all types and methods according
+  to [Telegram Bot API 6.0](https://core.telegram.org/bots/api#available-methods)
+- Handling `WebAppData` and data encryption/validation
+- Crash handling and error reporting
+- The ability to create advanced `Plugins` with their `asynchronous` methods
+- The ability to manage Channels from the bot admin interface
+- Downloading and uploading large files
+- Full support for inline bots
+- Inline keyboard support
+- And many more...
 
 #### Installation
 
@@ -67,16 +110,208 @@ require __DIR__ . '/vendor/autoload.php';
 $admin_id = 123456789;
 $bot_token = 'your_bot_token';
 
-$telegram = new \TelegramBot\Telegram($bot_token);
-$telegram->setAdmin($admin_id);
+\TelegramBot\Telegram::setToken($bot_token);
+\TelegramBot\CrashPad::setAdminChatId($admin_id);
 
-$result = Request::sendMessage([
+$result = \TelegramBot\Request::sendMessage([
     'chat_id' => $admin_id,
     'text' => 'text',
 ]);
 
 echo $result->getRawData(false); // {"ok": true, "result": {...}}
 ```
+
+## Webhook
+
+Create `set-hook.php` with the following contents:
+
+```php
+<?php
+require __DIR__ . '/vendor/autoload.php';
+
+\TelegramBot\Telegram::setToken($bot_token);
+$response = \TelegramBot\Request::setWebhook([
+    'url' => 'https://your-domain.com/webhook/' . $bot_token,
+]);
+
+if ($response->isOk()) {
+    echo $response->getDescription();
+    exit(0);
+}
+```
+
+### Use self-signed certificate
+
+```php
+\TelegramBot\Request::setWebhook([
+    'url' => 'https://your-domain.com/webhook/' . $bot_token,
+    'certificate' => 'path/to/certificate.pem',
+]);
+```
+
+### Delete webhook
+
+```php
+\TelegramBot\Request::deleteWebhook();
+```
+
+## Update Handling
+
+### Create a handler for updates
+
+```php
+<?php
+
+use TelegramBot\Entities\Update;
+use TelegramBotTest\EchoBot\Plugins\MainPlugin;
+
+class Handler extends \TelegramBot\UpdateHandler
+{
+
+    public function __process(Update $update): void
+    {
+        self::addPlugins([
+            MainPlugin::class,
+        ]);
+    }
+
+}
+```
+
+### Filter incoming updates
+
+Filtering incoming updates by their type is easy.
+
+```php
+TelegramBot\UpdateHandler::filterIncomingUpdates([
+    Update::TYPE_MESSAGE,
+    Update::TYPE_CALLBACK_QUERY,
+]);
+```
+
+Or just go advanced:
+
+```php
+TelegramBot\UpdateHandler::filterIncomingUpdates([
+    'message' => function (\TelegramBot\Entities\Update $update) {
+        return $update->getMessage()->getChat()->getId() === 259760855;
+    }
+]);
+```
+
+## Plugins
+
+The Plugins are a way to create a bot that can do more than just echo back the message.
+
+### Create plugin for Handler class
+
+```php
+<?php
+use TelegramBot\Entities\Message;
+use TelegramBot\Entities\WebAppData;
+
+class MainPlugin extends \TelegramBot\Plugin
+{
+
+    public function onMessage(int $update_id, Message $message): \Generator
+    {
+        if ($message->getText() === '/start') {
+            yield \TelegramBot\Request::sendMessage([
+                'chat_id' => $message->getChat()->getId(),
+                'text' => 'Hello, ' . $message->getFrom()->getFirstName(),
+            ]);
+        }
+        
+        if ($message->getText() === '/ping') {
+            yield \TelegramBot\Request::sendMessage([
+                'chat_id' => $message->getChat()->getId(),
+                'text' => 'pong',
+            ]);
+        }
+    }
+
+    public function onWebAppData(int $update_id, WebAppData $webAppData): \Generator
+    {
+        yield \TelegramBot\Request::sendMessage([
+            'chat_id' => $webAppData->getUser()->getId(),
+            'text' => 'Hello, ' . $webAppData->getUser()->getFirstName(),
+        ]);
+    }
+
+}
+```
+
+### Anonymous plugins and handlers
+
+```php
+$commands = new class() extends \TelegramBot\Plugin {
+
+    public function onUpdate(\TelegramBot\Entities\Update $update): \Generator
+    {
+        // Write your code here
+    }
+
+};
+
+$admin = new class() extends \TelegramBot\Plugin {
+
+    // TODO: Write your code here
+
+};
+
+
+(new \TelegramBot\UpdateHandler())->addPlugins([$commands, $admin])->resolve();
+```
+
+### Available events and methods
+
+```php
+class SomePlugin extends \TelegramBot\Plugin 
+{
+
+    public function onUpdate(Update $update): \Generator{}
+
+    public function onMessage(int $update_id, Message $message): \Generator{}
+
+    public function onEditedMessage(int $update_id, EditedMessage $editedMessage): \Generator{}
+
+    public function onChannelPost(int $update_id, ChannelPost $channelPost): \Generator{}
+
+    public function onEditedChannelPost(int $update_id, EditedChannelPost $editedChannelPost): \Generator{}
+
+    public function onInlineQuery(int $update_id, InlineQuery $inlineQuery): \Generator{}
+
+    public function onChosenInlineResult(int $update_id, ChosenInlineResult $chosenInlineResult): \Generator{}
+
+    public function onCallbackQuery(int $update_id, CallbackQuery $callbackQuery): \Generator{}
+
+    public function onShippingQuery(int $update_id, ShippingQuery $shippingQuery): \Generator{}
+
+    public function onPreCheckoutQuery(int $update_id, PreCheckoutQuery $preCheckoutQuery): \Generator{}
+
+    public function onPoll(int $update_id, Poll $poll): \Generator{}
+
+    public function onPollAnswer(int $update_id, PollAnswer $pollAnswer): \Generator{}
+
+    public function onWebAppData(int $update_id, WebAppData $webAppData): \Generator{}
+
+}
+```
+
+## Supports
+
+This library supports evey Telegram Bot API method and entity since [API version 6.0](https://core.telegram.org/bots/api#april-16-2022).
+
+## Error Handling
+
+Using CrashPad for reporting error through telegram. just add below to your Update handler.
+```php
+\TelegramBot\CrashPad::setDebugMode(259760855);
+```
+
+## Troubleshooting
+
+Please report any bugs you find on the [issues page](https://github.com/telegram-bot-php/core/issues).
 
 ## Code of Conduct
 

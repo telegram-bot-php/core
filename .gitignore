@@ -1,6 +1,7 @@
 .idea
 /.env
 /vendor
+/example.php
 /composer.lock
 /.telegram-bot
 /.phpunit.result.cache
