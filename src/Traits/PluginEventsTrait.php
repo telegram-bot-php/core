@@ -20,67 +20,67 @@ use TelegramBot\Entities\WebAppData;
 trait PluginEventsTrait
 {
 
-    public function onReceivedUpdate(Update $update): \Generator
+    public function onUpdate(Update $update): \Generator
     {
         return yield;
     }
 
-    public function onMessage(int $id, Message $update): \Generator
+    public function onMessage(int $update_id, Message $message): \Generator
     {
         return yield;
     }
 
-    public function onEditedMessage(int $id, EditedMessage $update): \Generator
+    public function onEditedMessage(int $update_id, EditedMessage $editedMessage): \Generator
     {
         return yield;
     }
 
-    public function onChannelPost(int $id, ChannelPost $update): \Generator
+    public function onChannelPost(int $update_id, ChannelPost $channelPost): \Generator
     {
         return yield;
     }
 
-    public function onEditedChannelPost(int $id, EditedChannelPost $update): \Generator
+    public function onEditedChannelPost(int $update_id, EditedChannelPost $editedChannelPost): \Generator
     {
         return yield;
     }
 
-    public function onInlineQuery(int $id, InlineQuery $update): \Generator
+    public function onInlineQuery(int $update_id, InlineQuery $inlineQuery): \Generator
     {
         return yield;
     }
 
-    public function onChosenInlineResult(int $id, ChosenInlineResult $update): \Generator
+    public function onChosenInlineResult(int $update_id, ChosenInlineResult $chosenInlineResult): \Generator
     {
         return yield;
     }
 
-    public function onCallbackQuery(int $id, CallbackQuery $update): \Generator
+    public function onCallbackQuery(int $update_id, CallbackQuery $callbackQuery): \Generator
     {
         return yield;
     }
 
-    public function onShippingQuery(int $id, ShippingQuery $update): \Generator
+    public function onShippingQuery(int $update_id, ShippingQuery $shippingQuery): \Generator
     {
         return yield;
     }
 
-    public function onPreCheckoutQuery(int $id, PreCheckoutQuery $update): \Generator
+    public function onPreCheckoutQuery(int $update_id, PreCheckoutQuery $preCheckoutQuery): \Generator
     {
         return yield;
     }
 
-    public function onPoll(int $id, Poll $update): \Generator
+    public function onPoll(int $update_id, Poll $poll): \Generator
     {
         return yield;
     }
 
-    public function onPollAnswer(int $id, PollAnswer $update): \Generator
+    public function onPollAnswer(int $update_id, PollAnswer $pollAnswer): \Generator
     {
         return yield;
     }
 
-    public function onWebAppData(int $id, WebAppData $update): \Generator
+    public function onWebAppData(int $update_id, WebAppData $webAppData): \Generator
     {
         return yield;
     }

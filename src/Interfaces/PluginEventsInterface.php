@@ -24,90 +24,90 @@ interface PluginEventsInterface
      * @param Update $update
      * @return \Generator
      */
-    public function onReceivedUpdate(Update $update): \Generator;
+    public function onUpdate(Update $update): \Generator;
 
     /**
-     * @param int $id
-     * @param Message $update
+     * @param int $update_id
+     * @param Message $message
      * @return \Generator
      */
-    public function onMessage(int $id, Message $update): \Generator;
+    public function onMessage(int $update_id, Message $message): \Generator;
 
     /**
-     * @param int $id
-     * @param EditedMessage $update
+     * @param int $update_id
+     * @param EditedMessage $editedMessage
      * @return \Generator
      */
-    public function onEditedMessage(int $id, EditedMessage $update): \Generator;
+    public function onEditedMessage(int $update_id, EditedMessage $editedMessage): \Generator;
 
     /**
-     * @param int $id
-     * @param ChannelPost $update
+     * @param int $update_id
+     * @param ChannelPost $channelPost
      * @return \Generator
      */
-    public function onChannelPost(int $id, ChannelPost $update): \Generator;
+    public function onChannelPost(int $update_id, ChannelPost $channelPost): \Generator;
 
     /**
-     * @param int $id
-     * @param EditedChannelPost $update
+     * @param int $update_id
+     * @param EditedChannelPost $editedChannelPost
      * @return \Generator
      */
-    public function onEditedChannelPost(int $id, EditedChannelPost $update): \Generator;
+    public function onEditedChannelPost(int $update_id, EditedChannelPost $editedChannelPost): \Generator;
 
     /**
-     * @param int $id
-     * @param InlineQuery $update
+     * @param int $update_id
+     * @param InlineQuery $inlineQuery
      * @return \Generator
      */
-    public function onInlineQuery(int $id, InlineQuery $update): \Generator;
+    public function onInlineQuery(int $update_id, InlineQuery $inlineQuery): \Generator;
 
     /**
-     * @param int $id
-     * @param ChosenInlineResult $update
+     * @param int $update_id
+     * @param ChosenInlineResult $chosenInlineResult
      * @return \Generator
      */
-    public function onChosenInlineResult(int $id, ChosenInlineResult $update): \Generator;
+    public function onChosenInlineResult(int $update_id, ChosenInlineResult $chosenInlineResult): \Generator;
 
     /**
-     * @param int $id
-     * @param CallbackQuery $update
+     * @param int $update_id
+     * @param CallbackQuery $callbackQuery
      * @return \Generator
      */
-    public function onCallbackQuery(int $id, CallbackQuery $update): \Generator;
+    public function onCallbackQuery(int $update_id, CallbackQuery $callbackQuery): \Generator;
 
     /**
-     * @param int $id
-     * @param ShippingQuery $update
+     * @param int $update_id
+     * @param ShippingQuery $shippingQuery
      * @return \Generator
      */
-    public function onShippingQuery(int $id, ShippingQuery $update): \Generator;
+    public function onShippingQuery(int $update_id, ShippingQuery $shippingQuery): \Generator;
 
     /**
-     * @param int $id
-     * @param PreCheckoutQuery $update
+     * @param int $update_id
+     * @param PreCheckoutQuery $preCheckoutQuery
      * @return \Generator
      */
-    public function onPreCheckoutQuery(int $id, PreCheckoutQuery $update): \Generator;
+    public function onPreCheckoutQuery(int $update_id, PreCheckoutQuery $preCheckoutQuery): \Generator;
 
     /**
-     * @param int $id
-     * @param Poll $update
+     * @param int $update_id
+     * @param Poll $poll
      * @return \Generator
      */
-    public function onPoll(int $id, Poll $update): \Generator;
+    public function onPoll(int $update_id, Poll $poll): \Generator;
 
     /**
-     * @param int $id
-     * @param PollAnswer $update
+     * @param int $update_id
+     * @param PollAnswer $pollAnswer
      * @return \Generator
      */
-    public function onPollAnswer(int $id, PollAnswer $update): \Generator;
+    public function onPollAnswer(int $update_id, PollAnswer $pollAnswer): \Generator;
 
     /**
-     * @param int $id
-     * @param WebAppData $update
+     * @param int $update_id
+     * @param WebAppData $webAppData
      * @return \Generator
      */
-    public function onWebAppData(int $id, WebAppData $update): \Generator;
+    public function onWebAppData(int $update_id, WebAppData $webAppData): \Generator;
 
 }

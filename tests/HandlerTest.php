@@ -34,7 +34,7 @@ class HandlerTest extends \PHPUnit\Framework\TestCase
 
             }
 
-            public function onReceivedUpdate(Update $update): \Generator
+            public function onUpdate(Update $update): \Generator
             {
                 $this->class->assertEquals(1, $update->getUpdateId());
 

@@ -50,7 +50,7 @@ trait PluginTrait
         }
 
         if (method_exists($this, 'onReceivedUpdate')) {
-            $return = $this->onReceivedUpdate($update);
+            $return = $this->onUpdate($update);
             $this->__checkExit($return);
         }
 
