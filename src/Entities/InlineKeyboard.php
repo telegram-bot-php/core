@@ -17,7 +17,7 @@ class InlineKeyboard extends Keyboard
      */
     public static function make(): InlineKeyboard
     {
-        return new self();
+        return new self([]);
     }
 
 }

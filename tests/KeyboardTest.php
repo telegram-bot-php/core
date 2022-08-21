@@ -13,10 +13,9 @@ class KeyboardTest extends \PHPUnit\Framework\TestCase
 
     public function test_the_result(): void
     {
-        $raw_data = $this->create_a_inline_keyboard()->getRawData();
+        $raw_data = $this->create_a_inline_keyboard();
 
         $this->assertEquals(true, $raw_data['one_time_keyboard']);
-
         $this->assertEquals(true, $raw_data['selective']);
 
         $keyboard = json_encode([
@@ -33,7 +32,7 @@ class KeyboardTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($keyboard, json_encode($raw_data['inline_keyboard']));
     }
 
-    public function create_a_inline_keyboard(): InlineKeyboard
+    public function create_a_inline_keyboard(): array
     {
         return InlineKeyboard::make()
             ->setOneTimeKeyboard(true)
@@ -83,7 +82,7 @@ class KeyboardTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals($compare_with, json_encode($keyboard['keyboard']));
     }
 
-    public function create_a_keyboard(): Keyboard
+    public function create_a_keyboard(): array
     {
         return Keyboard::make()
             ->setResizeKeyboard(true)
@@ -99,6 +98,24 @@ class KeyboardTest extends \PHPUnit\Framework\TestCase
                     KeyboardButton::make('Button 4'),
                 ],
             ]);
+    }
+
+    public function test_create_for_answer_query(): void
+    {
+        $raw_data = $this->create_a_inline_keyboard();
+        $result = Request::create('answerCallbackQuery', [
+            'callback_query_id' => 'callback_query_id',
+            'text' => 'text',
+            'show_alert' => true,
+            'url' => 'https://google.com',
+            'cache_time' => 10,
+            'reply_markup' => $raw_data,
+        ]);
+
+        $this->assertEquals(true, $result['options']['query']['show_alert']);
+        $this->assertEquals('https://google.com', $result['options']['query']['url']);
+        $this->assertEquals(10, $result['options']['query']['cache_time']);
+        $this->assertEquals(json_encode($raw_data), $result['options']['query']['reply_markup']);
     }
 
 }

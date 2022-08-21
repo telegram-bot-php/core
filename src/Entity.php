@@ -127,17 +127,16 @@ abstract class Entity
 
         if (str_starts_with($name, 'set')) {
             $property_name = strtolower(ltrim(preg_replace('/[A-Z]/', '_$0', substr($name, 3)), '_'));
+            $this->raw_data[$property_name] = $arguments[0];
 
             if (property_exists($this, $property_name)) {
                 $this->{$property_name} = $arguments[0];
-                $this->raw_data[$property_name] = $arguments[0];
-
-                return $this;
             }
 
+            return $this;
         }
 
-        throw new \BadMethodCallException("Method '$name' does not exist");
+        throw new \BadMethodCallException("Method {$name} does not exist");
     }
 
     /**

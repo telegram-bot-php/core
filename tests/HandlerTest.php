@@ -34,14 +34,9 @@ class HandlerTest extends \PHPUnit\Framework\TestCase
 
             }
 
-            public function onUpdate(Update $update): \Generator
+            public function __process(Update $update): void
             {
                 $this->class->assertEquals(1, $update->getUpdateId());
-
-                yield Request::sendMessage([
-                    'chat_id' => $update->getMessage()->getChat()->getId(),
-                    'text' => 'Hello World!'
-                ]);
             }
 
         };

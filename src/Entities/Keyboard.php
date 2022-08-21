@@ -23,16 +23,6 @@ use TelegramBot\Entity;
 class Keyboard extends Entity
 {
 
-    public function __construct(array $data = [])
-    {
-        parent::__construct(array_merge($data, [
-            'resize_keyboard' => false,
-            'one_time_keyboard' => false,
-            'input_field_placeholder' => '',
-            'selective' => false
-        ]));
-    }
-
     /**
      * Remove the current custom keyboard and display the default letter-keyboard.
      *
@@ -68,20 +58,20 @@ class Keyboard extends Entity
      */
     public static function make(): Keyboard
     {
-        return new self();
+        return new self([]);
     }
 
     /**
      * @param array $rows
-     * @return Keyboard
+     * @return array
      */
-    public function setKeyboard(array $rows): Keyboard
+    public function setKeyboard(array $rows): array
     {
         foreach ($rows as $row) {
             $this->addRow($row);
         }
 
-        return $this;
+        return $this->getRawData();
     }
 
     /**
