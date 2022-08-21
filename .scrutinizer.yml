@@ -15,7 +15,3 @@ build:
 
       tests:
         override: [ php-scrutinizer-run ]
-
-filter:
-  paths:
-    - "tests/unit/*"
