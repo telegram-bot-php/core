@@ -19,14 +19,14 @@ class CrashTest extends \PHPUnit\Framework\TestCase
 
             public function __construct(TestCase $testCase)
             {
-                Telegram::setAdminChatId(259760855);
-                $testCase->assertEquals(259760855, Telegram::getAdminChatId());
+                Telegram::setAdminId(259760855);
+                $testCase->assertEquals(259760855, Telegram::getAdminId());
             }
 
             public function __process(Update $update): void
             {
                 CrashPad::report(
-                    Telegram::getAdminChatId(),
+                    Telegram::getAdminId(),
                     new \Exception('test'),
                     json_encode($update->getRawData(), JSON_PRETTY_PRINT)
                 );

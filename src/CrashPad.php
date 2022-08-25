@@ -101,7 +101,7 @@ class CrashPad
 
         defined('DEBUG_MODE') or define('DEBUG_MODE', true);
         if ($admin_id !== -1) {
-            Telegram::setAdminChatId($admin_id);
+            Telegram::setAdminId($admin_id);
         }
 
         set_exception_handler(function (\Throwable $throwable) {
@@ -112,11 +112,11 @@ class CrashPad
                     $throwable->getPrevious()
                 );
             } else {
-                if (Telegram::getAdminChatId() !== -1) {
+                if (Telegram::getAdminId() !== -1) {
                     $input = getenv('TG_CURRENT_UPDATE') ?? Telegram::getInput();
                     $update = Telegram::processUpdate($input, Telegram::getApiToken());
                     $exception = new \Exception($throwable->getMessage(), $throwable->getCode(), $throwable->getPrevious());
-                    CrashPad::report(Telegram::getAdminChatId(), $exception, json_encode($update));
+                    CrashPad::report(Telegram::getAdminId(), $exception, json_encode($update));
                 }
             }
         });

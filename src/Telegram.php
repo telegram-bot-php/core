@@ -6,6 +6,8 @@ use Symfony\Component\Dotenv\Dotenv;
 use TelegramBot\Entities\Response;
 use TelegramBot\Entities\Update;
 use TelegramBot\Exception\TelegramException;
+use TelegramBot\Traits\TelegramTrait;
+use TelegramBot\Traits\WebhookTrait;
 use TelegramBot\Util\Toolkit;
 
 /**
@@ -18,17 +20,13 @@ use TelegramBot\Util\Toolkit;
 class Telegram
 {
 
+    use TelegramTrait;
+    use WebhookTrait;
+
     /**
      * @var string
      */
     public static string $VERSION = 'v1.0.0';
-
-    /**
-     * Admin chat id
-     *
-     * @var int
-     */
-    private static int $adminChatId = -1;
 
     /**
      * @var string|null
@@ -80,56 +78,6 @@ class Telegram
     }
 
     /**
-     * Get env file path and return it
-     *
-     * @return string
-     */
-    private function getEnvFilePath(): string
-    {
-        $defaultEnvPaths = [
-            $_SERVER['DOCUMENT_ROOT'] . '/.env',
-            getcwd() . '/../.env',
-            getcwd() . '/.env',
-        ];
-
-        foreach ($defaultEnvPaths as $path) {
-            if (file_exists($path)) {
-                return $path;
-            }
-        }
-
-        return '';
-    }
-
-    /**
-     * Get token from env file.
-     *
-     * @param string $file
-     * @return string|null
-     */
-    protected function getEnvToken(string $file): string|null
-    {
-        if (!file_exists($file)) return null;
-        return $_ENV['TELEGRAM_BOT_TOKEN'] ?? null;
-    }
-
-    /**
-     * @return int
-     */
-    public static function getAdminChatId(): int
-    {
-        return static::$adminChatId;
-    }
-
-    /**
-     * @param int $adminChatId
-     */
-    public static function setAdminChatId(int $adminChatId): void
-    {
-        static::$adminChatId = $adminChatId;
-    }
-
-    /**
      * Get bot info from given API key
      *
      * @return Response
@@ -147,75 +95,17 @@ class Telegram
     }
 
     /**
-     * Set Webhook for bot
+     * Pass the update to the given update handler
      *
-     * @param string $url
-     * @param array $data Optional parameters.
-     * @return Response
-     * @throws TelegramException
-     */
-    public function setWebhook(string $url, array $data = []): Response
-    {
-        if ($url === '') {
-            throw new TelegramException('Hook url is empty!');
-        }
-
-        if (!str_starts_with($url, 'https://')) {
-            throw new TelegramException('Hook url must start with https://');
-        }
-
-        $data = array_intersect_key($data, array_flip([
-            'certificate',
-            'ip_address',
-            'max_connections',
-            'allowed_updates',
-            'drop_pending_updates',
-        ]));
-        $data['url'] = $url;
-
-        $result = Request::setWebhook($data);
-
-        if (!$result->isOk()) {
-            throw new TelegramException(
-                'Webhook was not set! Error: ' . $result->getErrorCode() . ' ' . $result->getDescription()
-            );
-        }
-
-        return $result;
-    }
-
-    /**
-     * Delete any assigned webhook
-     *
-     * @param array $data
-     * @return Response
-     * @throws TelegramException
-     */
-    public function deleteWebhook(array $data = []): Response
-    {
-        $result = Request::deleteWebhook($data);
-
-        if (!$result->isOk()) {
-            throw new TelegramException(
-                'Webhook was not deleted! Error: ' . $result->getErrorCode() . ' ' . $result->getDescription()
-            );
-        }
-
-        return $result;
-    }
-
-    /**
-     * Pass the update to the given webhook handler
-     *
-     * @param UpdateHandler $webhook_handler The webhook handler
+     * @param UpdateHandler $update_handler The update handler
      * @param Update|null $update By default, it will get the update from input
      * @return void
      */
-    public function fetchWith(UpdateHandler $webhook_handler, Update|null $update = null): void
+    public function fetchWith(UpdateHandler $update_handler, Update|null $update = null): void
     {
-        if (is_subclass_of($webhook_handler, UpdateHandler::class)) {
+        if (is_subclass_of($update_handler, UpdateHandler::class)) {
             if ($update === null) $update = self::getUpdate();
-            $webhook_handler->resolve($update);
+            $update_handler->resolve($update);
         }
     }
 
