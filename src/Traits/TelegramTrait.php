@@ -18,7 +18,7 @@ trait TelegramTrait
      *
      * @var int
      */
-    private static int $adminId = -1;
+    protected static int $adminId = -1;
 
     /**
      * Get env file path and return it

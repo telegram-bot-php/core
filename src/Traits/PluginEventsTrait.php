@@ -22,67 +22,79 @@ trait PluginEventsTrait
 
     public function onUpdate(Update $update): \Generator
     {
-        return yield;
+        yield $update;
     }
 
     public function onMessage(int $update_id, Message $message): \Generator
     {
-        return yield;
+        yield $update_id;
+        yield $message;
     }
 
     public function onEditedMessage(int $update_id, EditedMessage $editedMessage): \Generator
     {
-        return yield;
+        yield $update_id;
+        yield $editedMessage;
     }
 
     public function onChannelPost(int $update_id, ChannelPost $channelPost): \Generator
     {
-        return yield;
+        yield $update_id;
+        yield $channelPost;
     }
 
     public function onEditedChannelPost(int $update_id, EditedChannelPost $editedChannelPost): \Generator
     {
-        return yield;
+        yield $update_id;
+        yield $editedChannelPost;
     }
 
     public function onInlineQuery(int $update_id, InlineQuery $inlineQuery): \Generator
     {
-        return yield;
+        yield $update_id;
+        yield $inlineQuery;
     }
 
     public function onChosenInlineResult(int $update_id, ChosenInlineResult $chosenInlineResult): \Generator
     {
-        return yield;
+        yield $update_id;
+        yield $chosenInlineResult;
     }
 
     public function onCallbackQuery(int $update_id, CallbackQuery $callbackQuery): \Generator
     {
-        return yield;
+        yield $update_id;
+        yield $callbackQuery;
     }
 
     public function onShippingQuery(int $update_id, ShippingQuery $shippingQuery): \Generator
     {
-        return yield;
+        yield $update_id;
+        yield $shippingQuery;
     }
 
     public function onPreCheckoutQuery(int $update_id, PreCheckoutQuery $preCheckoutQuery): \Generator
     {
-        return yield;
+        yield $update_id;
+        yield $preCheckoutQuery;
     }
 
     public function onPoll(int $update_id, Poll $poll): \Generator
     {
-        return yield;
+        yield $update_id;
+        yield $poll;
     }
 
     public function onPollAnswer(int $update_id, PollAnswer $pollAnswer): \Generator
     {
-        return yield;
+        yield $update_id;
+        yield $pollAnswer;
     }
 
     public function onWebAppData(int $update_id, WebAppData $webAppData): \Generator
     {
-        return yield;
+        yield $update_id;
+        yield $webAppData;
     }
 
 }
