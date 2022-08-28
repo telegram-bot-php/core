@@ -25,7 +25,7 @@ class CrashTest extends \PHPUnit\Framework\TestCase
 
             public function __process(Update $update): void
             {
-                CrashPad::report(
+                CrashPad::sendCrash(
                     Telegram::getAdminId(),
                     new \Exception('test'),
                     json_encode($update->getRawData(), JSON_PRETTY_PRINT)
