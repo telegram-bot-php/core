@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace TelegramBot;
 
+use Symfony\Component\Dotenv\Dotenv;
+
 /**
  * CrashPad class
  *
@@ -12,88 +14,6 @@ namespace TelegramBot;
  */
 class CrashPad
 {
-
-    /**
-     * Report the error to the developers from the Telegram Bot API.
-     *
-     * @param \Exception $exception The exception to report.
-     * @retrun void
-     */
-    public static function report(\Exception $exception): void
-    {
-        TelegramLog::error(($message = self::message($exception)));
-        echo '<b>TelegramError:</b> ' . $message;
-    }
-
-    /**
-     * Create crash message
-     *
-     * @param \Exception $exception The exception
-     * @retrun string
-     */
-    private static function message(\Exception $exception): string
-    {
-        return sprintf(
-            "%s(%d): %s\n%s",
-            $exception->getFile(),
-            $exception->getLine(),
-            $exception->getMessage(),
-            $exception->getTraceAsString()
-        );
-    }
-
-    /**
-     * Send crash message and log
-     *
-     * @param int $chat_id The chat id of the group to send the message to.
-     * @param \Exception $exception The exception to report.
-     * @param string|null $update (Optional) The update that caused the exception.
-     *
-     * @retrun bool
-     */
-    public static function sendCrash(int $chat_id, \Exception $exception, string|null $update = null): bool
-    {
-        if ($chat_id === -1) {
-            throw new \RuntimeException(sprintf(
-                'The given `chat_id` is not valid. given: %s',
-                $chat_id
-            ));
-        }
-
-        $text = Request::sendMessage([
-            'chat_id' => $chat_id,
-            'text' => ($message = self::message($exception)),
-        ]);
-
-        if ($update !== null) {
-            $document = Request::sendDocument([
-                'chat_id' => $chat_id,
-                'document' => self::createCrashFile(
-                    $message . "\n\n" . $update
-                ),
-            ]);
-            return $text->isOk() && $document->isOk();
-        }
-
-        return $text->isOk();
-    }
-
-    /**
-     * Create a log file for the error.
-     *
-     * @param string $content The content of the log file.
-     * @retrun string The path of the log file.
-     */
-    private static function createCrashFile(string $content): string
-    {
-        $base_path = $_SERVER['DOCUMENT_ROOT'] . '.telegram-bot/';
-        if (!file_exists($base_path)) {
-            mkdir($base_path, 0777, true);
-        }
-
-        file_put_contents(($file = $base_path . uniqid('error_') . '.log'), $content);
-        return $file;
-    }
 
     /**
      * Clear crash files.
@@ -141,6 +61,89 @@ class CrashPad
                 }
             }
         });
+    }
+
+    /**
+     * Send crash message and log
+     *
+     * @param int $chat_id The chat id of the group to send the message to.
+     * @param \Exception $exception The exception to report.
+     * @param string|null $update (Optional) The update that caused the exception.
+     *
+     * @retrun bool
+     */
+    public static function sendCrash(int $chat_id, \Exception $exception, string|null $update = null): bool
+    {
+        if ($chat_id === -1) {
+            throw new \RuntimeException(sprintf(
+                'The given `chat_id` is not valid. given: %s',
+                $chat_id
+            ));
+        }
+
+        if (!Telegram::validateToken($_ENV['TELEGRAM_BOT_TOKEN'] ?? '')) {
+            (new Dotenv())->load(Telegram::getEnvFilePath());
+            Telegram::setToken($_ENV['TELEGRAM_BOT_TOKEN']);
+        }
+
+        $text = Request::sendMessage([
+            'chat_id' => $chat_id,
+            'parse_mode' => 'HTML',
+            'text' => ($message = sprintf(
+                "<b>Message</b>: %s\n\n<b>File</b>: %s(%d)\n\n<b>Trace</b>: \n%s",
+                $exception->getMessage(),
+                $exception->getFile(),
+                $exception->getLine(),
+                $exception->getTraceAsString()
+            )),
+        ]);
+
+        if ($update !== null) {
+            $document = Request::sendDocument([
+                'chat_id' => $chat_id,
+                'document' => self::createCrashFile(
+                    $message . "\n\n" . $update
+                ),
+            ]);
+            return $text->isOk() && $document->isOk();
+        }
+
+        return $text->isOk();
+    }
+
+    /**
+     * Create a log file for the error.
+     *
+     * @param string $content The content of the log file.
+     * @retrun string The path of the log file.
+     */
+    private static function createCrashFile(string $content): string
+    {
+        $base_path = $_SERVER['DOCUMENT_ROOT'] . '.telegram-bot/';
+        if (!file_exists($base_path)) {
+            mkdir($base_path, 0777, true);
+        }
+
+        file_put_contents(($file = $base_path . uniqid('error_') . '.log'), $content);
+        return $file;
+    }
+
+    /**
+     * Report the error to the developers from the Telegram Bot API.
+     *
+     * @param \Exception $exception The exception to report.
+     * @retrun void
+     */
+    public static function report(\Exception $exception): void
+    {
+        TelegramLog::error(($message = sprintf(
+            "%s(%d): %s\n%s",
+            $exception->getFile(),
+            $exception->getLine(),
+            $exception->getMessage(),
+            $exception->getTraceAsString()
+        )));
+        echo '<b>TelegramError:</b> ' . $message;
     }
 
 }

@@ -25,7 +25,7 @@ trait TelegramTrait
      *
      * @return string
      */
-    private function getEnvFilePath(): string
+    public static function getEnvFilePath(): string
     {
         $defaultEnvPaths = [
             $_SERVER['DOCUMENT_ROOT'] . '/.env',
@@ -40,18 +40,6 @@ trait TelegramTrait
         }
 
         return '';
-    }
-
-    /**
-     * Get token from env file.
-     *
-     * @param string $file
-     * @return string|null
-     */
-    protected function getEnvToken(string $file): string|null
-    {
-        if (!file_exists($file)) return null;
-        return $_ENV['TELEGRAM_BOT_TOKEN'] ?? null;
     }
 
     /**
@@ -72,6 +60,18 @@ trait TelegramTrait
     public static function setAdminId(int $adminId): void
     {
         static::$adminId = $adminId;
+    }
+
+    /**
+     * Get token from env file.
+     *
+     * @param string $file
+     * @return string|null
+     */
+    protected function getEnvToken(string $file): string|null
+    {
+        if (!file_exists($file)) return null;
+        return $_ENV['TELEGRAM_BOT_TOKEN'] ?? null;
     }
 
 }

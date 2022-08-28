@@ -31,24 +31,28 @@ class TelegramLog
      * @var bool
      */
     public static bool $always_log_request_and_response = false;
+
     /**
      * Remove bot token from debug stream
      *
      * @var bool
      */
     public static bool $remove_bot_token = true;
+
     /**
      * Logger instance
      *
      * @var LoggerInterface
      */
     protected static LoggerInterface $logger;
+
     /**
      * Logger instance for update
      *
      * @var LoggerInterface
      */
     protected static LoggerInterface $update_logger;
+
     /**
      * Temporary stream handle for debug log
      *

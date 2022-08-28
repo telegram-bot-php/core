@@ -60,6 +60,19 @@ class UpdateHandler extends Telegram implements HandlerInterface
     }
 
     /**
+     * Resolve the request on single plugin.
+     *
+     * @param Plugin $plugin The plugin to work with
+     * @param ?Update $update The custom to work with
+     * @param array $config The configuration of the receiver
+     * @return void
+     */
+    public static function resolveOn(Plugin $plugin, Update $update = null, array $config = []): void
+    {
+        // TODO: Implement resolveOn() method.
+    }
+
+    /**
      * Add plugins to the receiver
      *
      * @param Plugin[]|array $plugins
@@ -86,6 +99,49 @@ class UpdateHandler extends Telegram implements HandlerInterface
         }
 
         return $this;
+    }
+
+    /**
+     * Resolve the request.
+     *
+     * @param ?Update $update The custom to work with
+     * @param array $config The configuration of the receiver
+     *
+     * @retrun void
+     */
+    public function resolve(Update $update = null, array $config = []): void
+    {
+        if (!method_exists($this, '__process')) {
+            throw new \RuntimeException('The method __process does not exist');
+        }
+
+        if (is_array($config)) $this->updateConfiguration($config);
+
+        if (!empty($update)) $this->update = $update;
+        else $this->update = Telegram::getUpdate() !== false ? Telegram::getUpdate() : null;
+
+        if (empty($this->update)) {
+            TelegramLog::error(
+                'The update is empty, the request is not processed'
+            );
+            return;
+        }
+
+        putenv('TG_CURRENT_UPDATE=' . $this->update->getRawData(false));
+
+        $this->__process($this->update);
+        $this->loadPlugins($this->plugins);
+    }
+
+    /**
+     * Update the configuration
+     *
+     * @param array $configuration
+     * @return void
+     */
+    public function updateConfiguration(array $configuration): void
+    {
+        $this->config = array_merge($this->config, $configuration);
     }
 
     /**
@@ -138,62 +194,6 @@ class UpdateHandler extends Telegram implements HandlerInterface
         }
 
         $this->active_spreader = false;
-    }
-
-    /**
-     * Resolve the request.
-     *
-     * @param ?Update $update The custom to work with
-     * @param array $config The configuration of the receiver
-     *
-     * @retrun void
-     */
-    public function resolve(Update $update = null, array $config = []): void
-    {
-        if (!method_exists($this, '__process')) {
-            throw new \RuntimeException('The method __process does not exist');
-        }
-
-        if (is_array($config)) $this->updateConfiguration($config);
-
-        if (!empty($update)) $this->update = $update;
-        else $this->update = Telegram::getUpdate() !== false ? Telegram::getUpdate() : null;
-
-        if (empty($this->update)) {
-            TelegramLog::error(
-                'The update is empty, the request is not processed'
-            );
-            return;
-        }
-
-        putenv('TG_CURRENT_UPDATE=' . $this->update->getRawData(false));
-
-        $this->__process($this->update);
-        $this->loadPlugins($this->plugins);
-    }
-
-    /**
-     * Resolve the request on single plugin.
-     *
-     * @param Plugin $plugin The plugin to work with
-     * @param ?Update $update The custom to work with
-     * @param array $config The configuration of the receiver
-     * @return void
-     */
-    public static function resolveOn(Plugin $plugin, Update $update = null, array $config = []): void
-    {
-        // TODO: Implement resolveOn() method.
-    }
-
-    /**
-     * Update the configuration
-     *
-     * @param array $configuration
-     * @return void
-     */
-    public function updateConfiguration(array $configuration): void
-    {
-        $this->config = array_merge($this->config, $configuration);
     }
 
     /**

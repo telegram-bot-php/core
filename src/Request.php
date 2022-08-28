@@ -282,13 +282,37 @@ class Request
     }
 
     /**
-     * Initialize a http client
+     * Create a Http Request
      *
-     * @return Client
+     * @param string $action Action to execute
+     * @param array $data Data to attach to the execution
+     *
+     * @return array An array of the setUpRequestParams and the url
      */
-    private static function getClient(): Client
+    public static function create(string $action, array $data, string $token = ""): array
     {
-        return new Client();
+        if ($token !== "") {
+            self::$current_token = $token;
+        }
+
+        return [
+            'url' => self::getApiPath() . $action,
+            'options' => self::setUpRequestParams($data)
+        ];
+    }
+
+    /**
+     * Get the Telegram API path
+     *
+     * @return string
+     */
+    public static function getApiPath(): string
+    {
+        if (static::$current_token !== '') {
+            return self::$api_base_uri . '/bot' . static::$current_token . '/';
+        }
+
+        return self::$api_base_uri . '/bot' . Telegram::getApiToken() . '/';
     }
 
     /**
@@ -353,37 +377,13 @@ class Request
     }
 
     /**
-     * Create a Http Request
+     * Initialize a http client
      *
-     * @param string $action Action to execute
-     * @param array $data Data to attach to the execution
-     *
-     * @return array An array of the setUpRequestParams and the url
+     * @return Client
      */
-    public static function create(string $action, array $data, string $token = ""): array
+    private static function getClient(): Client
     {
-        if ($token !== "") {
-            self::$current_token = $token;
-        }
-
-        return [
-            'url' => self::getApiPath() . $action,
-            'options' => self::setUpRequestParams($data)
-        ];
-    }
-
-    /**
-     * Get the Telegram API path
-     *
-     * @return string
-     */
-    public static function getApiPath(): string
-    {
-        if (static::$current_token !== '') {
-            return self::$api_base_uri . '/bot' . static::$current_token . '/';
-        }
-
-        return self::$api_base_uri . '/bot' . Telegram::getApiToken() . '/';
+        return new Client();
     }
 
 }

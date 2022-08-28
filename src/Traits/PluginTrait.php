@@ -23,16 +23,16 @@ trait PluginTrait
     protected UpdateHandler $hook;
 
     /**
-     * @var \Generator
-     */
-    private \Generator $returns;
-
-    /**
      * This property is used to kill the plugin when you yield a Response object.
      *
      * @var bool
      */
     protected bool $KILL_ON_YIELD = true;
+
+    /**
+     * @var \Generator
+     */
+    private \Generator $returns;
 
     /**
      * Execute the plugin.

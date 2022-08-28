@@ -56,6 +56,18 @@ class Telegram
     }
 
     /**
+     * Validate the token
+     *
+     * @param string $token (e.g. 123456789:ABC-DEF1234ghIkl-zyx57W2v1u123ew11) {digit}:{alphanumeric[34]}
+     * @return bool
+     */
+    public static function validateToken(string $token): bool
+    {
+        preg_match_all('/([0-9]+:[a-zA-Z0-9-_]+)/', $token, $matches);
+        return count($matches[0]) == 1;
+    }
+
+    /**
      * Set the current bot token.
      *
      * @param string $api_key
@@ -65,16 +77,6 @@ class Telegram
     {
         static::$api_key = $api_key;
         $_ENV['TELEGRAM_BOT_TOKEN'] = $api_key;
-    }
-
-    /**
-     * Get the current bot token.
-     *
-     * @return string|false
-     */
-    public static function getApiToken(): string|false
-    {
-        return self::$api_key !== null ? (self::validateToken(self::$api_key) ? self::$api_key : false) : false;
     }
 
     /**
@@ -181,18 +183,6 @@ class Telegram
     }
 
     /**
-     * Validate the token
-     *
-     * @param string $token (e.g. 123456789:ABC-DEF1234ghIkl-zyx57W2v1u123ew11) {digit}:{alphanumeric[34]}
-     * @return bool
-     */
-    public static function validateToken(string $token): bool
-    {
-        preg_match_all('/([0-9]+:[a-zA-Z0-9-_]+)/', $token, $matches);
-        return count($matches[0]) == 1;
-    }
-
-    /**
      * Validate webapp data from is from Telegram
      *
      * @link https://core.telegram.org/bots/webapps#validating-data-received-via-the-web-app
@@ -227,6 +217,16 @@ class Telegram
         $secret_key = hash_hmac('sha256', $token, "WebAppData", true);
 
         return hash_hmac('sha256', $data_check_string, $secret_key) == $data['hash'];
+    }
+
+    /**
+     * Get the current bot token.
+     *
+     * @return string|false
+     */
+    public static function getApiToken(): string|false
+    {
+        return self::$api_key !== null ? (self::validateToken(self::$api_key) ? self::$api_key : false) : false;
     }
 
 }
