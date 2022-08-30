@@ -67,12 +67,12 @@ class CrashPad
      * Send crash message and log
      *
      * @param int $chat_id The chat id of the group to send the message to.
-     * @param \Exception $exception The exception to report.
+     * @param \Exception|\Throwable $exception The exception to report.
      * @param string|null $update (Optional) The update that caused the exception.
      *
      * @retrun bool
      */
-    public static function sendCrash(int $chat_id, \Exception $exception, string|null $update = null): bool
+    public static function sendCrash(int $chat_id, \Exception|\Throwable $exception, string|null $update = null): bool
     {
         if ($chat_id === -1) {
             throw new \RuntimeException(sprintf(
@@ -131,10 +131,10 @@ class CrashPad
     /**
      * Report the error to the developers from the Telegram Bot API.
      *
-     * @param \Exception $exception The exception to report.
+     * @param \Exception|\Throwable $exception The exception to report.
      * @retrun void
      */
-    public static function report(\Exception $exception): void
+    public static function report(\Exception|\Throwable $exception): void
     {
         TelegramLog::error(($message = sprintf(
             "%s(%d): %s\n%s",
