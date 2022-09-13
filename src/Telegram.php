@@ -6,7 +6,7 @@ use Symfony\Component\Dotenv\Dotenv;
 use TelegramBot\Entities\Response;
 use TelegramBot\Entities\Update;
 use TelegramBot\Exception\TelegramException;
-use TelegramBot\Traits\TelegramTrait;
+use TelegramBot\Traits\EnvironmentsTrait;
 use TelegramBot\Traits\WebhookTrait;
 use TelegramBot\Util\Toolkit;
 
@@ -20,7 +20,7 @@ use TelegramBot\Util\Toolkit;
 class Telegram
 {
 
-    use TelegramTrait;
+    use EnvironmentsTrait;
     use WebhookTrait;
 
     /**
@@ -52,6 +52,7 @@ class Telegram
             ));
         }
 
+        CrashPad::enableCrashHandler();
         self::setToken($api_token);
     }
 
@@ -114,12 +115,12 @@ class Telegram
     /**
      * Get the update from input
      *
-     * @return Update|false
+     * @return Update|null
      */
-    public static function getUpdate(): Update|false
+    public static function getUpdate(): Update|null
     {
         $input = self::getInput();
-        if (empty($input)) return false;
+        if (empty($input)) return null;
         return Telegram::processUpdate($input, self::getApiToken());
     }
 
@@ -165,7 +166,7 @@ class Telegram
 
             if (!empty($web_data) && is_array($web_data)) {
                 $input = json_encode([
-                    'web_data' => $web_data,
+                    'web_app_data' => $web_data,
                 ]);
             }
         }

@@ -109,23 +109,20 @@ class UpdateHandler extends Telegram implements HandlerInterface
      *
      * @retrun void
      */
-    public function resolve(Update $update = null, array $config = []): void
+    public function resolve(Update|null $update = null, array $config = []): void
     {
+        $this->update = $update ?? Telegram::getUpdate();
+
+        if (empty($this->update)) {
+            TelegramLog::error('The update is empty, the request is not processed');
+            return;
+        }
+
         if (!method_exists($this, '__process')) {
             throw new \RuntimeException('The method __process does not exist');
         }
 
         if (is_array($config)) $this->updateConfiguration($config);
-
-        if (!empty($update)) $this->update = $update;
-        else $this->update = Telegram::getUpdate() !== false ? Telegram::getUpdate() : null;
-
-        if (empty($this->update)) {
-            TelegramLog::error(
-                'The update is empty, the request is not processed'
-            );
-            return;
-        }
 
         putenv('TG_CURRENT_UPDATE=' . $this->update->getRawData(false));
 

@@ -39,12 +39,12 @@ class KeyboardTest extends \PHPUnit\Framework\TestCase
             ->setSelective(true)
             ->setKeyboard([
                 [
-                    InlineKeyboardButton::make('Button 1')->WebApp('https://google.com'),
-                    InlineKeyboardButton::make('Button 2')->Url('https://google.com'),
+                    InlineKeyboardButton::make('Button 1')->setWebApp('https://google.com'),
+                    InlineKeyboardButton::make('Button 2')->setUrl('https://google.com'),
                 ],
                 [
-                    InlineKeyboardButton::make('Button 3')->CallbackData('callback_data'),
-                    InlineKeyboardButton::make('Button 4')->CallbackData('callback_data'),
+                    InlineKeyboardButton::make('Button 3')->setCallbackData('callback_data'),
+                    InlineKeyboardButton::make('Button 4')->setCallbackData('callback_data'),
                 ],
             ]);
     }
@@ -90,7 +90,7 @@ class KeyboardTest extends \PHPUnit\Framework\TestCase
             ->setSelective(true)
             ->setKeyboard([
                 [
-                    KeyboardButton::make('Button 1')->WebApp('https://google.com'),
+                    KeyboardButton::make('Button 1')->setWebApp('https://google.com'),
                     KeyboardButton::make('Button 2'),
                 ],
                 [

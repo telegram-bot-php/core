@@ -3,7 +3,9 @@ declare(strict_types=1);
 
 namespace TelegramBot;
 
+use Exception;
 use Symfony\Component\Dotenv\Dotenv;
+use Throwable;
 
 /**
  * CrashPad class
@@ -16,16 +18,28 @@ class CrashPad
 {
 
     /**
-     * Clear crash files.
+     * Enable the crash handler
      *
      * @return void
      */
-    public static function clearCrashFiles(): void
+    public static function enableCrashHandler(): void
     {
-        $files = glob(getcwd() . '.telegram-bot/*.log');
-        foreach ($files as $file) {
-            unlink($file);
-        }
+        $handler = function (Throwable $throwable) {
+            if (Telegram::getAdminId() !== -1) {
+                $input = getenv('TG_CURRENT_UPDATE') ?? Telegram::getInput();
+                CrashPad::sendCrash(Telegram::getAdminId(), $throwable, $input);
+            }
+
+            if (!defined('DEBUG_MODE')) {
+                throw new \RuntimeException(
+                    'Something went wrong, Unfortunately, we can not handle this error.', 0, $throwable
+                );
+            }
+
+            CrashPad::print($throwable);
+        };
+
+        set_exception_handler($handler);
     }
 
     /**
@@ -44,35 +58,19 @@ class CrashPad
             Telegram::setAdminId($admin_id);
         }
 
-        set_exception_handler(function (\Throwable $throwable) {
-            if (!defined('DEBUG_MODE') && !DEBUG_MODE) {
-                throw new \RuntimeException(
-                    $throwable->getMessage(),
-                    $throwable->getCode(),
-                    $throwable->getPrevious()
-                );
-            } else {
-                if (Telegram::getAdminId() !== -1) {
-                    $input = getenv('TG_CURRENT_UPDATE') ?? Telegram::getInput();
-                    $update = Telegram::processUpdate($input, Telegram::getApiToken());
-                    $exception = new \Exception($throwable->getMessage(), $throwable->getCode(), $throwable->getPrevious());
-                    CrashPad::sendCrash(Telegram::getAdminId(), $exception, json_encode($update));
-                    CrashPad::report($exception);
-                }
-            }
-        });
+        self::enableCrashHandler();
     }
 
     /**
      * Send crash message and log
      *
      * @param int $chat_id The chat id of the group to send the message to.
-     * @param \Exception|\Throwable $exception The exception to report.
+     * @param Exception|Throwable $exception The exception to report.
      * @param string|null $update (Optional) The update that caused the exception.
      *
      * @retrun bool
      */
-    public static function sendCrash(int $chat_id, \Exception|\Throwable $exception, string|null $update = null): bool
+    public static function sendCrash(int $chat_id, Exception|Throwable $exception, string|null $update = null): bool
     {
         if ($chat_id === -1) {
             throw new \RuntimeException(sprintf(
@@ -86,29 +84,39 @@ class CrashPad
             Telegram::setToken($_ENV['TELEGRAM_BOT_TOKEN']);
         }
 
+        if (($token = self::loadToken()) === null) {
+            throw new \RuntimeException(
+                'The token is not set. Please set the token using `Telegram::setToken()` method.'
+            );
+        }
+
         $text = Request::sendMessage([
+            'bot_token' => $token,
             'chat_id' => $chat_id,
             'parse_mode' => 'HTML',
-            'text' => ($message = sprintf(
+            'text' => sprintf(
                 "<b>Message</b>: %s\n\n<b>File</b>: %s(%d)\n\n<b>Trace</b>: \n%s",
                 $exception->getMessage(),
                 $exception->getFile(),
                 $exception->getLine(),
                 $exception->getTraceAsString()
+            ),
+        ]);
+
+        $document = Request::sendDocument([
+            'bot_token' => $token,
+            'chat_id' => $chat_id,
+            'document' => self::createCrashFile(sprintf(
+                "Message: %s\n\nFile: %s(%d)\n\nTrace: \n%s\n\nUpdate: \n%s",
+                $exception->getMessage(),
+                $exception->getFile(),
+                $exception->getLine(),
+                $exception->getTraceAsString(),
+                $update ?? 'Did not receive update.'
             )),
         ]);
 
-        if ($update !== null) {
-            $document = Request::sendDocument([
-                'chat_id' => $chat_id,
-                'document' => self::createCrashFile(
-                    $message . "\n\n" . $update
-                ),
-            ]);
-            return $text->isOk() && $document->isOk();
-        }
-
-        return $text->isOk();
+        return $text->isOk() && $document->isOk();
     }
 
     /**
@@ -131,10 +139,10 @@ class CrashPad
     /**
      * Report the error to the developers from the Telegram Bot API.
      *
-     * @param \Exception|\Throwable $exception The exception to report.
+     * @param Exception|Throwable $exception The exception to report.
      * @retrun void
      */
-    public static function report(\Exception|\Throwable $exception): void
+    public static function print(Exception|Throwable $exception): void
     {
         TelegramLog::error(($message = sprintf(
             "%s(%d): %s\n%s",
@@ -144,6 +152,45 @@ class CrashPad
             $exception->getTraceAsString()
         )));
         echo '<b>TelegramError:</b> ' . $message;
+    }
+
+    /**
+     * Clear the crash logs.
+     *
+     * @return void
+     */
+    public static function clearCrashLogs(): void
+    {
+        $base_path = $_SERVER['DOCUMENT_ROOT'] . '.telegram-bot/';
+        if (!file_exists($base_path)) {
+            return;
+        }
+
+        $files = glob($base_path . '*');
+        foreach ($files as $file) {
+            if (is_file($file)) {
+                unlink($file);
+            }
+        }
+    }
+
+    /**
+     * Check is there any loaded token or any token in the environment file.
+     *
+     * @return string|null
+     */
+    private static function loadToken(): string|null
+    {
+        if (($token = Telegram::getApiToken()) !== false) {
+            return $token;
+        }
+
+        if (file_exists(Telegram::getEnvFilePath())) {
+            (new Dotenv())->load(Telegram::getEnvFilePath());
+            return $_ENV['TELEGRAM_BOT_TOKEN'] ?? null;
+        }
+
+        return null;
     }
 
 }

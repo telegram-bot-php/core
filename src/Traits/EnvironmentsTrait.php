@@ -4,13 +4,13 @@ declare(strict_types=1);
 namespace TelegramBot\Traits;
 
 /**
- * TelegramTrait class
+ * EnvironmentsTrait class
  *
  * @link    https://github.com/telegram-bot-php/core
  * @author  Shahrad Elahi (https://github.com/shahradelahi)
  * @license https://github.com/telegram-bot-php/core/blob/master/LICENSE (MIT License)
  */
-trait TelegramTrait
+trait EnvironmentsTrait
 {
 
     /**
@@ -28,9 +28,9 @@ trait TelegramTrait
     public static function getEnvFilePath(): string
     {
         $defaultEnvPaths = [
-            $_SERVER['DOCUMENT_ROOT'] . '/.env',
-            getcwd() . '/../.env',
             getcwd() . '/.env',
+            getcwd() . '/../.env',
+            $_SERVER['DOCUMENT_ROOT'] . '/.env',
         ];
 
         foreach ($defaultEnvPaths as $path) {

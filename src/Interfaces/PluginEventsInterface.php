@@ -104,10 +104,9 @@ interface PluginEventsInterface
     public function onPollAnswer(int $update_id, PollAnswer $pollAnswer): \Generator;
 
     /**
-     * @param int $update_id
      * @param WebAppData $webAppData
      * @return \Generator
      */
-    public function onWebAppData(int $update_id, WebAppData $webAppData): \Generator;
+    public function onWebAppData(WebAppData $webAppData): \Generator;
 
 }

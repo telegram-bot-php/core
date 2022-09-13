@@ -91,9 +91,8 @@ trait PluginEventsTrait
         yield $pollAnswer;
     }
 
-    public function onWebAppData(int $update_id, WebAppData $webAppData): \Generator
+    public function onWebAppData(WebAppData $webAppData): \Generator
     {
-        yield $update_id;
         yield $webAppData;
     }
 

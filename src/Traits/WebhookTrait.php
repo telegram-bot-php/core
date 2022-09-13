@@ -67,9 +67,11 @@ trait WebhookTrait
         $result = Request::deleteWebhook($data);
 
         if (!$result->isOk()) {
-            throw new TelegramException(
-                'Webhook was not deleted! Error: ' . $result->getErrorCode() . ' ' . $result->getDescription()
-            );
+            throw new TelegramException(sprintf(
+                'Webhook was not deleted! Error: %s %s',
+                $result->getErrorCode(),
+                $result->getDescription()
+            ));
         }
 
         return $result;

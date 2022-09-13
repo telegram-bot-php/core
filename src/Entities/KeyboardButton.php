@@ -29,7 +29,6 @@ use TelegramBot\Exception\TelegramException;
  * @method $this setRequestContact(bool $request_contact)                Optional. If True, the user's phone number will be sent as a contact when the button is pressed. Available in private chats only
  * @method $this setRequestLocation(bool $request_location)            Optional. If True, the user's current location will be sent when the button is pressed. Available in private chats only
  * @method $this setRequestPoll(KeyboardButtonPollType $request_poll)    Optional. If specified, the user will be asked to create a poll and send it to the bot when the button is pressed. Available in private chats only
- * @method $this setWebApp(WebAppInfo $web_app)                        Optional. If specified, the described Web App will be launched when the button is pressed. The Web App will be able to send a “web_app_data” service message. Available in private chats only.
  */
 class KeyboardButton extends Entity
 {
@@ -70,10 +69,13 @@ class KeyboardButton extends Entity
     }
 
     /**
+     * Optional. If specified, the described Web App will be launched when the button is pressed.
+     * The Web App will be able to send a “web_app_data” service message. Available in private chats only.
+     *
      * @param string $url
      * @return $this
      */
-    public function WebApp(string $url): KeyboardButton
+    public function setWebApp(string $url): KeyboardButton
     {
         $this->raw_data['web_app'] = new WebAppInfo(['url' => $url]);
 

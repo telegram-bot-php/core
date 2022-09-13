@@ -23,10 +23,7 @@ use TelegramBot\Exception\TelegramException;
  * @method bool         getPay()                            Optional. Specify True, to send a Pay button.
  *
  * @method InlineKeyboardButton setText(string $text)                                                       Label text on the button
- * @method InlineKeyboardButton setUrl(string $url)                                                         Optional. HTTP url to be opened when button is pressed
  * @method InlineKeyboardButton setLoginUrl(LoginUrl $login_url)                                            Optional. HTTP url to be opened when button is pressed
- * @method InlineKeyboardButton setCallbackData(string $callback_data)                                      Optional. Data to be sent in a callback query to the bot when button is pressed, 1-64 bytes
- * @method InlineKeyboardButton setWebApp(WebAppInfo $web_app)                                              Optional. Description of the Web App that will be launched when the user presses the button. The Web App will be able to send an arbitrary message on behalf of the user using the method answerWebAppQuery. Available only in private chats between a user and the bot.
  * @method InlineKeyboardButton setSwitchInlineQuery(string $switch_inline_query)                           Optional. If set, pressing the button will prompt the user to select one of their chats, open that chat and insert the bot's username and the specified inline query in the input field. Can be empty, in which case just the bot’s username will be inserted.
  * @method InlineKeyboardButton setSwitchInlineQueryCurrentChat(string $switch_inline_query_current_chat)   Optional. If set, pressing the button will insert the bot‘s username and the specified inline query in the current chat's input field. Can be empty, in which case only the bot’s username will be inserted.
  * @method InlineKeyboardButton setCallbackGame(CallbackGame $callback_game)                                Optional. Description of the game that will be launched when the user presses the button.
@@ -68,10 +65,12 @@ class InlineKeyboardButton extends KeyboardButton
     }
 
     /**
+     * Optional. Data to be sent in a callback query to the bot when button is pressed, 1-64 bytes
+     *
      * @param string $data
      * @return $this
      */
-    public function CallbackData(string $data): InlineKeyboardButton
+    public function setCallbackData(string $data): InlineKeyboardButton
     {
         $this->raw_data['callback_data'] = $data;
 
@@ -79,10 +78,12 @@ class InlineKeyboardButton extends KeyboardButton
     }
 
     /**
+     * Optional. HTTP url to be opened when button is pressed
+     *
      * @param string $data
      * @return $this
      */
-    public function Url(string $data): InlineKeyboardButton
+    public function setUrl(string $data): InlineKeyboardButton
     {
         $this->raw_data['url'] = $data;
 
@@ -90,10 +91,14 @@ class InlineKeyboardButton extends KeyboardButton
     }
 
     /**
+     * Optional. Description of the Web App that will be launched when the user presses the button. The Web App will
+     * be able to send an arbitrary message on behalf of the user using the method answerWebAppQuery. Available only
+     * in private chats between a user and the bot.
+     *
      * @param string $url
      * @return $this
      */
-    public function WebApp(string $url): KeyboardButton
+    public function setWebApp(string $url): KeyboardButton
     {
         $this->raw_data['web_app'] = new WebAppInfo(['url' => $url]);
 

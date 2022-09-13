@@ -30,6 +30,7 @@ class CrashTest extends \PHPUnit\Framework\TestCase
                     new \Exception('test'),
                     json_encode($update->getRawData(), JSON_PRETTY_PRINT)
                 );
+                CrashPad::clearCrashLogs();
             }
 
         };

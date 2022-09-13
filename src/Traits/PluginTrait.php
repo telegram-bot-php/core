@@ -5,6 +5,7 @@ namespace TelegramBot\Traits;
 
 use TelegramBot\Entities\Response;
 use TelegramBot\Entities\Update;
+use TelegramBot\Request;
 use TelegramBot\UpdateHandler;
 
 /**
@@ -56,9 +57,7 @@ trait PluginTrait
 
         $type = $this->__identify($update);
         if (method_exists($this, ($method = 'on' . $type)) && $type !== null) {
-            $catchMethod = 'get' . ucfirst($type);
-            $return = $this->$method($update->getUpdateId(), $update->$catchMethod());
-            $this->__checkExit($return);
+            $this->__checkExit($this->__callEvent($method, $update));
         }
     }
 
@@ -99,6 +98,22 @@ trait PluginTrait
         }
 
         return str_replace('_', '', ucwords($type, '_'));
+    }
+
+    /**
+     * Pass data to the method.
+     *
+     * @param string $method The method name.
+     * @param Update $update The update object.
+     * @return \Generator
+     */
+    private function __callEvent(string $method, Update $update): \Generator
+    {
+        $upperName = 'get' . ucfirst(substr($method, 2));
+        return match ($method) {
+            'onWebAppData' => $this->onWebAppData($update->getWebAppData()),
+            default => $this->$method($update->getUpdateId(), $update->$upperName()),
+        };
     }
 
 }
