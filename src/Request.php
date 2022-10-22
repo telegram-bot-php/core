@@ -2,7 +2,7 @@
 
 namespace TelegramBot;
 
-use EasyHttp\Client;
+use EasyHttp\HttpClient;
 use EasyHttp\FormData;
 use TelegramBot\Entities\Response;
 use TelegramBot\Exception\InvalidBotTokenException;
@@ -379,11 +379,11 @@ class Request
     /**
      * Initialize a http client
      *
-     * @return Client
+     * @return HttpClient
      */
-    private static function getClient(): Client
+    private static function getClient(): HttpClient
     {
-        return new Client();
+        return new HttpClient();
     }
 
 }

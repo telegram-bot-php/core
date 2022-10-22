@@ -2,10 +2,12 @@
    "name": "telegram-bot-php/core",
    "description": "A PHP library that makes using Telegram Bot API much easier.",
    "keywords": [
+      "php",
       "telegram",
       "bot",
       "core",
-      "php"
+      "update-handler",
+      "library"
    ],
    "license": "MIT",
    "homepage": "https://github.com/telegram-bot-php/core",
@@ -16,19 +18,26 @@
    "authors": [
       {
          "name": "Shahrad Elahi",
-         "email": "shahrad@litehex.com",
-         "role": "developer"
+         "email": "shahrad@litehex.com"
+      },
+      {
+         "name": "LiteHex Team",
+         "email": "opensource@litehex.com"
       }
    ],
    "minimum-stability": "dev",
    "prefer-stable": true,
+   "scripts": {
+      "install-dependencies": "composer install --prefer-source",
+      "phpunit-test": "vendor/bin/phpunit --colors=always --configuration phpunit.xml"
+   },
    "require": {
       "php": ">=8.0",
       "ext-json": "*",
       "ext-curl": "*",
       "ext-mbstring": "*",
       "symfony/dotenv": "^v6.1.0",
-      "shahradelahi/easy-http": "^v1.2.0"
+      "shahradelahi/easy-http": "~v1.3.0"
    },
    "require-dev": {
       "phpunit/phpunit": "^9.5.20",
@@ -44,8 +53,8 @@
          "TelegramBotTest\\": "tests/"
       }
    },
-   "scripts": {
-      "install-dependencies": "composer install --prefer-source",
-      "phpunit-test": "vendor/bin/phpunit --colors=always --configuration phpunit.xml"
+   "config": {
+      "sort-packages": true,
+      "optimize-autoloader": true
    }
 }

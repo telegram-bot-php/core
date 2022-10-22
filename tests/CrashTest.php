@@ -36,6 +36,7 @@ class CrashTest extends \PHPUnit\Framework\TestCase
         };
 
         TelegramTest::loadEnvironment();
+        echo $_ENV['TELEGRAM_BOT_TOKEN'];
         (new UpdateHandler())->addPlugins($plugin)->resolve(Telegram::processUpdate(
             '{"update_id":1,"message":{"message_id":1,"from":{"id":1,"is_bot":false,"first_name":"First","last_name":"Last","username":"username","language_code":"en"},"chat":{"id":1,"first_name":"First","last_name":"Last","username":"username","type":"private"},"date":1546300800,"text":"Hello World!"}}',
             $_ENV['TELEGRAM_BOT_TOKEN']
