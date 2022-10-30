@@ -3,11 +3,11 @@
    "description": "A PHP library that makes using Telegram Bot API much easier.",
    "keywords": [
       "php",
+      "library",
       "telegram",
-      "bot",
-      "core",
       "update-handler",
-      "library"
+      "bot",
+      "core"
    ],
    "license": "MIT",
    "homepage": "https://github.com/telegram-bot-php/core",
@@ -21,7 +21,7 @@
          "email": "shahrad@litehex.com"
       },
       {
-         "name": "LiteHex Team",
+         "name": "LiteHex",
          "email": "opensource@litehex.com"
       }
    ],
@@ -40,6 +40,7 @@
       "shahradelahi/easy-http": "~v1.3.0"
    },
    "require-dev": {
+      "fakerphp/faker": "^1.20",
       "phpunit/phpunit": "^9.5.20",
       "psr/log": "^1.1|^2.0|^3.0"
    },

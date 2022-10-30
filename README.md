@@ -18,13 +18,15 @@
 
 # Telegram Bot PHP
 
-This library is a simple and easy to use library for creating [Telegram API Bots](https://telegram.org/blog/bot-revolution), and this library is designed to provide a platform where one can simply write a bot and have interactions in a matter of minutes.
+This library is a simple and easy to use library for
+creating [Telegram API Bots](https://telegram.org/blog/bot-revolution), and this library is designed to provide a
+platform where one can simply write a bot and have interactions in a matter of minutes.
 
 ## Table of Contents
 
 - [Introduction](#introduction)
-  - [Installation](#installation)
-  - [Getting started](#getting-started)
+    - [Installation](#installation)
+    - [Getting started](#getting-started)
 - [Webhook](#webhook)
     - [Use self-signed certificate](#use-self-signed-certificate)
     - [Delete webhook](#delete-webhook)
@@ -110,8 +112,8 @@ $bot_token = 'your_bot_token';
 \TelegramBot\CrashPad::setDebugMode($admin_id);
 
 $result = \TelegramBot\Request::sendMessage([
-    'chat_id' => $admin_id,
-    'text' => 'text',
+   'chat_id' => $admin_id,
+   'text' => 'text',
 ]);
 
 echo $result->getRawData(false); // {"ok": true, "result": {...}}
@@ -127,12 +129,12 @@ require __DIR__ . '/vendor/autoload.php';
 
 \TelegramBot\Telegram::setToken($bot_token);
 $response = \TelegramBot\Request::setWebhook([
-    'url' => 'https://your-domain.com/webhook/' . $bot_token,
+   'url' => 'https://your-domain.com/webhook/' . $bot_token,
 ]);
 
 if ($response->isOk()) {
-    echo $response->getDescription();
-    exit(0);
+   echo $response->getDescription();
+   exit(0);
 }
 ```
 
@@ -140,8 +142,8 @@ if ($response->isOk()) {
 
 ```php
 \TelegramBot\Request::setWebhook([
-    'url' => 'https://your-domain.com/webhook/' . $bot_token,
-    'certificate' => 'path/to/certificate.pem',
+   'url' => 'https://your-domain.com/webhook/' . $bot_token,
+   'certificate' => 'path/to/certificate.pem',
 ]);
 ```
 
@@ -161,15 +163,13 @@ if ($response->isOk()) {
 use TelegramBot\Entities\Update;
 use TelegramBotTest\EchoBot\Plugins\MainPlugin;
 
-class Handler extends \TelegramBot\UpdateHandler
-{
+class Handler extends \TelegramBot\UpdateHandler {
 
-    public function __process(Update $update): void
-    {
-        self::addPlugins([
-            MainPlugin::class,
-        ]);
-    }
+   public function __process(Update $update): void {
+      self::addPlugins([
+         MainPlugin::class,
+      ]);
+   }
 
 }
 ```
@@ -179,19 +179,19 @@ class Handler extends \TelegramBot\UpdateHandler
 Filtering incoming updates by their type is easy.
 
 ```php
-TelegramBot\UpdateHandler::filterIncomingUpdates([
-    Update::TYPE_MESSAGE,
-    Update::TYPE_CALLBACK_QUERY,
+$updateHandler->filterIncomingUpdates([
+   Update::TYPE_MESSAGE,
+   Update::TYPE_CALLBACK_QUERY,
 ]);
 ```
 
 Or just go advanced:
 
 ```php
-TelegramBot\UpdateHandler::filterIncomingUpdates([
-    Update::TYPE_MESSAGE => function (\TelegramBot\Entities\Update $update) {
-        return $update->getMessage()->getChat()->getId() === 259760855;
-    }
+$updateHandler->filterIncomingUpdates([
+   Update::TYPE_MESSAGE => function (\TelegramBot\Entities\Update $update) {
+      return $update->getMessage()->getChat()->getId() === 259760855;
+   }
 ]);
 ```
 
@@ -203,36 +203,34 @@ The Plugins are a way to create a bot that can do more than just echo back the m
 
 ```php
 <?php
+
 use TelegramBot\Entities\Message;
 use TelegramBot\Entities\WebAppData;
 
-class MainPlugin extends \TelegramBot\Plugin
-{
+class MainPlugin extends \TelegramBot\Plugin {
 
-    public function onMessage(int $update_id, Message $message): \Generator
-    {
-        if ($message->getText() === '/start') {
-            yield \TelegramBot\Request::sendMessage([
-                'chat_id' => $message->getChat()->getId(),
-                'text' => 'Hello, ' . $message->getFrom()->getFirstName(),
-            ]);
-        }
-        
-        if ($message->getText() === '/ping') {
-            yield \TelegramBot\Request::sendMessage([
-                'chat_id' => $message->getChat()->getId(),
-                'text' => 'pong',
-            ]);
-        }
-    }
+   public function onMessage(int $update_id, Message $message): \Generator {
+      if ($message->getText() === '/start') {
+         yield \TelegramBot\Request::sendMessage([
+            'chat_id' => $message->getChat()->getId(),
+            'text' => 'Hello, ' . $message->getFrom()->getFirstName(),
+         ]);
+      }
 
-    public function onWebAppData(int $update_id, WebAppData $webAppData): \Generator
-    {
-        yield \TelegramBot\Request::sendMessage([
-            'chat_id' => $webAppData->getUser()->getId(),
-            'text' => 'Hello, ' . $webAppData->getUser()->getFirstName(),
-        ]);
-    }
+      if ($message->getText() === '/ping') {
+         yield \TelegramBot\Request::sendMessage([
+            'chat_id' => $message->getChat()->getId(),
+            'text' => 'pong',
+         ]);
+      }
+   }
+
+   public function onWebAppData(int $update_id, WebAppData $webAppData): \Generator {
+      yield \TelegramBot\Request::sendMessage([
+         'chat_id' => $webAppData->getUser()->getId(),
+         'text' => 'Hello, ' . $webAppData->getUser()->getFirstName(),
+      ]);
+   }
 
 }
 ```
@@ -240,18 +238,18 @@ class MainPlugin extends \TelegramBot\Plugin
 ### Anonymous plugins and handlers
 
 ```php
-<?php
-declare(strict_types=1);
-
 $commands = new class() extends \TelegramBot\Plugin {
-    public function onUpdate(\TelegramBot\Entities\Update $update): \Generator
-    {
-        // Write your code here
-    }
+
+   public function onUpdate(\TelegramBot\Entities\Update $update): \Generator {
+      // Write your code here
+   }
+
 };
 
 $admin = new class() extends \TelegramBot\Plugin {
-    // TODO: Write your code here
+
+   // TODO: Write your code here
+   
 };
 
 (new \TelegramBot\UpdateHandler())->addPlugins([$commands, $admin])->resolve();
@@ -260,45 +258,46 @@ $admin = new class() extends \TelegramBot\Plugin {
 ### Available events and methods
 
 ```php
-class SomePlugin extends \TelegramBot\Plugin 
-{
+class SomePlugin extends \TelegramBot\Plugin {
 
-    public function onUpdate(Update $update): \Generator{}
+   public function onUpdate(Update $update): \Generator {}
 
-    public function onMessage(int $update_id, Message $message): \Generator{}
+   public function onMessage(int $update_id, Message $message): \Generator {}
 
-    public function onEditedMessage(int $update_id, EditedMessage $editedMessage): \Generator{}
+   public function onEditedMessage(int $update_id, EditedMessage $editedMessage): \Generator {}
 
-    public function onChannelPost(int $update_id, ChannelPost $channelPost): \Generator{}
+   public function onChannelPost(int $update_id, ChannelPost $channelPost): \Generator {}
 
-    public function onEditedChannelPost(int $update_id, EditedChannelPost $editedChannelPost): \Generator{}
+   public function onEditedChannelPost(int $update_id, EditedChannelPost $editedChannelPost): \Generator {}
 
-    public function onInlineQuery(int $update_id, InlineQuery $inlineQuery): \Generator{}
+   public function onInlineQuery(int $update_id, InlineQuery $inlineQuery): \Generator {}
 
-    public function onChosenInlineResult(int $update_id, ChosenInlineResult $chosenInlineResult): \Generator{}
+   public function onChosenInlineResult(int $update_id, ChosenInlineResult $chosenInlineResult): \Generator {}
 
-    public function onCallbackQuery(int $update_id, CallbackQuery $callbackQuery): \Generator{}
+   public function onCallbackQuery(int $update_id, CallbackQuery $callbackQuery): \Generator {}
 
-    public function onShippingQuery(int $update_id, ShippingQuery $shippingQuery): \Generator{}
+   public function onShippingQuery(int $update_id, ShippingQuery $shippingQuery): \Generator {}
 
-    public function onPreCheckoutQuery(int $update_id, PreCheckoutQuery $preCheckoutQuery): \Generator{}
+   public function onPreCheckoutQuery(int $update_id, PreCheckoutQuery $preCheckoutQuery): \Generator {}
 
-    public function onPoll(int $update_id, Poll $poll): \Generator{}
+   public function onPoll(int $update_id, Poll $poll): \Generator {}
 
-    public function onPollAnswer(int $update_id, PollAnswer $pollAnswer): \Generator{}
+   public function onPollAnswer(int $update_id, PollAnswer $pollAnswer): \Generator {}
 
-    public function onWebAppData(int $update_id, WebAppData $webAppData): \Generator{}
+   public function onWebAppData(int $update_id, WebAppData $webAppData): \Generator {}
 
 }
 ```
 
 ## Supports
 
-This library supports evey Telegram Bot API method and entity since [API version 6.0](https://core.telegram.org/bots/api#april-16-2022).
+This library supports evey Telegram Bot API method and entity
+since [API version 6.0](https://core.telegram.org/bots/api#april-16-2022).
 
 ## Error Handling
 
 Using CrashPad for reporting error through telegram. just add below to your Update handler.
+
 ```php
 \TelegramBot\CrashPad::setDebugMode(259760855);
 ```
