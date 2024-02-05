@@ -344,7 +344,7 @@ class Request
                     $has_resource = true;
 
                     continue;
-                } elseif (str_contains('/', $item) && !filter_var($item, FILTER_VALIDATE_URL)) {
+                } elseif (str_contains($item, '/') && !filter_var($item, FILTER_VALIDATE_URL)) {
                     throw new TelegramException(
                         'Invalid file path or URL: ' . $item . ' for ' . self::$current_action . ' action'
                     );
