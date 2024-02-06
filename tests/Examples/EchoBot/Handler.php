@@ -1,10 +1,10 @@
 <?php
 declare(strict_types=1);
 
-namespace TelegramBotTest\EchoBot;
+namespace TelegramBotTest\Methods\examples\EchoBot;
 
 use TelegramBot\Entities\Update;
-use TelegramBotTest\EchoBot\Plugins\MainPlugin;
+use TelegramBotTest\Methods\examples\EchoBot\Plugins\MainPlugin;
 
 class Handler extends \TelegramBot\UpdateHandler
 {

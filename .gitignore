@@ -1,5 +1,9 @@
 .idea
-/.env
+
+.env
+.env.*
+!.env.example
+
 /vendor
 /example.php
 /.telegram-bot

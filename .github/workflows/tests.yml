@@ -2,9 +2,10 @@ name: PHPUnit Test
 
 on:
   push:
-    branches: [ "master" ]
   pull_request:
-    branches: [ "master" ]
+
+concurrency:
+  group: test
 
 permissions:
   contents: read
@@ -23,16 +24,9 @@ jobs:
       - name: Cache Composer packages
         id: composer-cache
         uses: actions/cache@v3
-        with:
-          path: vendor
-          key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-php-
 
       - name: Create Environments
-        run: |
-          touch .env
-          echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" >> .env
+        run: echo "${{ secrets.TEST_ENV_VARIABLES }}" > .env
 
       - name: Install and update Composer packages
         run: composer run-script install-dependencies
