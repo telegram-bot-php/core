@@ -339,22 +339,16 @@ class Request
 
         foreach ($data as $key => &$item) {
             if (array_key_exists(self::$current_action, self::$input_file_fields) && in_array($key, self::$input_file_fields[self::$current_action], true)) {
-
                 if (is_string($item) && file_exists($item)) {
+                    $multipart[$key] = $item;
                     $has_resource = true;
 
-                } elseif (filter_var($item, FILTER_VALIDATE_URL)) {
-                    $has_resource = false;
                     continue;
-
-                } else {
+                } elseif (str_contains($item, '/') && !filter_var($item, FILTER_VALIDATE_URL)) {
                     throw new TelegramException(
                         'Invalid file path or URL: ' . $item . ' for ' . self::$current_action . ' action'
                     );
                 }
-
-                $multipart[$key] = $item;
-                continue;
             }
 
             if ($item instanceof Entity) {
