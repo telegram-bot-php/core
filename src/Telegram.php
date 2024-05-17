@@ -2,7 +2,6 @@
 
 namespace TelegramBot;
 
-use Symfony\Component\Dotenv\Dotenv;
 use TelegramBot\Entities\Response;
 use TelegramBot\Entities\Update;
 use TelegramBot\Exception\TelegramException;
@@ -41,15 +40,12 @@ class Telegram
     public function __construct(string $api_token = '')
     {
         if ($api_token === '') {
-            (new Dotenv())->load($this->getEnvFilePath());
+            self::tryAutoloadEnv();
             $api_token = $_ENV['TELEGRAM_BOT_TOKEN'];
         }
 
         if (empty($api_token) || self::validateToken($api_token) === false) {
-            throw new TelegramException(sprintf(
-                'Invalid Telegram API token: %s',
-                $api_token
-            ));
+            throw new TelegramException('Invalid Telegram API token');
         }
 
         CrashPad::enableCrashHandler();

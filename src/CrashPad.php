@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace TelegramBot;
 
 use Exception;
-use Symfony\Component\Dotenv\Dotenv;
 use Throwable;
 
 /**
@@ -80,8 +79,7 @@ class CrashPad
         }
 
         if (!Telegram::validateToken($_ENV['TELEGRAM_BOT_TOKEN'] ?? '')) {
-            (new Dotenv())->load(Telegram::getEnvFilePath());
-            Telegram::setToken($_ENV['TELEGRAM_BOT_TOKEN']);
+          Telegram::tryAutoloadEnv();
         }
 
         if (($token = self::loadToken()) === null) {
@@ -179,18 +177,14 @@ class CrashPad
      *
      * @return string|null
      */
-    private static function loadToken(): string|null
+    protected static function loadToken(): string|null
     {
         if (($token = Telegram::getApiToken()) !== false) {
             return $token;
         }
 
-        if (file_exists(Telegram::getEnvFilePath())) {
-            (new Dotenv())->load(Telegram::getEnvFilePath());
-            return $_ENV['TELEGRAM_BOT_TOKEN'] ?? null;
-        }
-
-        return null;
+        Telegram::tryAutoloadEnv();
+        return $_ENV['TELEGRAM_BOT_TOKEN'] ?? null;
     }
 
 }
