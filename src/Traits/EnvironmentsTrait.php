@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace TelegramBot\Traits;
 
+use Symfony\Component\Dotenv\Dotenv;
+
 /**
  * EnvironmentsTrait class
  *
@@ -21,11 +23,11 @@ trait EnvironmentsTrait
     protected static int $adminId = -1;
 
     /**
-     * Get env file path and return it
+     * Guesses a possible path to env file
      *
-     * @return string
+     * @return string|null
      */
-    public static function getEnvFilePath(): string
+  protected static function guessEnvPath(): string|null
     {
         $defaultEnvPaths = [
             getcwd() . '/.env',
@@ -39,7 +41,14 @@ trait EnvironmentsTrait
             }
         }
 
-        return '';
+        return null;
+    }
+
+    protected static function tryAutoloadEnv(): void {
+      $envPath = static::guessEnvPath();
+      if ($envPath !== null) {
+        (new Dotenv())->load($envPath);
+      }
     }
 
     /**
