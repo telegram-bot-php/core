@@ -12,24 +12,36 @@ permissions:
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
+    environment: test
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
 
       - name: Validate composer.json and composer.lock
         run: composer validate --strict
 
       - name: Cache Composer packages
         id: composer-cache
-        uses: actions/cache@v3
+        uses: actions/cache@v2
+        with:
+          path: vendor
+          key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
 
-      - name: Create Environments
-        run: echo "${{ secrets.TEST_ENV_VARIABLES }}" > .env
+      - name: Create Environment File
+        run: echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" > .env
 
-      - name: Install and update Composer packages
-        run: composer run-script install-dependencies
+      - name: Create Environment File test user id
+        run: echo "TEST_USER_ID=${{ vars.TEST_USER_ID }}" >> .env
 
-      - name: Run test suite
-        run: composer run-script phpunit-test
+      - name: Install Composer packages
+        run: composer install --prefer-dist --no-progress --no-suggest
+
+      - name: Run PHPUnit tests
+        run: ./vendor/bin/phpunit
