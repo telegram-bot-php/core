@@ -2,8 +2,8 @@
 
 namespace TelegramBot;
 
-use EasyHttp\HttpClient;
-use EasyHttp\FormData;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use TelegramBot\Entities\Response;
 use TelegramBot\Exception\InvalidBotTokenException;
 use TelegramBot\Exception\TelegramException;
@@ -140,8 +140,7 @@ use TelegramBot\Util\Toolkit;
  * @method static Response setGameScore(array $data)        Use this method to set the score of the specified user in a game. On success, if the message was sent by the bot, returns the edited Message, otherwise returns True. Returns an error, if the new score is not greater than the user's current score in the chat and force is False.
  * @method static Response getGameHighScores(array $data)   Use this method to get data for high score tables. Will return the score of the specified user and several of his neighbors in a game. On success, returns an Array of GameHighScore objects.
  */
-class Request
-{
+class Request {
 
     /**
      * Available fields for InputFile helper
@@ -204,8 +203,7 @@ class Request
      *
      * @return string {left, member, administrator, creator}
      */
-    public static function getChatMemberStatus(int $user_id, int $chat_id): string
-    {
+    public static function getChatMemberStatus(int $user_id, int $chat_id): string {
         $response = self::getChatMember([
             'user_id' => $user_id,
             'chat_id' => $chat_id,
@@ -223,8 +221,7 @@ class Request
      * @return Response
      * @throws TelegramException
      */
-    public static function __callStatic(string $name, array $arguments)
-    {
+    public static function __callStatic(string $name, array $arguments) {
         if (isset($arguments[1])) {
             self::$current_token = $arguments[1];
         }
@@ -241,8 +238,7 @@ class Request
      * @return Response
      * @throws TelegramException
      */
-    public static function send(string $action, array $data = []): Response
-    {
+    public static function send(string $action, array $data = []): Response {
         self::$current_action = $action;
 
         $raw_response = self::execute($action, $data);
@@ -271,12 +267,12 @@ class Request
      * @param array $data Data to attach to the execution
      *
      * @return string Result of the HTTP Request
+     * @throws GuzzleException
      */
-    private static function execute(string $action, array $data): string
-    {
+    private static function execute(string $action, array $data): string {
         $request = self::create($action, $data);
 
-        $response = self::getClient()->get($request['url'], $request['options']);
+        $response = self::getClient()->request($request['method'], $request['url'], $request['options']);
 
         return $response->getBody();
     }
@@ -289,15 +285,17 @@ class Request
      *
      * @return array An array of the setUpRequestParams and the url
      */
-    public static function create(string $action, array $data): array
-    {
+    public static function create(string $action, array $data): array {
         if (isset($data['bot_token'])) {
             self::$current_token = $data['bot_token'];
         }
 
+        $opts = self::setUpRequestParams($data);
+
         return [
             'url' => self::getApiPath() . $action,
-            'options' => self::setUpRequestParams($data)
+            'method' => isset($opts['multipart']) && count($opts['multipart']) > 0 ? 'POST' : 'GET',
+            'options' => $opts,
         ];
     }
 
@@ -306,8 +304,7 @@ class Request
      *
      * @return string
      */
-    public static function getApiPath(): string
-    {
+    public static function getApiPath(): string {
         if (static::$current_token !== '') {
             return self::$api_base_uri . '/bot' . static::$current_token . '/';
         }
@@ -324,14 +321,12 @@ class Request
      * @param array $data
      * @return array
      */
-    private static function setUpRequestParams(array $data): array
-    {
+    private static function setUpRequestParams(array $data): array {
         $multipart = [];
         $has_resource = false;
 
         $options = [
             'headers' => [
-                'Content-Type' => 'application/json',
                 'Accept' => 'application/json',
                 'User-Agent' => 'TelegramBot-PHP/' . Telegram::$VERSION
             ]
@@ -340,7 +335,10 @@ class Request
         foreach ($data as $key => &$item) {
             if (array_key_exists(self::$current_action, self::$input_file_fields) && in_array($key, self::$input_file_fields[self::$current_action], true)) {
                 if (is_string($item) && file_exists($item)) {
-                    $multipart[$key] = $item;
+                    $multipart[] = [
+                        'name' => $key,
+                        'contents' => fopen($item, 'r')
+                    ];
                     $has_resource = true;
 
                     continue;
@@ -364,7 +362,7 @@ class Request
         unset($item);
 
         if ($has_resource) {
-            $options['multipart'] = FormData::create($multipart);
+            $options['multipart'] = $multipart;
         }
 
         return $options;
@@ -373,11 +371,10 @@ class Request
     /**
      * Initialize a http client
      *
-     * @return HttpClient
+     * @return Client
      */
-    private static function getClient(): HttpClient
-    {
-        return new HttpClient();
+    private static function getClient(): Client {
+        return new Client();
     }
 
 }

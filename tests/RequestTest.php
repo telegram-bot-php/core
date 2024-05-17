@@ -22,9 +22,9 @@ class RequestTest extends \PHPUnit\Framework\TestCase
 
         $expected = [
             'url' => "https://api.telegram.org/bot{$_ENV['TELEGRAM_BOT_TOKEN']}/sendMessage",
+            'method' => 'GET',
             'options' => [
                 'headers' => [
-                    'Content-Type' => 'application/json',
                     'Accept' => 'application/json',
                     'User-Agent' => 'TelegramBot-PHP/v1.0.0'
                 ],
