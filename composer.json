@@ -40,8 +40,8 @@
       "shahradelahi/easy-http": "~v1.3.0"
    },
    "require-dev": {
-      "fakerphp/faker": "^1.20",
-      "phpunit/phpunit": "^9.5.20",
+      "fakerphp/faker": "^1.23",
+      "phpunit/phpunit": "^9.5",
       "psr/log": "^1.1|^2.0|^3.0"
    },
    "autoload": {
