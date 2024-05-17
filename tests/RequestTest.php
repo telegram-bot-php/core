@@ -15,7 +15,7 @@ class RequestTest extends \PHPUnit\Framework\TestCase
         Telegram::setToken($_ENV['TELEGRAM_BOT_TOKEN']);
 
         $result = Request::create('sendMessage', [
-            'chat_id' => '259760855',
+            'chat_id' => $_ENV['TEST_USER_ID'],
             'text' => 'text',
             'parse_mode' => 'Markdown',
         ]);
@@ -29,7 +29,7 @@ class RequestTest extends \PHPUnit\Framework\TestCase
                     'User-Agent' => 'TelegramBot-PHP/v1.0.0'
                 ],
                 'query' => [
-                    'chat_id' => '259760855',
+                    'chat_id' => $_ENV['TEST_USER_ID'],
                     'text' => 'text',
                     'parse_mode' => 'Markdown',
                 ],
@@ -45,7 +45,7 @@ class RequestTest extends \PHPUnit\Framework\TestCase
         Telegram::setToken($_ENV['TELEGRAM_BOT_TOKEN']);
 
         $response = Request::sendMessage([
-            'chat_id' => 259760855,
+            'chat_id' => $_ENV['TEST_USER_ID'],
             'text' => 'Hello World',
         ]);
 
