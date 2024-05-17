@@ -8,7 +8,7 @@ use TelegramBot\Entities\Update;
 use TelegramBot\Plugin;
 use TelegramBot\Telegram;
 use TelegramBot\UpdateHandler;
-use TelegramBotTest\Methods\examples\EchoBot\Handler;
+use TelegramBotTest\Examples\EchoBot\Handler;
 
 class HandlerTest extends \PHPUnit\Framework\TestCase {
 
