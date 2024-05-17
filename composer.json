@@ -33,11 +33,11 @@
    },
    "require": {
       "php": ">=8.0",
-      "ext-json": "*",
       "ext-curl": "*",
+      "ext-json": "*",
       "ext-mbstring": "*",
-      "symfony/dotenv": "^v6.1.0",
-      "shahradelahi/easy-http": "~v1.3.0"
+      "guzzlehttp/guzzle": "^7.8",
+      "symfony/dotenv": "^v6.4"
    },
    "require-dev": {
       "fakerphp/faker": "^1.23",
