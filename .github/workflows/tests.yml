@@ -38,7 +38,7 @@ jobs:
         run: echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" > .env
 
       - name: Create Environment File test user id
-        run: echo "TEST_USER_ID=${{ vars.TEST_USER_ID }}" >> .env
+        run: echo "TEST_USER_ID=${{ secrets.TEST_USER_ID }}" >> .env
 
       - name: Install Composer packages
         run: composer install --prefer-dist --no-progress --no-suggest
