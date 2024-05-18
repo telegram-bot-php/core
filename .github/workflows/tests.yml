@@ -34,11 +34,16 @@ jobs:
           path: vendor
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
 
+      - name: Masking app token
+        run: echo "::add-mask::$TELEGRAM_BOT_TOKEN"
+      - name: Masking user id
+        run: echo "::add-mask::$TEST_USER_ID"
+
       - name: Create Environment File
-        run: echo "TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_BOT_TOKEN }}" > .env
+        run: echo "TELEGRAM_BOT_TOKEN=${{ env.TELEGRAM_BOT_TOKEN }}" > .env
 
       - name: Create Environment File test user id
-        run: echo "TEST_USER_ID=${{ secrets.TEST_USER_ID }}" >> .env
+        run: echo "TEST_USER_ID=${{ env.TEST_USER_ID }}s" >> .env
 
       - name: Install Composer packages
         run: composer install --prefer-dist --no-progress --no-suggest
