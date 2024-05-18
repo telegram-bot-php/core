@@ -35,15 +35,15 @@ jobs:
           key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
 
       - name: Masking app token
-        run: echo "::add-mask::$TELEGRAM_BOT_TOKEN"
+        run: "::add-mask::${{ vars.TELEGRAM_BOT_TOKEN }}"
       - name: Masking user id
-        run: echo "::add-mask::$TEST_USER_ID"
+        run: "::add-mask::${{ vars.TEST_USER_ID }}"
 
       - name: Create Environment File
-        run: echo "TELEGRAM_BOT_TOKEN=${{ env.TELEGRAM_BOT_TOKEN }}" > .env
+        run: echo "TELEGRAM_BOT_TOKEN=${{ vars.TELEGRAM_BOT_TOKEN }}" > .env
 
       - name: Create Environment File test user id
-        run: echo "TEST_USER_ID=${{ env.TEST_USER_ID }}s" >> .env
+        run: echo "TEST_USER_ID=${{ vars.TEST_USER_ID }}" >> .env
 
       - name: Install Composer packages
         run: composer install --prefer-dist --no-progress --no-suggest
