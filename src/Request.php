@@ -175,13 +175,6 @@ class Request {
     private static string $api_base_uri = 'https://api.telegram.org';
 
     /**
-     * URI of the Telegram API for downloading files (relative to $api_base_url or absolute)
-     *
-     * @var string
-     */
-    private static string $api_base_download_uri = '/file/bot{API_KEY}';
-
-    /**
      * The current action that is being executed
      *
      * @var string

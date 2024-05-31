@@ -43,7 +43,6 @@ class Response extends Entity
         $this->response = $data;
 
         $is_ok = (bool)($data['ok'] ?? false);
-        $result = $data['result'] ?? null;
 
         if ($is_ok) {
             foreach ($this->requiredFields as $field) {

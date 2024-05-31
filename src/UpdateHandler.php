@@ -71,6 +71,8 @@ class UpdateHandler extends Telegram implements HandlerInterface {
     * @param ?Update $update The custom to work with
     * @param array $config The configuration of the receiver
     * @return void
+
+    * @TODO @SuppressWarnings(PHPMD.UnusedFormalParameter)
     */
    public static function resolveOn(Plugin $plugin, Update $update = null, array $config = []): void {
       // TODO: Implement resolveOn() method.
@@ -94,7 +96,6 @@ class UpdateHandler extends Telegram implements HandlerInterface {
             );
          }
 
-         $reflection = Toolkit::reflectionClass($plugin);
          $this->plugins[] = [
             'class' => $plugin,
             'initialized' => is_object($plugin),
