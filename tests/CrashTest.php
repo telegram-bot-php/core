@@ -16,8 +16,9 @@ class CrashTest extends \PHPUnit\Framework\TestCase {
         $plugin = new class($this) extends Plugin {
 
             public function __construct(TestCase $testCase) {
-                Telegram::setAdminId(259760855);
-                $testCase->assertEquals(259760855, Telegram::getAdminId());
+                TelegramTest::loadEnvironment();
+                Telegram::setAdminId((int)$_ENV['TEST_USER_ID']);
+                $testCase->assertEquals((int)$_ENV['TEST_USER_ID'], Telegram::getAdminId());
             }
 
             public function __process(Update $update): void {
