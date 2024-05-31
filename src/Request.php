@@ -342,15 +342,9 @@ class Request {
                 }
             }
 
-            if ($item instanceof Entity) {
-                $item = $item->getRawData();
-            }
+            $itemObject = self::getItemEncode($item);
 
-            if (is_array($item)) {
-                $item = json_encode($item);
-            }
-
-            $options['query'][$key] = $item;
+            $options['query'][$key] = $itemObject;
         }
         unset($item);
 
@@ -368,6 +362,23 @@ class Request {
      */
     private static function getClient(): Client {
         return new Client();
+    }
+
+    /**
+     * get the item encoded
+     * @param $item
+     * @return string
+     */
+    private static function getItemEncode($item): string {
+        if ($item instanceof Entity) {
+            $item = $item->getRawData();
+        }
+
+        if (is_array($item)) {
+            $item = json_encode($item);
+        }
+
+        return $item;
     }
 
 }
