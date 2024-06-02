@@ -83,7 +83,9 @@ class CrashPad
           Telegram::tryAutoloadEnv();
         }
 
-        if (($token = self::loadToken()) === null) {
+        $token = self::loadToken();
+
+        if ($token === null) {
             throw new RuntimeException(
                 'The token is not set. Please set the token using `Telegram::setToken()` method.'
             );
@@ -180,7 +182,9 @@ class CrashPad
      */
     protected static function loadToken(): string|null
     {
-        if (($token = Telegram::getApiToken()) !== false) {
+        $token = Telegram::getApiToken();
+
+        if ($token !== false) {
             return $token;
         }
 

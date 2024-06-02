@@ -53,7 +53,9 @@ trait PluginTrait {
       }
 
       $type = $this->__identify($update);
-      if (method_exists($this, ($method = 'on' . $type)) && $type !== null) {
+      $method = 'on' . $type;
+
+      if (method_exists($this, $method) && $type !== null) {
          $this->__checkExit($this->__callEvent($method, $update));
       }
    }

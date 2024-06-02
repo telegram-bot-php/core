@@ -25,8 +25,9 @@ class UserProfilePhotos extends Entity
     public function getPhotos(): array
     {
         $all_photos = [];
+        $these_photos = $this->getProperty('photos');
 
-        if ($these_photos = $this->getProperty('photos')) {
+        if ($these_photos) {
             foreach ($these_photos as $photos) {
                 $all_photos[] = array_map(function ($photo) {
                     return new PhotoSize($photo);
