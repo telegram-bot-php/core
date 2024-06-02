@@ -3,6 +3,7 @@
 
 namespace TelegramBot\Entities;
 
+use ReflectionClass;
 use TelegramBot\Entity;
 
 /**
@@ -105,7 +106,7 @@ class Keyboard extends Entity
      */
     public function getType(): string
     {
-        $reflection = new \ReflectionClass(static::class);
+        $reflection = new ReflectionClass(static::class);
 
         $class_name = $reflection->getShortName();
 

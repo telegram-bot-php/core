@@ -2,6 +2,8 @@
 
 namespace TelegramBot;
 
+use InvalidArgumentException;
+use RuntimeException;
 use TelegramBot\Entities\Update;
 use TelegramBot\Exception\InvalidBotTokenException;
 use TelegramBot\Interfaces\HandlerInterface;
@@ -91,7 +93,7 @@ class UpdateHandler extends Telegram implements HandlerInterface {
 
       foreach ($plugins as $plugin) {
          if (!is_subclass_of($plugin, Plugin::class)) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                sprintf('The plugin %s must be an instance of %s', get_class($plugin), Plugin::class)
             );
          }
@@ -138,10 +140,10 @@ class UpdateHandler extends Telegram implements HandlerInterface {
                } elseif (is_bool($value)) {
                   return $value;
                }
-               throw new \InvalidArgumentException('The value of the filter must be a callable or a boolean');
+               throw new InvalidArgumentException('The value of the filter must be a callable or a boolean');
             }
          }
-         throw new \InvalidArgumentException('Invalid filter');
+         throw new InvalidArgumentException('Invalid filter');
       }
 
       return false;
@@ -169,7 +171,7 @@ class UpdateHandler extends Telegram implements HandlerInterface {
       }
 
       if (!method_exists($this, '__process')) {
-         throw new \RuntimeException('The method __process does not exist');
+         throw new RuntimeException('The method __process does not exist');
       }
 
       if (is_array($config)) {
@@ -203,7 +205,7 @@ class UpdateHandler extends Telegram implements HandlerInterface {
 
       foreach ($plugins as $plugin) {
          if (!is_subclass_of($plugin['class'], Plugin::class)) {
-            throw new \InvalidArgumentException(sprintf(
+            throw new InvalidArgumentException(sprintf(
                'The plugin %s must be an instance of %s',
                get_class($plugin['class']), Plugin::class
             ));
@@ -211,7 +213,7 @@ class UpdateHandler extends Telegram implements HandlerInterface {
       }
 
       if (!$update instanceof Update) {
-         throw new \InvalidArgumentException(sprintf(
+         throw new InvalidArgumentException(sprintf(
             'The update must be an instance of %s. %s given',
             Update::class, gettype($update)
          ));

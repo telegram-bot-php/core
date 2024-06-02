@@ -2,6 +2,10 @@
 
 namespace TelegramBot\Util;
 
+use ReflectionClass;
+use ReflectionException;
+use RuntimeException;
+
 /**
  * Toolkit class
  *
@@ -75,14 +79,14 @@ class Toolkit
      * Ignored reflection class
      *
      * @param class-string|object $reflectionClass
-     * @return \ReflectionClass
+     * @return ReflectionClass
      */
-    public static function reflectionClass(string|object $reflectionClass): \ReflectionClass
+    public static function reflectionClass(string|object $reflectionClass): ReflectionClass
     {
         try {
-            return new \ReflectionClass($reflectionClass);
-        } catch (\ReflectionException $e) {
-            throw new \RuntimeException($e->getMessage(), $e->getCode(), $e);
+            return new ReflectionClass($reflectionClass);
+        } catch (ReflectionException $e) {
+            throw new RuntimeException($e->getMessage(), $e->getCode(), $e);
         }
     }
 

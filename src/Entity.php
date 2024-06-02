@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace TelegramBot;
 
+use BadMethodCallException;
+
 /**
  * Entity class
  *
@@ -169,7 +171,7 @@ abstract class Entity {
          return $this;
       }
 
-    throw new \BadMethodCallException(`Method {$name} does not exist`);
+    throw new BadMethodCallException(`Method {$name} does not exist`);
   }
 
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace TelegramBot;
 
 use Exception;
+use RuntimeException;
 use Throwable;
 
 /**
@@ -30,7 +31,7 @@ class CrashPad
             }
 
             if (!defined('DEBUG_MODE')) {
-                throw new \RuntimeException(
+                throw new RuntimeException(
                     'Something went wrong, Unfortunately, we can not handle this error.', 0, $throwable
                 );
             }
@@ -72,7 +73,7 @@ class CrashPad
     public static function sendCrash(int $chat_id, Exception|Throwable $exception, string|null $update = null): bool
     {
         if ($chat_id === -1) {
-            throw new \RuntimeException(sprintf(
+            throw new RuntimeException(sprintf(
                 'The given `chat_id` is not valid. given: %s',
                 $chat_id
             ));
@@ -83,7 +84,7 @@ class CrashPad
         }
 
         if (($token = self::loadToken()) === null) {
-            throw new \RuntimeException(
+            throw new RuntimeException(
                 'The token is not set. Please set the token using `Telegram::setToken()` method.'
             );
         }
