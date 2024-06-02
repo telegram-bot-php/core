@@ -25,7 +25,7 @@ class CrashTest extends \PHPUnit\Framework\TestCase {
                 CrashPad::sendCrash(
                     Telegram::getAdminId(),
                     new \Exception('test'),
-                    json_encode($update->getRawData(), JSON_PRETTY_PRINT)
+                    json_encode($update->getRawData(true), JSON_PRETTY_PRINT)
                 );
                 CrashPad::clearCrashLogs();
             }

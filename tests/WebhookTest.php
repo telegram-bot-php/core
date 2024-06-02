@@ -15,7 +15,7 @@ class WebhookTest extends \PHPUnit\Framework\TestCase {
 
             public function onMessage(int $update_id, Message $message): \Generator {
                 Assert::assertEquals(1, $update_id);
-                Assert::assertEquals('Hello World!', $message->getText());
+                Assert::assertEquals('Hello World!', $message->getText(false));
                 yield;
             }
 
@@ -26,7 +26,7 @@ class WebhookTest extends \PHPUnit\Framework\TestCase {
 
         (new UpdateHandler())->addPlugins($plugin)->resolve(new Update([
             'update_id' => 1,
-            'message' => $message->getRawData(),
+            'message' => $message->getRawData(true),
         ]));
     }
 
@@ -46,10 +46,11 @@ class WebhookTest extends \PHPUnit\Framework\TestCase {
 
         $handler->resolve(new Update([
             'update_id' => 1,
-            'message' => DummyUpdate::message()->getRawData(),
+            'message' => DummyUpdate::message()->getRawData(true),
         ]));
 
         $this->assertTrue(true);
     }
 
 }
+

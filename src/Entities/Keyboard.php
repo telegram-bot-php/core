@@ -72,7 +72,7 @@ class Keyboard extends Entity
             $this->addRow($row);
         }
 
-        return $this->getRawData();
+        return $this->getRawData(true);
     }
 
     /**
@@ -91,7 +91,7 @@ class Keyboard extends Entity
 
         $new_row = [];
         foreach ($row as $button) {
-            $new_row[] = $button->getRawData();
+            $new_row[] = $button->getRawData(true);
         }
 
         $this->raw_data[$keyboard_type][] = $new_row;

@@ -210,14 +210,14 @@ use TelegramBot\Entities\WebAppData;
 class MainPlugin extends \TelegramBot\Plugin {
 
    public function onMessage(int $update_id, Message $message): \Generator {
-      if ($message->getText() === '/start') {
+      if ($message->getText(false) === '/start') {
          yield \TelegramBot\Request::sendMessage([
             'chat_id' => $message->getChat()->getId(),
             'text' => 'Hello, ' . $message->getFrom()->getFirstName(),
          ]);
       }
 
-      if ($message->getText() === '/ping') {
+      if ($message->getText(false) === '/ping') {
          yield \TelegramBot\Request::sendMessage([
             'chat_id' => $message->getChat()->getId(),
             'text' => 'pong',

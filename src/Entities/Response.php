@@ -74,7 +74,7 @@ class Response extends Entity
      * @param bool $return
      * @return bool|string
      */
-    public function printError(bool $return = false): bool|string
+    public function printError(bool $return): bool|string
     {
         $error = sprintf('Error N: %s, Description: %s', $this->getErrorCode(), $this->getDescription());
 

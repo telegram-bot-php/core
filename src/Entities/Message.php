@@ -85,7 +85,7 @@ class Message extends Entity
      *
      * @return string|null
      */
-    public function getText(bool $without_cmd = false): ?string
+    public function getText(bool $without_cmd): ?string
     {
         $text = $this->getProperty('text');
         $command = $this->getFullCommand();

@@ -371,7 +371,7 @@ class Request {
      */
     private static function getItemEncode($item): string {
         if ($item instanceof Entity) {
-            $item = $item->getRawData();
+            $item = $item->getRawData(true);
         }
 
         if (is_array($item)) {
