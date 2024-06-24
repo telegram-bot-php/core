@@ -35,12 +35,12 @@ class InlineKeyboardButton extends KeyboardButton
     /**
      * Creates instance of InlineKeyboardButton
      *
-     * @param string $string
+     * @param string|null $label
      * @return InlineKeyboardButton
      */
-    public static function make(string $string): InlineKeyboardButton
+    public static function make(string|null $label = null): InlineKeyboardButton
     {
-        return new self($string);
+        return new self($label);
     }
 
     /**

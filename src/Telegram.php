@@ -127,7 +127,17 @@ class Telegram
      */
     public static function getInput(): string|null
     {
-        return file_get_contents('php://input') ?? null;
+        $input = file_get_contents('php://input');
+        if (!empty($input)) {
+            return $input;
+        }
+
+        $env = getenv('TG_CURRENT_UPDATE');
+        if (!empty($env) && is_string($env)) {
+            return $env;
+        }
+
+        return null;
     }
 
     /**
