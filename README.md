@@ -2,7 +2,7 @@
 <img src="logo.png" alt="logo" width="250" height="250"/>
 </p>
 <p align="center">
-  <a href="https://github.com/telegram-bot-php/core/actions"><img src="https://github.com/telegram-bot-php/core/workflows/PHPUnit%20Test/badge.svg" alt="Build Status" /></a>
+  <a href="https://github.com/telegram-bot-php/core/actions"><img src="https://github.com/telegram-bot-php/core/actions/workflows/ci.yml/badge.svg" alt="Build Status" /></a>
   <a href="https://scrutinizer-ci.com/g/telegram-bot-php/core/?branch=master"><img src="https://img.shields.io/scrutinizer/g/telegram-bot-php/core/master.svg?style=flat" alt="Code Quality" /></a>
   <a href="https://scrutinizer-ci.com/g/telegram-bot-php/core/?branch=master"><img src="https://scrutinizer-ci.com/g/telegram-bot-php/core/badges/code-intelligence.svg?b=master" alt="Code Intelligence Status" /></a>
   <a href="https://scrutinizer-ci.com/g/telegram-bot-php/core/?branch=master"><img src="https://scrutinizer-ci.com/g/telegram-bot-php/core/badges/coverage.png?b=master" alt="Code Coverage" /></a>
@@ -249,7 +249,7 @@ $commands = new class() extends \TelegramBot\Plugin {
 $admin = new class() extends \TelegramBot\Plugin {
 
    // TODO: Write your code here
-   
+
 };
 
 (new \TelegramBot\UpdateHandler())->addPlugins([$commands, $admin])->resolve();
