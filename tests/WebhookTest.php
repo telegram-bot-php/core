@@ -2,7 +2,7 @@
 
 namespace TelegramBotTest;
 
-use PHPUnit\Framework\TestCase;
+use PHPUnit\Framework\Assert;
 use TelegramBot\Entities\Message;
 use TelegramBot\Entities\Update;
 use TelegramBot\Plugin;
@@ -10,57 +10,46 @@ use TelegramBot\UpdateHandler;
 
 class WebhookTest extends \PHPUnit\Framework\TestCase {
 
-   public function testAnonymousPlugins() {
-      $plugin = new class($this) extends Plugin {
+    public function testAnonymousPlugins() {
+        $plugin = new class() extends Plugin {
 
-         private $testCase;
+            public function onMessage(int $update_id, Message $message): \Generator {
+                Assert::assertEquals(1, $update_id);
+                Assert::assertEquals('Hello World!', $message->getText());
+                yield;
+            }
 
-         public function __construct(TestCase $testCase) {
-            $this->testCase = $testCase;
-         }
+        };
 
-         public function onMessage(int $update_id, Message $message): \Generator {
-            $this->testCase->assertEquals(1, $update_id);
-            $this->testCase->assertEquals('Hello World!', $message->getText());
-            yield;
-         }
+        $message = DummyUpdate::message();
+        $message->set('text', 'Hello World!');
 
-      };
+        (new UpdateHandler())->addPlugins($plugin)->resolve(new Update([
+            'update_id' => 1,
+            'message' => $message->getRawData(),
+        ]));
+    }
 
-      $message = DummyUpdate::message();
-      $message->set('text', 'Hello World!');
+    public function testFilterIncomingUpdates() {
 
-      (new UpdateHandler())->addPlugins($plugin)->resolve(new Update([
-         'update_id' => 1,
-         'message' => $message->getRawData(),
-      ]));
-   }
+        $plugin = new class() extends Plugin {
+            public function __process(Update $update): void {
+                Assert::fail('This should not be called');
+            }
+        };
 
-   public function testFilterIncomingUpdates() {
+        $handler = (new UpdateHandler())->addPlugins($plugin);
 
-      $plugin = new class($this) extends Plugin {
+        $handler->filterIncomingUpdates([
+            Update::TYPE_MESSAGE
+        ]);
 
-         public function __construct(TestCase $testCase) {
-            $this->testCase = $testCase;
-         }
+        $handler->resolve(new Update([
+            'update_id' => 1,
+            'message' => DummyUpdate::message()->getRawData(),
+        ]));
 
-         public function __process(Update $update): void {
-            $this->testCase->fail('This should not be called');
-         }
-      };
-
-      $handler = (new UpdateHandler())->addPlugins($plugin);
-
-      $handler->filterIncomingUpdates([
-         Update::TYPE_MESSAGE
-      ]);
-
-      $handler->resolve(new Update([
-         'update_id' => 1,
-         'message' => DummyUpdate::message()->getRawData(),
-      ]));
-
-      $this->assertTrue(true);
-   }
+        $this->assertTrue(true);
+    }
 
 }

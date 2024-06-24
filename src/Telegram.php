@@ -48,7 +48,6 @@ class Telegram
             throw new TelegramException('Invalid Telegram API token');
         }
 
-        CrashPad::enableCrashHandler();
         self::setToken($api_token);
     }
 

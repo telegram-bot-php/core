@@ -1,0 +1,49 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+
+concurrency:
+    group: '${{ github.workflow }}-${{ github.event.number || github.sha }}'
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+jobs:
+    test:
+        strategy:
+            matrix:
+                php-version: [ '8.2', '8.3' ]
+        name: Test on PHP ${{ matrix.php-version }}
+        runs-on: ubuntu-latest
+        steps:
+            -   uses: actions/checkout@v3
+
+            -   name: Setup PHP
+                uses: shivammathur/setup-php@v2
+                with:
+                    php-version: ${{ matrix.php-version }}
+                    extensions: curl, json, mbstring
+
+            -   name: Validate composer.json and composer.lock
+                run: composer validate --strict
+
+            -   name: Cache Composer packages
+                id: composer-cache
+                uses: actions/cache@v3
+                with:
+                    path: vendor
+                    key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+
+            -   name: Install dependencies
+                run: composer install --prefer-source
+
+            -   name: Create Environments
+                run: echo "${{ secrets.TEST_ENV_VARIABLES }}" > .env
+
+            -   name: Run test suite
+                run: composer run-script test
