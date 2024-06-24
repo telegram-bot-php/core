@@ -37,11 +37,11 @@
       "ext-json": "*",
       "ext-mbstring": "*",
       "guzzlehttp/guzzle": "^7.8",
-      "symfony/dotenv": "^v6.4"
+      "symfony/dotenv": "^v6.4|^v7.1"
    },
    "require-dev": {
       "fakerphp/faker": "^1.23",
-      "phpunit/phpunit": "^9.5",
+      "phpunit/phpunit": "^11.2.1",
       "psr/log": "^1.1|^2.0|^3.0"
    },
    "autoload": {
