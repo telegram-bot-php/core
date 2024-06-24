@@ -19,6 +19,13 @@ jobs:
         steps:
             - uses: actions/checkout@v3
 
+            - name: Setup PHP
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: '8.2'
+                  extensions: curl, json, mbstring
+                  coverage: none
+
             - name: Validate composer.json and composer.lock
               run: composer validate --strict
 
@@ -29,11 +36,11 @@ jobs:
                   path: vendor
                   key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
 
-            - name: Create Environments
-              run: echo "${{ secrets.TEST_ENV_VARIABLES }}" > .env
-
             - name: Install dependencies
               run: composer install --prefer-source
+
+            - name: Create Environments
+              run: echo "${{ secrets.TEST_ENV_VARIABLES }}" > .env
 
             - name: Run test suite
               run: composer run-script test

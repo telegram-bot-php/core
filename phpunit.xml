@@ -2,23 +2,24 @@
 <phpunit
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/11.2/phpunit.xsd"
-    bootstrap="phpunit.setup.php" colors="true"
+    bootstrap="phpunit.setup.php"
+    colors="true"
     processIsolation="false"
     stopOnFailure="false"
     cacheDirectory=".phpunit.cache"
 >
   <php>
-    <ini name="date.timezone" value="UTC"/>
-    <ini name="error_reporting" value="1"/>
+    <ini name="date.timezone" value="UTC" />
+    <ini name="error_reporting" value="1" />
   </php>
   <testsuites>
     <testsuite name="Unit Tests">
-      <directory suffix=".php">tests/</directory>
+      <directory suffix="Test.php">tests/</directory>
     </testsuite>
   </testsuites>
   <source>
     <include>
-      <directory suffix=".php">tests/</directory>
+      <directory suffix="Test.php">tests/</directory>
     </include>
   </source>
 </phpunit>
