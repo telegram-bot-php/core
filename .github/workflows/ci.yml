@@ -1,0 +1,39 @@
+name: CI
+
+on:
+    push:
+        branches:
+            - master
+    pull_request:
+
+concurrency:
+    group: '${{ github.workflow }}-${{ github.event.number || github.sha }}'
+    cancel-in-progress: true
+
+permissions:
+    contents: read
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v3
+
+            - name: Validate composer.json and composer.lock
+              run: composer validate --strict
+
+            - name: Cache Composer packages
+              id: composer-cache
+              uses: actions/cache@v3
+              with:
+                  path: vendor
+                  key: ${{ runner.os }}-php-${{ hashFiles('**/composer.lock') }}
+
+            - name: Create Environments
+              run: echo "${{ secrets.TEST_ENV_VARIABLES }}" > .env
+
+            - name: Install dependencies
+              run: composer install --prefer-source
+
+            - name: Run test suite
+              run: composer run-script test

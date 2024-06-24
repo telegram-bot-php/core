@@ -28,8 +28,7 @@
    "minimum-stability": "dev",
    "prefer-stable": true,
    "scripts": {
-      "install-dependencies": "composer install --prefer-source",
-      "phpunit-test": "vendor/bin/phpunit --colors=always --configuration phpunit.xml"
+      "test": "vendor/bin/phpunit --colors=always --configuration phpunit.xml"
    },
    "require": {
       "php": ">=8.0",
