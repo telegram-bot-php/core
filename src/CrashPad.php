@@ -25,7 +25,7 @@ class CrashPad
     {
         $handler = function (Throwable $throwable) {
             if (Telegram::getAdminId() !== -1) {
-                $input = getenv('TG_CURRENT_UPDATE') ?? Telegram::getInput();
+                $input = Telegram::getInput();
                 CrashPad::sendCrash(Telegram::getAdminId(), $throwable, $input);
             }
 

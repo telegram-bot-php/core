@@ -42,18 +42,18 @@ class KeyboardButton extends Entity
             $data = ['text' => $data];
         }
 
-        parent::__construct($data);
+        parent::__construct($data ?? []);
     }
 
     /**
      * Creates instance of KeyboardButton
      *
-     * @param string $string
+     * @param string|null $label
      * @return KeyboardButton
      */
-    public static function make(string $string): KeyboardButton
+    public static function make(string|null $label = null): KeyboardButton
     {
-        return new self($string);
+        return new self($label);
     }
 
     /**
