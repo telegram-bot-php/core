@@ -85,11 +85,12 @@ class Message extends Entity
      *
      * @return string|null
      */
-    public function getText(bool $without_cmd = false): ?string
+    public function getText(bool $without_cmd): ?string
     {
         $text = $this->getProperty('text');
+        $command = $this->getFullCommand();
 
-        if ($without_cmd && $command = $this->getFullCommand()) {
+        if ($without_cmd && $command) {
             if (strlen($command) + 1 < strlen($text)) {
                 return substr($text, strlen($command) + 1);
             }
@@ -201,7 +202,9 @@ class Message extends Entity
      */
     public function getCommand(): ?string
     {
-        if ($command = $this->getProperty('command')) {
+        $command = $this->getProperty('command');
+
+        if ($command) {
             return $command;
         }
 

@@ -33,11 +33,11 @@ class PreCheckoutQuery extends Entity
      *
      * @return Response
      */
-    public function answer(bool $ok, array $data = []): Response
+    public function answer(bool $_ok, array $data = []): Response
     {
         return Request::answerPreCheckoutQuery(array_merge([
             'pre_checkout_query_id' => $this->getId(),
-            'ok' => $ok,
+            'ok' => $_ok,
         ], $data));
     }
 

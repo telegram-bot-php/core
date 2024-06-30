@@ -2,6 +2,7 @@
 
 namespace TelegramBot\Entities;
 
+use InvalidArgumentException;
 use TelegramBot\Entity;
 
 /**
@@ -43,12 +44,11 @@ class Response extends Entity
         $this->response = $data;
 
         $is_ok = (bool)($data['ok'] ?? false);
-        $result = $data['result'] ?? null;
 
         if ($is_ok) {
             foreach ($this->requiredFields as $field) {
                 if (!isset($data[$field])) {
-                    throw new \InvalidArgumentException("The field '{$field}' is required.");
+                    throw new InvalidArgumentException("The field '{$field}' is required.");
                 }
             }
         }
@@ -74,7 +74,7 @@ class Response extends Entity
      * @param bool $return
      * @return bool|string
      */
-    public function printError(bool $return = false): bool|string
+    public function printError(bool $return): bool|string
     {
         $error = sprintf('Error N: %s, Description: %s', $this->getErrorCode(), $this->getDescription());
 

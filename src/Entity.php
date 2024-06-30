@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace TelegramBot;
 
+use BadMethodCallException;
+
 /**
  * Entity class
  *
@@ -90,7 +92,7 @@ abstract class Entity {
     * @param bool $associated
     * @return array|string
     */
-   public function getRawData(bool $associated = true): array|string {
+   public function getRawData(bool $associated): array|string {
       return $associated ? $this->raw_data : json_encode($this->raw_data);
    }
 
@@ -169,7 +171,7 @@ abstract class Entity {
          return $this;
       }
 
-    throw new \BadMethodCallException(`Method {$name} does not exist`);
+    throw new BadMethodCallException(`Method {$name} does not exist`);
   }
 
 }

@@ -9,9 +9,10 @@ use TelegramBot\Entities\Message;
 class MainPlugin extends \TelegramBot\Plugin {
 
     public function onMessage(int $update_id, Message $message): \Generator {
-        Assert::assertEquals('Hello World!', $message->getText());
+        Assert::assertEquals('Hello World!', $message->getText(false));
         Assert::assertEquals(1, $update_id);
         yield;
     }
 
 }
+

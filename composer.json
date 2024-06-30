@@ -28,7 +28,9 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "test": "phpunit --colors=always --configuration phpunit.xml"
+        "install-dependencies": "composer install --ignore-platform-reqs",
+        "phpunit-test": "vendor/bin/phpunit --colors=always --configuration phpunit.xml",
+        "mess-detect": "vendor/bin/phpmd ./src  text  phpmd.xml"
     },
     "require": {
         "php": ">=8.2",
@@ -40,6 +42,7 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "phpmd/phpmd": "^2.15",
         "phpunit/phpunit": "^11.2",
         "psr/log": "^1.1|^2.0|^3.0"
     },

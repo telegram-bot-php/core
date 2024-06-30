@@ -1,0 +1,60 @@
+name: PHP validate and Unit Test
+
+on:
+  push:
+  pull_request:
+
+concurrency:
+  group: test
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Validate composer.json and composer.lock
+        run: composer validate --strict
+
+      - name: Cache Composer packages
+        id: composer-cache
+        uses: actions/cache@v3
+
+      - name: Create Environments
+        run: echo "${{ secrets.TEST_ENV_VARIABLES }}" > .env
+
+      - name: Install and update Composer packages
+        run: composer run-script install-dependencies
+
+      - name: Run test suite
+        run: composer run-script phpunit-test
+
+  validate:
+      runs-on: ubuntu-latest
+
+      steps:
+          - name: Setup PHP
+            uses: shivammathur/setup-php@15c43e89cdef867065b0213be354c2841860869e
+            with:
+                php-version: '8.3'
+
+          - name: Checkout code
+            uses: actions/checkout@v3
+
+          - name: Validate PHP version
+            run: php -v
+
+          - name: Cache Composer packages
+            id: composer-cache
+            uses: actions/cache@v3
+
+          - name: Install and update Composer packages
+            run: composer install --ignore-platform-reqs
+
+          - name: Run PHP mess detector
+            run: composer run-script mess-detect

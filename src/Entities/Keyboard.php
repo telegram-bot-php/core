@@ -3,6 +3,7 @@
 
 namespace TelegramBot\Entities;
 
+use ReflectionClass;
 use TelegramBot\Entity;
 
 /**
@@ -71,7 +72,7 @@ class Keyboard extends Entity
             $this->addRow($row);
         }
 
-        return $this->getRawData();
+        return $this->getRawData(true);
     }
 
     /**
@@ -90,7 +91,7 @@ class Keyboard extends Entity
 
         $new_row = [];
         foreach ($row as $button) {
-            $new_row[] = $button->getRawData();
+            $new_row[] = $button->getRawData(true);
         }
 
         $this->raw_data[$keyboard_type][] = $new_row;
@@ -105,7 +106,7 @@ class Keyboard extends Entity
      */
     public function getType(): string
     {
-        $reflection = new \ReflectionClass(static::class);
+        $reflection = new ReflectionClass(static::class);
 
         $class_name = $reflection->getShortName();
 

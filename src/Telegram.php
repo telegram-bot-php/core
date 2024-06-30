@@ -160,21 +160,7 @@ class Telegram
             );
         }
 
-        if ($apiKey !== null && self::validateWebData($apiKey, $input)) {
-            if (Toolkit::isUrlEncode($input)) {
-                $web_data = Toolkit::urlDecode($input);
-            }
-
-            if (Toolkit::isJson($input)) {
-                $web_data = json_decode($input, true);
-            }
-
-            if (!empty($web_data) && is_array($web_data)) {
-                $input = json_encode([
-                    'web_app_data' => $web_data,
-                ]);
-            }
-        }
+        $input = self::handleInputEncoding($apiKey, $input);
 
         if (!Toolkit::isJson($input)) {
             throw new TelegramException(sprintf(
@@ -233,6 +219,37 @@ class Telegram
     public static function getApiToken(): string|false
     {
         return self::$api_key !== null ? (self::validateToken(self::$api_key) ? self::$api_key : false) : false;
+    }
+
+    /**
+     * Handle input encoding
+     * from web data
+     * @param $apiKey
+     * @param $input
+     * @return string
+     */
+    private static function handleInputEncoding($apiKey, $input): string
+    {
+        if ($apiKey !== null && self::validateWebData($apiKey, $input)) {
+
+            $web_data = [];
+            if (Toolkit::isUrlEncode($input)) {
+                $web_data = Toolkit::urlDecode($input);
+            }
+
+            if (Toolkit::isJson($input)) {
+                $web_data = json_decode($input, true);
+            }
+
+
+            if (!empty($web_data) && is_array($web_data)) {
+                $input = json_encode([
+                    'web_app_data' => $web_data,
+                ]);
+            }
+        }
+
+        return $input;
     }
 
 }

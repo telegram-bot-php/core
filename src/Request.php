@@ -175,13 +175,6 @@ class Request {
     private static string $api_base_uri = 'https://api.telegram.org';
 
     /**
-     * URI of the Telegram API for downloading files (relative to $api_base_url or absolute)
-     *
-     * @var string
-     */
-    private static string $api_base_download_uri = '/file/bot{API_KEY}';
-
-    /**
      * The current action that is being executed
      *
      * @var string
@@ -349,15 +342,9 @@ class Request {
                 }
             }
 
-            if ($item instanceof Entity) {
-                $item = $item->getRawData();
-            }
+            $itemObject = self::getItemEncode($item);
 
-            if (is_array($item)) {
-                $item = json_encode($item);
-            }
-
-            $options['query'][$key] = $item;
+            $options['query'][$key] = $itemObject;
         }
         unset($item);
 
@@ -375,6 +362,23 @@ class Request {
      */
     private static function getClient(): Client {
         return new Client();
+    }
+
+    /**
+     * get the item encoded
+     * @param $item
+     * @return string
+     */
+    private static function getItemEncode($item): string {
+        if ($item instanceof Entity) {
+            $item = $item->getRawData(true);
+        }
+
+        if (is_array($item)) {
+            $item = json_encode($item);
+        }
+
+        return $item;
     }
 
 }

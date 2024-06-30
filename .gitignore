@@ -8,3 +8,5 @@
 /example.php
 /.telegram-bot
 /.phpunit.result.cache
+
+/.phpunit.cache

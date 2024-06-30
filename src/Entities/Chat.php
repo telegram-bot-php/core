@@ -40,11 +40,11 @@ class Chat extends Entity
     {
         parent::__construct($data);
 
-        $id = $this->getId();
+        $_id = $this->getId();
         $type = $this->getType();
         if (!$type) {
-            $id > 0 && $this->type = 'private';
-            $id < 0 && $this->type = 'group';
+            $_id > 0 && $this->type = 'private';
+            $_id < 0 && $this->type = 'group';
         }
     }
 

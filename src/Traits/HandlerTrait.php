@@ -15,6 +15,9 @@ use TelegramBot\Entities\Update;
 trait HandlerTrait
 {
 
+    /**
+     * @TODO @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
     public function __process(Update $update): void
     {
         // TODO: Implement __process() method.
